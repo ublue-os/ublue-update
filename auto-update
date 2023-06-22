@@ -50,7 +50,6 @@ def checks(config):
 		check_cpu_load(max_cpu_load),
 	]
 	update_checks_failed = False
-	update_fail_conditions = []
 	for inhibitor_result in update_inhibitors:
 		if not inhibitor_result["passed"]:
 			update_passed = True
@@ -92,14 +91,14 @@ def main():
 
 	notify2.init('auto-update')
 
-	update_checks_failed, update_fail_conditions = checks(load_config())
+	update_checks_failed, update_inhibitors = checks(load_config())
 	if update_checks_failed:
-		n = notify2.Notification("System Updater","System doesn't pass " + update_inhibitors[key][1] + " check \n aborting ...","notification-message-im")
+		n = notify2.Notification("System Updater","System doesn't pass checks, check logs for more info; aborting ...","notification-message-im")
 		n.show()
 		exit(0)
 
 # system checks passed
-	n = notify2.Notification("System Updater","System passed checks \n updating ...","notification-message-im")
+	n = notify2.Notification("System Updater","System passed checks updating ...","notification-message-im")
 	n.show()
 
 	root_dir = "/etc/update.d/"
