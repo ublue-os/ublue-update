@@ -8,8 +8,16 @@ end goal is to just have an rpm SPEC file that will most likely end up in ublue-
 
 # Reads values from configuration
 
+valid config paths (in order or priority)
+
+`"$HOME"/.config/auto-update/auto-update.conf`
+`/etc/auto-update/auto-update.conf`
+`/usr/etc/auto-update/auto-update.conf`
+
 section: `checks`
 `battery_percent`: checks if battery is above specified percent
 `cpu_load`: checks if cpu average load is under specified percent
 
 # executes update scripts in `/etc/update.d`
+
+
