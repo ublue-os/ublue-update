@@ -1,6 +1,8 @@
 #!/bin/bash
 
 echo "hello from bash!"
-echo "waiting 3 seconds"
-sleep 3
-echo "3 seconds waited"
+echo ligam
+
+echo "waiting 69 seconds"
+sleep 1
+echo "69 seconds waited"
