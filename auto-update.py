@@ -30,7 +30,7 @@ def checks(config):
 				break
 	
 	errors = {
-		battery_status: [battery_status.percent > check_battery_percent or battery_status.power_plugged, "battery"],
+		battery_status: [(battery_status.percent > check_battery_percent or battery_status.power_plugged) or battery_status == None, "battery"],
 		cpu_load: [cpu_load < check_cpu_load, "CPU load"],
 		network_up: [network_up, "network"]
 	}
