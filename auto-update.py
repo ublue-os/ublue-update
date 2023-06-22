@@ -29,7 +29,7 @@ def checks(config):
 				network_up = True
 				break
 
-# null saftey on the battery variable, it returns "None" when the system doesn't have a battery
+# null safety on the battery variable, it returns "None" when the system doesn't have a battery
 	battery_pass = True
 	if battery_status != None:
 		battery_check = (battery_status.percent > check_battery_percent or battery_status.power_plugged)
@@ -41,8 +41,7 @@ def checks(config):
 	}
 	return errors
 
-
-def main():
+def load_config():
 # load config values
 	config_paths = [
 		os.path.expanduser('~/.config/auto-update/auto-update.conf'),
@@ -64,6 +63,10 @@ def main():
 
 	config = configparser.ConfigParser()
 	config.read(config_path)
+	return config
+
+def main():
+# setup logging
 	logging.basicConfig(
 			format="[%(asctime)s] %(name)s:%(levelname)s | %(message)s",
 			level=os.getenv("UBLUE_LOG", default=logging.INFO),
@@ -71,14 +74,13 @@ def main():
 
 	notify2.init('auto-update')
 
-	errors = checks(config)
+	errors = checks(load_config())
 	for key in errors:
 		if not errors[key][0]:
 			# system checks failed
 			n = notify2.Notification("System Updater","System doesn't pass " + errors[key][1] + " check; aborting ...","notification-message-im")
 			n.show()
 			exit(0)
-
 
 # system checks passed
 	n = notify2.Notification("System Updater","System passed checks, updating ...","notification-message-im")
@@ -91,5 +93,9 @@ def main():
 		for file in files:
 			full_path = root_dir + "/" + str(file)
 			list_files = subprocess.run([full_path])
+
+	# system checks passed
+	n = notify2.Notification("System Updater","System update complete, reboot for changes to take effect","notification-message-im")
+	n.show()
 
 main()
