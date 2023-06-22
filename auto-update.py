@@ -28,9 +28,14 @@ def checks(config):
 			if network_status[key][0]:
 				network_up = True
 				break
-	
+
+# null saftey on the battery variable, it returns "None" when the system doesn't have a battery
+	battery_pass = True
+	if battery_status != None:
+		battery_check = (battery_status.percent > check_battery_percent or battery_status.power_plugged)
+
 	errors = {
-		battery_status: [(battery_status.percent > check_battery_percent or battery_status.power_plugged) or battery_status == None, "battery"],
+		battery_status: [battery_pass, "battery"],
 		cpu_load: [cpu_load < check_cpu_load, "CPU load"],
 		network_up: [network_up, "network"]
 	}
@@ -46,7 +51,6 @@ def main():
 		]
 
 	config_path = ""
-
 	for path in config_paths:
 		if os.path.isfile(path):
 			config_path = path
