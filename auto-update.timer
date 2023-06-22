@@ -2,7 +2,7 @@
 Description=auto-update system timer
 
 [Timer]
-OnBootSec=5m
+After=network-online
 OnUnitActiveSec=24h
 
 [Install]
