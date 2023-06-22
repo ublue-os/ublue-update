@@ -15,7 +15,7 @@ cpu_load = 50
 def checks(config):
 	check_battery_percent = float(config['checks']['battery_percent'])
 	check_cpu_load = float(config['checks']['cpu_load'])
-	
+
 	battery_status = psutil.sensors_battery()
 # get load average percentage in last 5 minutes: https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
 	cpu_load = psutil.getloadavg()[1] / psutil.cpu_count() * 100
@@ -70,17 +70,17 @@ def main():
 	errors = checks(config)
 	for key in errors:
 		if not errors[key][0]:
+			# system checks failed
 			n = notify2.Notification("System Updater","System doesn't pass " + errors[key][1] + " check; aborting ...","notification-message-im")
 			n.show()
 			exit(0)
-# system checks failed
-	
+
 
 # system checks passed
 	n = notify2.Notification("System Updater","System passed checks, updating ...","notification-message-im")
 	n.show()
 
-	root_dir = str(os.path.dirname(__file__)) + "/update-scripts"
+	root_dir = "/etc/update.d/"
 
 # execute update commands
 	for root, dirs, files in os.walk(root_dir):

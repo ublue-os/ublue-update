@@ -1,0 +1,7 @@
+
+[Unit]
+Description=auto-update oneshot service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/bin/auto-update.py

@@ -1,0 +1,9 @@
+[Unit]
+Description=auto-update system timer
+
+[Timer]
+OnBootSec=5m
+OnUnitActiveSec=24h
+
+[Install]
+WantedBy=timers.target
