@@ -94,7 +94,7 @@ def main():
 			full_path = root_dir + "/" + str(file)
 			list_files = subprocess.run([full_path])
 
-	# system checks passed
+# system is done updating
 	n = notify2.Notification("System Updater","System update complete, reboot for changes to take effect","notification-message-im")
 	n.show()
 
