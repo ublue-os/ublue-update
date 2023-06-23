@@ -7,7 +7,6 @@ import subprocess
 import logging
 import configparser
 
-
 default_config = """
 [checks]
 battery_percent = 50
@@ -40,7 +39,7 @@ def check_battery_status(min_battery_percent):
 		battery_check = (battery_status.percent > min_battery_percent or battery_status.power_plugged)
 	return {"passed": battery_pass, "message": f"Battery less than {min_battery_percent}%"}
 
-def checks(config):
+def check_inhibitors(config):
 	min_battery_percent = float(config['checks']['battery_percent'])
 	max_cpu_load = float(config['checks']['cpu_load'])
 	
@@ -49,11 +48,18 @@ def checks(config):
 		check_battery_status(min_battery_percent),
 		check_cpu_load(max_cpu_load),
 	]
+
 	update_checks_failed = False
+	log = " \nupdate failed to pass checks:"
 	for inhibitor_result in update_inhibitors:
 		if not inhibitor_result["passed"]:
-			update_passed = True
-			print(f"System could not upgrade due to: {inhibitor_result['message']}")
+			update_checks_failed = True
+			log = log + f" \n {inhibitor_result['message']}"
+# log the failed update
+	if update_checks_failed:
+		logger = logging.getLogger(__name__)
+		logger.info(log)
+		exit(0)
 	return update_checks_failed
 
 
@@ -91,10 +97,7 @@ def main():
 
 	notify2.init('auto-update')
 
-	update_checks_failed = checks(load_config())
-	if update_checks_failed:
-		print("Update checks failed")
-		exit(0)
+	check_inhibitors(load_config())
 
 # system checks passed
 	n = notify2.Notification("System Updater","System passed checks updating ...","notification-message-im")
