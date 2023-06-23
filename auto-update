@@ -54,7 +54,7 @@ def checks(config):
 		if not inhibitor_result["passed"]:
 			update_passed = True
 			print(f"System could not upgrade due to: {inhibitor_result['message']}")
-	return update_checks_failed, update_inhibitors
+	return update_checks_failed
 
 
 def load_config():
@@ -93,8 +93,7 @@ def main():
 
 	update_checks_failed, update_inhibitors = checks(load_config())
 	if update_checks_failed:
-		n = notify2.Notification("System Updater","System doesn't pass checks, check logs for more info; aborting ...","notification-message-im")
-		n.show()
+		print("Update checks failed")
 		exit(0)
 
 # system checks passed
