@@ -91,7 +91,7 @@ def main():
 
 	notify2.init('auto-update')
 
-	update_checks_failed, update_inhibitors = checks(load_config())
+	update_checks_failed = checks(load_config())
 	if update_checks_failed:
 		print("Update checks failed")
 		exit(0)
