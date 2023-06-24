@@ -22,12 +22,5 @@ build-rpm: tarball
     	--define '%_tmppath %{_topdir}/tmp' \
     	$(UBLUE_ROOT)/$(TARGET).spec
 
-build:
-	
-
-install:
-	mkdir -p $(DESTDIR)/usr/bin
-	install -m 0755 $(TARGET) $(DESTDIR)/usr/bin/$(TARGET)
-
 clean: $(SOURCE_DIR) $(RPMBUILD)
 	rm -rf $^
