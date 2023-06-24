@@ -1,27 +1,39 @@
 Name:     ublue-updater
 Version:  0.1
-Release:  %autorelease
+Release:  1%{?dist}
 Summary:  centralized update service/checker made for universal blue
 License:  Apache-2.0
 URL:      https://github.com/gerblesh/ublue-auto-update
-Source:   http://ftp.gnu.org/gnu/hello/hello-%{version}.tar.gz
+
+
+BuildArch:      noarch
+Supplements:    rpm-ostree flatpak
+
+Source0:        ublue-os-update-services.tar.gz
 
 %description
-The GNU Hello program produces a familiar, friendly greeting. Yes, this is
-another implementation of the classic program that prints "Hello, world!" when
-you run it.
+Installs and configures ublue-updater services and timers for auto update
 
 %prep
-%autosetup
+%setup -q -c -T
 
 %build
-%configure
-%make_build
 
-%install
-%make_install
+mkdir -p -m0755 %{buildroot}%{_datadir}/%{VENDOR}
+
+tar xf %{SOURCE0} -C %{buildroot}%{_datadir}/%{VENDOR} --strip-components=1
+
+tar xf %{SOURCE0} -C %{buildroot} --strip-components=2
+
+
+%post
+%systemd_post ublue-updater.timer
+
+%preun
+%systemd_preun ublue-updater.timer
 
 %files
+
 
 %changelog
 %autochangelog
