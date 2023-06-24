@@ -42,7 +42,7 @@ def check_battery_status(min_battery_percent):
 def check_inhibitors(config):
 	min_battery_percent = float(config['checks']['battery_percent'])
 	max_cpu_load = float(config['checks']['cpu_load'])
-	
+
 	update_inhibitors = [
 		check_network_status(),
 		check_battery_status(min_battery_percent),
@@ -55,6 +55,7 @@ def check_inhibitors(config):
 		if not inhibitor_result["passed"]:
 			update_checks_failed = True
 			log = log + f" \n {inhibitor_result['message']}"
+
 # log the failed update
 	if update_checks_failed:
 		logger = logging.getLogger(__name__)
@@ -66,10 +67,10 @@ def check_inhibitors(config):
 def load_config():
 # load config values
 	config_paths = [
-		os.path.expanduser('~/.config/auto-update/auto-update.conf'),
-		"/etc/auto-update/auto-update.conf",
-		"/usr/etc/auto-update/auto-update.conf"
-		]
+		os.path.expanduser('~/.config/ublue-updater/ublue-updater.conf'),
+		"/etc/ublue-updater/ublue-updater.conf",
+		"/usr/etc/ublue-updater/ublue-updater.conf"
+	]
 
 	config_path = ""
 	for path in config_paths:
@@ -95,12 +96,12 @@ def main():
 			level=os.getenv("UBLUE_LOG", default=logging.INFO),
 	)
 
-	notify2.init('auto-update')
+	notify2.init('ublue-updater')
 
 	check_inhibitors(load_config())
 
 # system checks passed
-	n = notify2.Notification("System Updater","System passed checks updating ...","notification-message-im")
+	n = notify2.Notification("System Updater","System passed checks; updating ...","notification-message-im")
 	n.show()
 
 	root_dir = "/etc/update.d/"
@@ -112,7 +113,7 @@ def main():
 			list_files = subprocess.run([full_path])
 
 # system is done updating
-	n = notify2.Notification("System Updater","System update complete \n reboot for changes to take effect","notification-message-im")
+	n = notify2.Notification("System Updater","System update complete; reboot for changes to take effect","notification-message-im")
 	n.show()
 
 main()

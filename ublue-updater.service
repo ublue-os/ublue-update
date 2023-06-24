@@ -4,4 +4,4 @@ Description=auto-update oneshot service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/auto-update
+ExecStart=/usr/bin/update-ublue

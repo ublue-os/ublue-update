@@ -1,5 +1,5 @@
 [Unit]
-Description=auto-update system timer
+Description=update-ublue system timer
 
 [Timer]
 After=network-online
