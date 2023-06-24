@@ -42,9 +42,9 @@ sudo install -m 0755 update-ublue %{buildroot}%{_bindir}/update-ublue
 %{_bindir}/update-ublue
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.timer
-%attr(0755,root,root) %{_sysconfdir}/ublue-updater/ublue-updater.conf
+%attr(0755,root,root) %{_exec_prefix}/etc/ublue-updater/ublue-updater.conf
 %attr(0644,root,root) %{_sysconfdir}/update.d/flatpak-user-update.sh
-%attr(0644,root,root) %{_sysconfdir}/update.d/system-update.sh
+%attr(0644,root,root) %{_sysconfdir}/etc/update.d/system-update.sh
 %exclude %{_datadir}/%{VENDOR}/*
 
 %changelog
