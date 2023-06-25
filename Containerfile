@@ -13,7 +13,7 @@ RUN make
 RUN \
     for RPM in /tmp/ublue-os/rpmbuild/RPMS/*/*.rpm; do \
         NAME="$(rpm -q $RPM --queryformat='%{NAME}')"; \
-        mkdir "/tmp/ublue-os/files/${NAME}"; \
+        mkdir -p "/tmp/ublue-os/files/${NAME}"; \
         rpm2cpio "${RPM}" | cpio -idmv --directory "/tmp/ublue-os/files/${NAME}"; \
         cp "${RPM}" "/tmp/ublue-os/rpms/$(rpm -q "${RPM}" --queryformat='%{NAME}.%{ARCH}.rpm')"; \
     done
