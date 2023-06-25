@@ -12,4 +12,4 @@ RUN make
 FROM scratch
 
 # Copy build RPMs
-COPY --from=builder /tmp/ublue-os/rpmbuild/*.rpm /rpms/
+COPY --from=builder /tmp/ublue-os/rpmbuild/RPMS /rpms
