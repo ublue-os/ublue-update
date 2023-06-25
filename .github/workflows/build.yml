@@ -2,11 +2,17 @@ name: build-ublue
 on:
   pull_request:
   merge_group:  
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
   schedule:
     - cron: '0 5 * * *'  # 5 am everyday
   workflow_dispatch:  
 env:
-    IMAGE_NAME: config
+    IMAGE_NAME: ublue-updater
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
