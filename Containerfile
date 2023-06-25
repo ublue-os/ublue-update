@@ -9,7 +9,17 @@ RUN dnf install --disablerepo='*' --enablerepo='fedora,updates' --setopt install
 RUN make
 
 
+# Dump a file list for each RPM for easier consumption
+RUN \
+    for RPM in /tmp/ublue-os/rpmbuild/RPMS/*/*.rpm; do \
+        NAME="$(rpm -q $RPM --queryformat='%{NAME}')"; \
+        mkdir "/tmp/ublue-os/files/${NAME}"; \
+        rpm2cpio "${RPM}" | cpio -idmv --directory "/tmp/ublue-os/files/${NAME}"; \
+        cp "${RPM}" "/tmp/ublue-os/rpms/$(rpm -q "${RPM}" --queryformat='%{NAME}.%{ARCH}.rpm')"; \
+    done
+
+
 FROM scratch
 
 # Copy build RPMs
-COPY --from=builder /tmp/ublue-os/rpmbuild/RPMS /rpms
+COPY --from=builder /tmp/ublue-os/rpms /rpms
