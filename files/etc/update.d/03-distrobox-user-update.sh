@@ -1,3 +1,3 @@
 #!/usr/bin/bash
 
-/usr/bin/distrobox update
+/usr/bin/distrobox upgrade
