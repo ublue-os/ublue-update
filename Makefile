@@ -1,6 +1,6 @@
 UBLUE_ROOT := /tmp/ublue-os
 TARGET := ublue-updater
-SOURCE_DIR := $(UBLUE_ROOT)/$(TARGET)
+SOURCE_DIR := $(UBLUE_ROOT)/rpms/$(TARGET)
 RPMBUILD := $(UBLUE_ROOT)/rpmbuild
 
 all: build-rpm
@@ -15,7 +15,7 @@ tarball:
 	tar czf $(RPMBUILD)/SOURCES/$(TARGET)-data.tar.gz -C $(UBLUE_ROOT)/$(TARGET)/files .
 	
 build-rpm: tarball
-	cp ./*.spec $(UBLUE_ROOT)
+	cp ./*.spec $(UBLUE_ROOT)/rpms/
 	mkdir -p $(RPMBUILD)
 	rpmbuild -ba \
     	--define '_topdir $(RPMBUILD)' \
