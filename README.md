@@ -1,8 +1,6 @@
 # ublue-updater
 
-Small update program written in python, executes update scripts in `/etc/update.d`
-
-## intended for use in uBlue, however can be used anywhere as a simple update runner/checker
+Small update program written in python intended for use in uBlue, executes update scripts in `/etc/update.d`
 
 dependencies (fedora): ```sudo dnf install python3-notify2 python3-psutil```
 
