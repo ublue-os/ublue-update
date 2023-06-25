@@ -6,7 +6,7 @@ RPMBUILD := $(UBLUE_ROOT)/rpmbuild
 all: build-rpm
 
 tarball:
-	mkdir -p $(SOURCE_DIR) $(UBLUE_ROOT) $(SOURCE_DIR)/src $(RPMBUILD)/SOURCES
+	mkdir -p $(SOURCE_DIR) $(UBLUE_ROOT)/rpms $(SOURCE_DIR)/src $(RPMBUILD)/SOURCES
 	cp -r \
 		LICENSE Makefile README.md update-ublue \
 		$(SOURCE_DIR)/src
@@ -20,7 +20,7 @@ build-rpm: tarball
 	rpmbuild -ba \
     	--define '_topdir $(RPMBUILD)' \
     	--define '%_tmppath %{_topdir}/tmp' \
-    	$(UBLUE_ROOT)/$(TARGET).spec
+    	$(UBLUE_ROOT)/rpms/$(TARGET).spec
 
 clean: $(SOURCE_DIR) $(RPMBUILD)
 	rm -rf $^
