@@ -1,6 +1,6 @@
 [Unit]
 Description=update-ublue system timer
-After=network-online
+Wants=network-online.target
 
 [Timer]
 OnBootSec=1h
