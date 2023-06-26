@@ -101,7 +101,7 @@ def main():
 	check_inhibitors(load_config())
 
 # system checks passed
-	n = notify2.Notification("System Updater","System passed checks; updating ...","notification-message-im")
+	n = notify2.Notification("System Updater","System passed checks, updating ...","notification-message-im")
 	n.show()
 
 	root_dir = "/etc/update.d/"
