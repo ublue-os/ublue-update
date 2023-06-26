@@ -113,7 +113,8 @@ def main():
 			if executable:
 				list_files = subprocess.run([full_path])
 			else:
-				log.info(f"could not execute file {full_path}")
+				logger = logging.getLogger(__name__)
+				logger.info(f"could not execute file {full_path}")
 
 	notify2.Notification(
 		"System Updater",
