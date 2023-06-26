@@ -13,6 +13,7 @@ battery_percent = 50
 cpu_load = 50
 """
 
+
 def check_cpu_load(max_cpu_load):
 # get load average percentage in last 5 minutes: https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
 	cpu_load = psutil.getloadavg()[1] / psutil.cpu_count() * 100
@@ -72,12 +73,14 @@ def load_config():
 		"/usr/etc/ublue-updater/ublue-updater.conf"
 	]
 
+# search for the right config
 	config_path = ""
 	for path in config_paths:
 		if os.path.isfile(path):
 			config_path = path
 			break
 
+# if there's no config, create one
 	if config_path == "":
 		config_path = config_paths[0]
 		os.makedirs(os.path.dirname(config_path))
@@ -89,6 +92,32 @@ def load_config():
 	return config
 
 
+def run_updates():
+	root_dir = "/etc/update.d/"
+
+	for root, dirs, files in os.walk(root_dir):
+		for file in files:
+			full_path = root_dir + "/" + str(file)
+
+			executable = os.access(full_path, os.X_OK)
+			if executable:
+				out = subprocess.run([full_path],
+					stdout=subprocess.PIPE, 
+					stderr=subprocess.STDOUT)
+
+				if out.returncode != 0:
+					logger = logging.getLogger(__name__)
+					logger.info(f"{full_path} returned error code: {out.returncode} \n Program output: \n {out.stdout}")
+
+					notify2.Notification(
+						"System Updater",
+						f"Error in update script: {file}, check logs for more info",
+						"notification-message-im").show()
+			else:
+				logger = logging.getLogger(__name__)
+				logger.info(f"could not execute file {full_path}")
+
+
 def main():
 # setup logging
 	logging.basicConfig(
@@ -97,29 +126,18 @@ def main():
 	)
 
 	notify2.init('ublue-updater')
-
 	check_inhibitors(load_config())
-
 # system checks passed
 	n = notify2.Notification("System Updater","System passed checks, updating ...","notification-message-im")
 	n.show()
 
-	root_dir = "/etc/update.d/"
-
-	for root, dirs, files in os.walk(root_dir):
-		for file in files:
-			full_path = root_dir + "/" + str(file)
-			executable = os.access(full_path, os.X_OK)
-			if executable:
-				list_files = subprocess.run([full_path])
-			else:
-				logger = logging.getLogger(__name__)
-				logger.info(f"could not execute file {full_path}")
+	run_updates()
 
 	notify2.Notification(
 		"System Updater",
 		"System update complete, reboot for changes to take effect",
 		"notification-message-im").show()
+
 
 if __name__ == "__main__":
 	raise SystemExit(main())

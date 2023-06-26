@@ -3,8 +3,8 @@ Description=update-ublue system timer
 After=network-online
 
 [Timer]
-OnCalendar=0/6:00:00
-Persistent=true
+OnBootSec=1h
+OnUnitInactiveSec=1d
 
 [Install]
 WantedBy=timers.target
