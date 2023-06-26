@@ -44,10 +44,10 @@ sudo install -m 0755 update-ublue %{buildroot}%{_bindir}/update-ublue
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
 %attr(0755,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-ublue-updater-preset
 %attr(0755,root,root) %{_exec_prefix}/etc/ublue-updater/ublue-updater.conf
-%attr(0644,root,root) %{_sysconfdir}/update.d/00-system-update.sh
-%attr(0644,root,root) %{_sysconfdir}/update.d/01-flatpak-system-update.sh
-%attr(0644,root,root) %{_sysconfdir}/update.d/02-flatpak-user-update.sh
-%attr(0644,root,root) %{_sysconfdir}/update.d/03-distrobox-user-update.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/00-system-update.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/01-flatpak-system-update.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/02-flatpak-user-update.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/03-distrobox-user-update.sh
 
 %exclude %{_datadir}/%{VENDOR}/*
 
