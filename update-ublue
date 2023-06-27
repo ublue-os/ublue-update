@@ -37,7 +37,7 @@ def check_battery_status(min_battery_percent):
 	# null safety on the battery variable, it returns "None" when the system doesn't have a battery
 	battery_pass = True
 	if battery_status != None:
-		battery_check = (battery_status.percent > min_battery_percent or battery_status.power_plugged)
+		battery_pass = (battery_status.percent > min_battery_percent or battery_status.power_plugged)
 	return {"passed": battery_pass, "message": f"Battery less than {min_battery_percent}%"}
 
 def check_inhibitors(config):
@@ -61,6 +61,7 @@ def check_inhibitors(config):
 	if update_checks_failed:
 		logger = logging.getLogger(__name__)
 		logger.info(log)
+		
 		exit(0)
 	return update_checks_failed
 
