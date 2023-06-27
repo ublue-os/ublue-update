@@ -1,6 +1,6 @@
 Name:     ublue-updater
 Vendor: ublue-os
-Version:  0.1
+Version:  0.9
 Release:  1%{?dist}
 Summary:  Centralized update service/checker made for Universal Blue
 License:  Apache-2.0
