@@ -139,7 +139,7 @@ def main():
 # system checks passed
 	n = notify2.Notification("System Updater","System passed checks, updating ...","notification-message-im")
 	n.show()
-	exit(0)
+
 	run_updates()
 
 	notify2.Notification(
