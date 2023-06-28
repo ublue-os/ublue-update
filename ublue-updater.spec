@@ -47,7 +47,9 @@ sudo install -m 0755 update-ublue %{buildroot}%{_bindir}/update-ublue
 %attr(0755,root,root) %{_sysconfdir}/update.d/00-system-update.sh
 %attr(0755,root,root) %{_sysconfdir}/update.d/01-flatpak-system-update.sh
 %attr(0755,root,root) %{_sysconfdir}/update.d/02-flatpak-user-update.sh
-%attr(0755,root,root) %{_sysconfdir}/update.d/03-distrobox-user-update.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/03-flatpak-system-repair-cleanup.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/04-flatpak-user-repair-cleanup.sh
+%attr(0755,root,root) %{_sysconfdir}/update.d/05-distrobox-user-update.sh
 
 %exclude %{_datadir}/%{VENDOR}/*
 
