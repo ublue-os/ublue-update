@@ -10,8 +10,8 @@ dependencies (fedora): ```sudo dnf install python3-notify2 python3-psutil```
 You can add this to your image by simply pulling down and installing the rpm
 
 ```
-COPY --from=ghcr.io/gerblesh/ublue-updater:latest /rpms/ublue-updater.noarch.rpm /rpms/
-RUN rpm-ostree install /rpms/ublue-updater.noarch.rpm
+COPY --from=ghcr.io/gerblesh/ublue-updater:latest /rpms/ublue-updater.noarch.rpm /tmp/rpms/
+RUN rpm-ostree install /tmp/rpms/ublue-updater.noarch.rpm
 ```
 
 
