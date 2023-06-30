@@ -1,5 +1,5 @@
 [Unit]
-Description=update-ublue system timer
+Description=auto update system timer for uBlue
 Wants=network-online.target
 
 [Timer]

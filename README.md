@@ -1,6 +1,8 @@
-# ublue-updater
+# Update uBlue
 
 Small update program written in python intended for use in uBlue, executes update scripts/tasks placed in `/etc/ublue-update.d` (make sure each script has exec perms)
+
+Includes systemd timers and services for auto update
 
 dependencies (fedora): ```sudo dnf install python3-notify2 python3-psutil```
 
@@ -48,7 +50,7 @@ valid config paths (in order of priority)
 
 ```"$HOME"/.config/ublue-update/ublue-update.conf```
 
-```/etc/ublue-updater/ublue-update.conf```
+```/etc/ublue-update/ublue-update.conf```
 
 ```/usr/etc/ublue-update/ublue-update.conf```
 

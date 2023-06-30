@@ -17,7 +17,7 @@ Source1:    %{NAME}-data.tar.gz
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 
 %description
-Installs and configures ublue-os-updater services and timers for auto update
+Installs and configures ublue-update script, systemd services, and systemd timers for auto update
 
 %prep
 %setup -q -c
@@ -39,7 +39,7 @@ sudo install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/update-ublue
+%{_bindir}/ublue-update
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
 %attr(0755,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
