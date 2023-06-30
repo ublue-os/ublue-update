@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 def check_cpu_load(max_cpu_load):
 	# get load average percentage in last 5 minutes: https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
 	cpu_load = psutil.getloadavg()[1] / psutil.cpu_count() * 100
-	return {"passed": cpu_load < max_cpu_load, "message": f"CPU load is above {max_cpu_load}%"}
+	return {"passed": cpu_load < max_cpu_load, "message": str.format("CPU load is above {max_cpu_load}%")}
 
 
 def check_network_status():
@@ -41,7 +41,7 @@ def check_battery_status(min_battery_percent):
 	battery_pass = True
 	if battery_status != None:
 		battery_pass = (battery_status.percent > min_battery_percent or battery_status.power_plugged)
-	return {"passed": battery_pass, "message": f"Battery less than {min_battery_percent}%"}
+	return {"passed": battery_pass, "message": str.format("Battery less than {min_battery_percent}%")}
 
 
 def check_inhibitors(config):
@@ -64,7 +64,7 @@ def check_inhibitors(config):
 	# log the failed update
 	if update_checks_failed:
 		# notify systemd that the checks have failed, systemd will try to rerun the unit
-		raise Exception(f"update failed to pass checks: \n{'\n - '.join(failures)}")
+		raise Exception(str.format("update failed to pass checks: \n{'\n - '.join(failures)}"))
 
 
 def load_config():
@@ -108,14 +108,14 @@ def run_updates():
 					stderr=subprocess.STDOUT)
 
 				if out.returncode != 0:
-					log.info(f"{full_path} returned error code: {out.returncode} \n Program output: \n {out.stdout}")
+					log.info(str.format("{full_path} returned error code: {out.returncode} \n Program output: \n {out.stdout}"))
 
 					notify2.Notification(
 						"System Updater",
-						f"Error in update script: {file}, check logs for more info",
+						str.format("Error in update script: {file}, check logs for more info"),
 						"notification-message-im").show()
 			else:
-				log.info(f"could not execute file {full_path}")
+				log.info(str.format("could not execute file {full_path}"))
 
 
 def main():
