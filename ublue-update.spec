@@ -39,7 +39,7 @@ sudo install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/ublue-update
+%{_bindir}/%{NAME}
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
 %attr(0755,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
