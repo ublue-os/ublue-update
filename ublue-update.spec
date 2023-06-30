@@ -1,4 +1,4 @@
-Name:     ublue-updater
+Name:   ublue-update
 Vendor: ublue-os
 Version:  0.9
 Release:  1%{?dist}

@@ -132,7 +132,7 @@ def main():
 		help="force manual update, skipping update checks")
 	args = parser.parse_args()
 
-	notify2.init('ublue-updater')
+	notify2.init('ublue-update')
 
 	if not args.force:
 		check_inhibitors(load_config())
