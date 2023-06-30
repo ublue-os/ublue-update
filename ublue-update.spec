@@ -26,7 +26,7 @@ Installs and configures ublue-os-updater services and timers for auto update
 mkdir -p -m0755 %{buildroot}%{_datadir}/%{VENDOR} %{buildroot}%{_bindir}
 tar xzf %{SOURCE1} -C %{buildroot} . --strip-components=1
 tar xzf %{SOURCE0} -C %{buildroot}%{_datadir}/${VENDOR} --directory ./%{VENDOR} --strip-components=1
-sudo install -m 0755 update-ublue %{buildroot}%{_bindir}/update-ublue
+sudo install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
 
 %post
 %systemd_post ublue-update.service
