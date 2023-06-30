@@ -24,6 +24,10 @@ COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /
 RUN rpm-ostree override replace ublue-os-update-services --install=/tmp/rpms/ublue-update.noarch.rpm
 ```
 
+Enable the systemd timer:
+
+```RUN systemctl --global enable ublue-update.timer```
+
 
 ## Command Line
 
