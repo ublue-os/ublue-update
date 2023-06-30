@@ -70,7 +70,7 @@ def check_inhibitors(config):
 def load_config():
 # load config values
 	config_paths = [
-		os.path.expanduser('~/.config/ublue-updater/ublue-update.conf'),
+		os.path.expanduser('~/.config/ublue-update/ublue-update.conf'),
 		"/etc/ublue-update/ublue-update.conf",
 		"/usr/etc/ublue-update/ublue-update.conf"
 	]
