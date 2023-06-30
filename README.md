@@ -28,7 +28,9 @@ RUN rpm-ostree override replace ublue-os-update-services --install=/tmp/rpms/ubl
 
 Enable the systemd timer:
 
-```RUN systemctl --global enable ublue-update.timer```
+```
+RUN systemctl --global enable ublue-update.timer
+```
 
 
 ## Command Line
