@@ -4,7 +4,7 @@ Version:  0.9
 Release:  1%{?dist}
 Summary:  Centralized update service/checker made for Universal Blue
 License:  Apache-2.0
-URL:      https://github.com/gerblesh/ublue-auto-update
+URL:      https://github.com/gerblesh/%{NAME}
 
 BuildArch:      noarch
 Supplements:    rpm-ostree flatpak
@@ -29,12 +29,12 @@ tar xzf %{SOURCE0} -C %{buildroot}%{_datadir}/${VENDOR} --directory ./%{VENDOR} 
 sudo install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
 
 %post
-%systemd_post ublue-update.service
-%systemd_post ublue-update.timer
+%systemd_post %{NAME}.service
+%systemd_post %{NAME}.timer
 
 %preun
-%systemd_preun ublue-update.service
-%systemd_preun ublue-update.timer
+%systemd_preun %{NAME}.service
+%systemd_preun %{NAME}.timer
 
 %files
 %license LICENSE
