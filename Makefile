@@ -1,5 +1,5 @@
 UBLUE_ROOT := /tmp/ublue-os
-TARGET := ublue-update
+TARGET := update-ublue
 SOURCE_DIR := $(UBLUE_ROOT)/$(TARGET)
 RPMBUILD := $(UBLUE_ROOT)/rpmbuild
 
@@ -8,7 +8,7 @@ all: build-rpm
 tarball:
 	mkdir -p $(SOURCE_DIR) $(UBLUE_ROOT) $(SOURCE_DIR)/src $(RPMBUILD)/SOURCES
 	cp -r \
-		LICENSE Makefile README.md ublue-update \
+		LICENSE Makefile README.md update-ublue \
 		$(SOURCE_DIR)/src
 	tar czf $(RPMBUILD)/SOURCES/$(TARGET).tar.gz -C $(UBLUE_ROOT)/$(TARGET)/src .	
 	cp -r ./files $(SOURCE_DIR)
