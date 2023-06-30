@@ -70,9 +70,9 @@ def check_inhibitors(config):
 def load_config():
 # load config values
 	config_paths = [
-		os.path.expanduser('~/.config/ublue-updater/ublue-updater.conf'),
-		"/etc/ublue-updater/ublue-updater.conf",
-		"/usr/etc/ublue-updater/ublue-updater.conf"
+		os.path.expanduser('~/.config/ublue-updater/ublue-update.conf'),
+		"/etc/ublue-update/ublue-update.conf",
+		"/usr/etc/ublue-update/ublue-update.conf"
 	]
 
 # search for the right config
@@ -95,7 +95,7 @@ def load_config():
 
 
 def run_updates():
-	root_dir = "/etc/update.d/"
+	root_dir = "/etc/ublue-update.d/"
 
 	for root, dirs, files in os.walk(root_dir):
 		for file in files:

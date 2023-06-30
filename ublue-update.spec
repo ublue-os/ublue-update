@@ -29,12 +29,12 @@ tar xzf %{SOURCE0} -C %{buildroot}%{_datadir}/${VENDOR} --directory ./%{VENDOR} 
 sudo install -m 0755 update-ublue %{buildroot}%{_bindir}/update-ublue
 
 %post
-%systemd_post ublue-updater.service
-%systemd_post ublue-updater.timer
+%systemd_post ublue-update.service
+%systemd_post ublue-update.timer
 
 %preun
-%systemd_preun ublue-updater.service
-%systemd_preun ublue-updater.timer
+%systemd_preun ublue-update.service
+%systemd_preun ublue-update.timer
 
 %files
 %license LICENSE
@@ -42,14 +42,14 @@ sudo install -m 0755 update-ublue %{buildroot}%{_bindir}/update-ublue
 %{_bindir}/update-ublue
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
-%attr(0755,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-ublue-updater.preset
-%attr(0755,root,root) %{_exec_prefix}/etc/ublue-updater/ublue-updater.conf
-%attr(0755,root,root) %{_sysconfdir}/update.d/00-system-update.sh
-%attr(0755,root,root) %{_sysconfdir}/update.d/01-flatpak-system-update.sh
-%attr(0755,root,root) %{_sysconfdir}/update.d/02-flatpak-user-update.sh
-%attr(0755,root,root) %{_sysconfdir}/update.d/03-flatpak-system-repair-cleanup.sh
-%attr(0755,root,root) %{_sysconfdir}/update.d/04-flatpak-user-repair-cleanup.sh
-%attr(0755,root,root) %{_sysconfdir}/update.d/05-distrobox-user-update.sh
+%attr(0755,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
+%attr(0755,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.conf
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/00-system-update.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/01-flatpak-system-update.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/02-flatpak-user-update.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/03-flatpak-system-repair-cleanup.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/04-flatpak-user-repair-cleanup.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/05-distrobox-user-update.sh
 
 %exclude %{_datadir}/%{VENDOR}/*
 
