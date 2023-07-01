@@ -4,7 +4,7 @@ WORKDIR /app
 
 ADD . /app
 
-RUN dnf install --disablerepo='*' --enablerepo='fedora,updates' --setopt install_weak_deps=0 --nodocs --assumeyes rpm-build make
+RUN dnf install --disablerepo='*' --enablerepo='fedora,updates' --setopt install_weak_deps=0 --nodocs --assumeyes rpm-build make systemd-rpm-macros
 
 RUN make
 
