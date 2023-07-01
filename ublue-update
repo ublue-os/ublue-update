@@ -12,7 +12,11 @@ default_config = """
 [checks]
 battery_percent = 50
 cpu_load = 50
+[notify]
+dbus-notify = True
 """
+
+dbus_notify = True
 
 log = logging.getLogger(__name__)
 
@@ -110,16 +114,18 @@ def run_updates():
 
 				if out.returncode != 0:
 					log.info(f"{full_path} returned error code: {out.returncode} \n Program output: \n {out.stdout}")
-
-					notify2.Notification(
-						"System Updater",
-						f"Error in update script: {file}, check logs for more info",
-						"notification-message-im").show()
+					if dbus_notify:
+						notify2.Notification(
+							"System Updater",
+							f"Error in update script: {file}, check logs for more info",
+							"notification-message-im").show()
 			else:
 				log.info(f"could not execute file {full_path}")
 
 
 def main():
+	config = load_config()
+	dbus_notify = config["notify"]["dbus_notify"]
 	# setup logging
 	logging.basicConfig(
 			format="[%(asctime)s] %(name)s:%(levelname)s | %(message)s",
@@ -131,20 +137,25 @@ def main():
 		help="force manual update, skipping update checks")
 	args = parser.parse_args()
 
-	notify2.init('ublue-update')
+	if dbus_notify:
+		notify2.init('ublue-update')
 
 	if not args.force:
-		check_inhibitors(load_config())
+		check_inhibitors(config)
 	# system checks passed
-	n = notify2.Notification("System Updater","System passed checks, updating ...","notification-message-im")
-	n.show()
+	if 
+	if dbus_notify:
+		notify2.Notification(
+			"System Updater",
+			"System passed checks, updating ...",
+			"notification-message-im").show()
 
 	run_updates()
-
-	notify2.Notification(
-		"System Updater",
-		"System update complete, reboot for changes to take effect",
-		"notification-message-im").show()
+	if dbus_notify:
+		notify2.Notification(
+			"System Updater",
+			"System update complete, reboot for changes to take effect",
+			"notification-message-im").show()
 
 
 if __name__ == "__main__":
