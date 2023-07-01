@@ -13,7 +13,7 @@ default_config = """
 battery_percent = 50
 cpu_load = 50
 [notify]
-dbus-notify = True
+dbus_notify = True
 """
 
 dbus_notify = True
