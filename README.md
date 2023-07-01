@@ -23,7 +23,8 @@ if you are using a uBlue main image (or any derivitaves):
 
 ```
 COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
+RUN rpm-ostree override remove ublue-os-update-services
+RUN rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 ```
 
 Enable the systemd timer:
