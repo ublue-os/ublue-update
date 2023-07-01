@@ -177,6 +177,7 @@ def main():
             "System Updater",
             "System update complete, reboot for changes to take effect",
             "notification-message-im").show()
+    log.info("System update complete")
 
 
 if __name__ == "__main__":
