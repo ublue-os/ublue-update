@@ -29,11 +29,12 @@ RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /t
 ## Command Line
 
 ```
-usage: ublue-update [-h] [-f]
+usage: ublue-update [-h] [-f] [-c]
 
 options:
   -h, --help   show this help message and exit
   -f, --force  force manual update, skipping update checks
+  -c, --check  run update checks and exit
 ```
 
 
