@@ -29,12 +29,12 @@ tar xzf %{SOURCE0} -C %{buildroot}%{_datadir}/${VENDOR} --directory ./%{VENDOR} 
 sudo install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
 
 %post
-%systemd_post %{NAME}.service
-%systemd_post %{NAME}.timer
+%systemd_user_post %{NAME}.service
+%systemd_user_post %{NAME}.timer
 
 %preun
-%systemd_preun %{NAME}.service
-%systemd_preun %{NAME}.timer
+%systemd_user_preun %{NAME}.service
+%systemd_user_preun %{NAME}.timer
 
 %files
 %license LICENSE

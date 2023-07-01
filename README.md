@@ -16,14 +16,6 @@ You can add this to your image by simply pulling down and installing the rpm
 
 ```
 COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree override install /tmp/rpms/ublue-update.noarch.rpm
-```
-
-if you are using a uBlue main image (or any derivitaves):
-
-```
-COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree override remove ublue-os-update-services
 RUN rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 ```
 
