@@ -128,45 +128,45 @@ def run_updates():
                     [full_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
                 )
 
-				if out.returncode != 0:
-					log.info(f"{full_path} returned error code: {out.returncode} \n Program output: \n {out.stdout}")
-					if dbus_notify:
-						notify2.Notification(
-							"System Updater",
-							f"Error in update script: {file}, check logs for more info",
-							"notification-message-im").show()
-			else:
-				log.info(f"could not execute file {full_path}")
+                if out.returncode != 0:
+                    log.info(f"{full_path} returned error code: {out.returncode}")
+                    log.info("Program output: \n {out.stdout}")
+                    if dbus_notify:
+                        notify2.Notification(
+                            "System Updater",
+                            f"Error in update script: {file}, check logs for more info",
+                            "notification-message-im").show()
+            else:
+                log.info(f"could not execute file {full_path}")
 
 
 def main():
-	config = load_config()
-	dbus_notify = config["notify"]["dbus_notify"]
-	# setup argparse
-	parser = argparse.ArgumentParser()
-	parser.add_argument("-f","--force",action="store_true",
-		help="force manual update, skipping update checks")
-	args = parser.parse_args()
+    config = load_config()
+    dbus_notify = config["notify"]["dbus_notify"]
+    # setup argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--force", action="store_true",
+                        help="force manual update, skipping update checks")
+    args = parser.parse_args()
 
-	if dbus_notify:
-		notify2.init('ublue-update')
+    if dbus_notify:
+        notify2.init('ublue-update')
 
-	if not args.force:
-		check_inhibitors(config)
-	# system checks passed
-	if 
-	if dbus_notify:
-		notify2.Notification(
-			"System Updater",
-			"System passed checks, updating ...",
-			"notification-message-im").show()
+    if not args.force:
+        check_inhibitors(config)
+    # system checks passed
+    if dbus_notify:
+        notify2.Notification(
+            "System Updater",
+            "System passed checks, updating ...",
+            "notification-message-im").show()
 
-	run_updates()
-	if dbus_notify:
-		notify2.Notification(
-			"System Updater",
-			"System update complete, reboot for changes to take effect",
-			"notification-message-im").show()
+    run_updates()
+    if dbus_notify:
+        notify2.Notification(
+            "System Updater",
+            "System update complete, reboot for changes to take effect",
+            "notification-message-im").show()
 
 
 if __name__ == "__main__":
