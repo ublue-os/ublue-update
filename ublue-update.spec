@@ -12,7 +12,7 @@ BuildRequires: make
 BuildRequires: systemd-rpm-macros
 Requires: python3-notify2
 Requires: python3-psutil
-Source0:    %{NAME}.tar.gz 
+Source0:    %{NAME}.tar.gz
 Source1:    %{NAME}-data.tar.gz
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
@@ -27,7 +27,7 @@ Installs and configures ublue-update script, systemd services, and systemd timer
 mkdir -p -m0755 %{buildroot}%{_datadir}/%{VENDOR} %{buildroot}%{_bindir}
 tar xzf %{SOURCE1} -C %{buildroot} . --strip-components=1
 tar xzf %{SOURCE0} -C %{buildroot}%{_datadir}/${VENDOR} --directory ./%{VENDOR} --strip-components=1
-sudo install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
+install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
 
 %post
 %systemd_user_post %{NAME}.timer

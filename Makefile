@@ -10,7 +10,7 @@ tarball:
 	cp -r \
 		LICENSE Makefile README.md ublue-update \
 		$(SOURCE_DIR)/src
-	tar czf $(RPMBUILD)/SOURCES/$(TARGET).tar.gz -C $(UBLUE_ROOT)/$(TARGET)/src .	
+	tar czf $(RPMBUILD)/SOURCES/$(TARGET).tar.gz -C $(UBLUE_ROOT)/$(TARGET)/src .
 	cp -r ./files $(SOURCE_DIR)
 	tar czf $(RPMBUILD)/SOURCES/$(TARGET)-data.tar.gz -C $(UBLUE_ROOT)/$(TARGET)/files .
 	
