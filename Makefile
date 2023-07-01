@@ -1,4 +1,4 @@
-UBLUE_ROOT := /tmp/ublue-os
+UBLUE_ROOT := $(UBLUE_ROOT)
 TARGET := ublue-update
 SOURCE_DIR := $(UBLUE_ROOT)/$(TARGET)
 RPMBUILD := $(UBLUE_ROOT)/rpmbuild
