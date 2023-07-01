@@ -12,7 +12,10 @@ dependencies (fedora): ```sudo dnf install python3-notify2 python3-psutil```
 
 ## Installation
 
-You can add this to your image by simply pulling down and installing the rpm
+You can add this to your image by simply pulling down and installing the rpm:
+
+Warning:
+(if you are making an image derived from the ublue-os/main or ublue-os/nvidia images, you'll want to disable the auto updates in rpm-ostreed.conf and make sure the flatpak-user-update and flatpak-update services aren't running)
 
 ```
 COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
