@@ -161,8 +161,8 @@ def main():
         check_inhibitors()
 
     # system checks passed
+    log.info("System passed all update checks")
     if dbus_notify:
-        log.info("System passed all update checks")
         notify2.Notification(
             "System Updater",
             "System passed checks, updating ...",
