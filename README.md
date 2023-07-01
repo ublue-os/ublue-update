@@ -1,4 +1,4 @@
-# Update uBlue
+# uBlue Update
 
 Small update program written in python intended for use in uBlue, executes update scripts/tasks placed in `/etc/ublue-update.d` (make sure each script has exec perms)
 
