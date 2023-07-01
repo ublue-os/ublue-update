@@ -150,6 +150,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--force", action="store_true",
                         help="force manual update, skipping update checks")
+    parser.add_argument("-c", "--check", action="store_true",
+                        help="run update checks and exit")
     args = parser.parse_args()
 
     if dbus_notify:
@@ -157,12 +159,17 @@ def main():
 
     if not args.force:
         check_inhibitors()
+
     # system checks passed
     if dbus_notify:
+        log.info("System passed all update checks")
         notify2.Notification(
             "System Updater",
             "System passed checks, updating ...",
             "notification-message-im").show()
+
+    if args.check:
+        exit(0)
 
     run_updates()
     if dbus_notify:
