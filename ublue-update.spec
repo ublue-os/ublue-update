@@ -8,7 +8,7 @@ URL:      https://github.com/gerblesh/%{NAME}
 
 BuildArch:      noarch
 Supplements:    rpm-ostree flatpak
-BuildRequires: make
+BuildRequires: make systemd-rpm-macros
 Requires: python3-notify2
 Requires: python3-psutil
 Source0:    %{NAME}.tar.gz 
