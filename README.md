@@ -1,6 +1,6 @@
-# uBlue Update
+# Universal Blue Update
 
-Small update program written in python intended for use in uBlue, executes update scripts/tasks placed in `/etc/ublue-update.d` (make sure each script has exec perms)
+Small update program written in python intended for use in Universal Blue, executes update scripts/tasks placed in `/etc/ublue-update.d` (make sure each script has exec perms)
 
 Includes systemd timers and services for auto update
 
