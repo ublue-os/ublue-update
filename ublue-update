@@ -5,7 +5,7 @@ import notify2
 import os
 import subprocess
 import logging
-import configparser
+import tomllib
 import argparse
 
 
@@ -72,9 +72,9 @@ def check_inhibitors():
 def load_config():
     # load config values
     config_paths = [
-        os.path.expanduser("~/.config/ublue-update/ublue-update.conf"),
-        "/etc/ublue-update/ublue-update.conf",
-        "/usr/etc/ublue-update/ublue-update.conf",
+        os.path.expanduser("~/.config/ublue-update/ublue-update.toml"),
+        "/etc/ublue-update/ublue-update.toml",
+        "/usr/etc/ublue-update/ublue-update.toml",
     ]
 
     # search for the right config
@@ -84,17 +84,15 @@ def load_config():
             config_path = path
             break
 
-    # if there's no config, create one
-    if config_path == "":
-        config_path = config_paths[0]
-        os.makedirs(os.path.dirname(config_path))
-        with open(config_path, "w") as f:
-            f.write(default_config)
-
-    config = configparser.ConfigParser()
-    config.read(config_path)
+    config = tomllib.load(open(config_path, "rb"))
     return config
 
+def load_value(key,value):
+    default_config_path = "/usr/etc/ublue-update/ublue-update.toml"
+    default = tomllib.load(os.open(default_config_path,"rb"))
+    if key in config.keys():
+        return config[key].get(value, default)
+    return default
 
 def run_updates():
     root_dir = "/etc/ublue-update.d/"
@@ -120,21 +118,11 @@ def run_updates():
             else:
                 log.info(f"could not execute file {full_path}")
 
-
-default_config = """
-[checks]
-battery_percent = 50
-cpu_load = 50
-[notify]
-dbus_notify = True
-"""
-
 config = load_config()
 
-dbus_notify = config.getboolean("notify","dbus_notify", fallback = True)
-min_battery_percent = config.getfloat("checks","battery_percent", fallback = 50.0)
-max_cpu_load = config.getfloat("checks","battery_percent", fallback = 50.0)
-
+dbus_notify = load_value("notify","dbus_notify")
+min_battery_percent = load_value("checks","battery_percent")
+max_cpu_load = load_value("checks","cpu_load")
 
 # setup logging
 logging.basicConfig(
@@ -182,3 +170,4 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

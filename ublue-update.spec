@@ -51,7 +51,7 @@ cp -rp etc usr %{buildroot}
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
-%attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.conf
+%attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.toml
 %attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/00-system-update.sh
 %attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/01-flatpak-system-update.sh
 %attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/02-flatpak-user-update.sh
