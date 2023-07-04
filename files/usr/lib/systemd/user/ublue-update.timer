@@ -5,7 +5,7 @@ Wants=network-online.target
 [Timer]
 OnBootSec=15min
 OnUnitInactiveSec=6h
-Persistant=true
+Persistent=true
 
 [Install]
 WantedBy=timers.target
