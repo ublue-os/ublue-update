@@ -1,9 +1,6 @@
-
 [Unit]
 Description=auto-update oneshot service
 
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/ublue-update
-Restart=on-failure
-RestartSec=15min
