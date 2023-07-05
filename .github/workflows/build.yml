@@ -1,4 +1,4 @@
-name: build-ublue
+name: build development package
 on:
   pull_request:
   merge_group:  

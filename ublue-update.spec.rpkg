@@ -1,6 +1,6 @@
 Name:   {{{ git_dir_name }}}
 Vendor: ublue-os
-Version:  {{{ git_dir_version }}}
+Version:  {{{ ublue_updater_version }}}
 Release:  1%{?dist}
 Summary:  Centralized update service/checker made for Universal Blue
 License:  Apache-2.0
@@ -25,8 +25,8 @@ BuildRequires: python-setuptools
 BuildRequires: python
 BuildRequires: python-devel
 BuildRequires: pyproject-rpm-macros
-%generate_buildrequires
-%pyproject_buildrequires
+BuildRequires: python-setuptools_scm
+BuildRequires: python-wheel
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 

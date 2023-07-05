@@ -1,2 +1,0 @@
-notify2
-psutil

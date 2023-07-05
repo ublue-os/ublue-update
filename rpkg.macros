@@ -1,0 +1,7 @@
+function ublue_updater_version {
+    if [ "$GITHUB_TOKEN" = "" ]; then
+        echo "1.0.0+$(git rev-parse --short HEAD)"
+    else
+        echo "$GITHUB_TOKEN" | awk '{print $NF}' FS='/'
+    fi
+}

@@ -1,2 +1,0 @@
-[console_scripts]
-ublue-update = ublue_updater.cli:main

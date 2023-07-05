@@ -17,8 +17,13 @@ format:
 	flake8 src
 	black src
 
-build-rpm:
+spec: output
+	rpkg spec --outdir $(PWD)/output
+
+build-rpm: output
 	rpkg local --outdir $(PWD)/output
+output:
+	mkdir -p output
 
 clean: $(SOURCE_DIR) $(RPMBUILD)
 	rm -rf $^
