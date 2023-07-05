@@ -2,25 +2,23 @@ UBLUE_ROOT := $(UBLUE_ROOT)
 TARGET := ublue-update
 SOURCE_DIR := $(UBLUE_ROOT)/$(TARGET)
 RPMBUILD := $(UBLUE_ROOT)/rpmbuild
+ifeq ($(GITHUB_REF),)
+export GITHUB_REF := refs/tags/v1.0.0+$(shell git rev-parse --short HEAD)
+endif
 
 all: build-rpm
 
-tarball:
-	mkdir -p $(SOURCE_DIR) $(UBLUE_ROOT) $(SOURCE_DIR)/src $(RPMBUILD)/SOURCES
-	cp -r \
-		LICENSE Makefile README.md ublue-update \
-		$(SOURCE_DIR)/src
-	tar czf $(RPMBUILD)/SOURCES/$(TARGET).tar.gz -C $(UBLUE_ROOT)/$(TARGET)/src .
-	cp -r ./files $(SOURCE_DIR)
-	tar czf $(RPMBUILD)/SOURCES/$(TARGET)-data.tar.gz -C $(UBLUE_ROOT)/$(TARGET)/files .
-	
-build-rpm: tarball
-	cp ./*.spec $(UBLUE_ROOT)
-	mkdir -p $(RPMBUILD)
-	rpmbuild -ba \
-    	--define '_topdir $(RPMBUILD)' \
-    	--define '%_tmppath %{_topdir}/tmp' \
-    	$(UBLUE_ROOT)/$(TARGET).spec
+build:
+	flake8 --check src
+	black --check src
+	python3 -m build
+
+format:
+	flake8 src
+	black src
+
+build-rpm:
+	rpkg local --outdir $(PWD)/output
 
 clean: $(SOURCE_DIR) $(RPMBUILD)
 	rm -rf $^
