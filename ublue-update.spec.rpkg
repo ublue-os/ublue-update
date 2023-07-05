@@ -1,10 +1,10 @@
 Name:   {{{ git_dir_name }}}
 Vendor: ublue-os
-Version:  {{{ ublue_updater_version }}}
+Version:  {{{ ublue_update_version }}}
 Release:  1%{?dist}
 Summary:  Centralized update service/checker made for Universal Blue
 License:  Apache-2.0
-URL:      https://github.com/gerblesh/%{NAME}
+URL:      https://github.com/%{vendor}/%{name}
 # Detailed information about the source Git repository and the source commit
 # for the created rpm package
 VCS:        {{{ git_dir_vcs }}}
@@ -37,6 +37,8 @@ Installs and configures ublue-update script, systemd services, and systemd timer
 {{{ git_dir_setup_macro }}}
 
 %build
+ls
+ls src
 black src
 flake8 src
 shellcheck files/etc/%{NAME}.d/*.sh
@@ -44,7 +46,7 @@ shellcheck files/etc/%{NAME}.d/*.sh
 
 %install
 %pyproject_install
-%pyproject_save_files ublue_updater
+%pyproject_save_files ublue_update
 cp -rp files/etc files/usr %{buildroot}
 
 %post

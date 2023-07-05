@@ -95,6 +95,7 @@ def load_value(key,value):
         return config[key].get(value, fallback)
     return fallback
 
+
 def run_updates():
     root_dir = "/etc/ublue-update.d/"
 
@@ -122,9 +123,9 @@ def run_updates():
 
 config, fallback_config = load_config()
 
-dbus_notify = load_value("notify","dbus_notify")
-min_battery_percent = load_value("checks","battery_percent")
-max_cpu_load = load_value("checks","cpu_load")
+dbus_notify = load_value("notify", "dbus_notify")
+min_battery_percent = load_value("checks", "battery_percent")
+max_cpu_load = load_value("checks", "cpu_load")
 
 # setup logging
 logging.basicConfig(

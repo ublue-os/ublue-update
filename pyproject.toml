@@ -3,13 +3,13 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ublue_updater"
+name = "ublue_update"
 authors = [
     {name = "gerblesh", email = "01901964+gerblesh@users.noreply.github.com"},
 ]
-description = "Ublue System Updater"
+description = "Universal Blue System Updater"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["ublue", "update"]
 license = {text = "Apache-2"}
 classifiers = [
@@ -21,7 +21,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.scripts]
-ublue-update = "ublue_updater.cli:main"
+ublue-update = "ublue_update.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
