@@ -79,20 +79,23 @@ def load_config():
 
     # search for the right config
     config_path = ""
+    fallback_config_path = ""
     for path in config_paths:
         if os.path.isfile(path):
-            config_path = path
+            if config_path == "":
+                config_path = path
+            fallback_config_path = path
             break
 
+    fallback_config = tomllib.load(open(fallback_config_path, "rb"))
     config = tomllib.load(open(config_path, "rb"))
-    return config
+    return config, fallback_config
 
 def load_value(key,value):
-    default_config_path = "/usr/etc/ublue-update/ublue-update.toml"
-    default = tomllib.load(os.open(default_config_path,"rb"))
+    fallback = fallback_config[key][value]
     if key in config.keys():
-        return config[key].get(value, default)
-    return default
+        return config[key].get(value, fallback)
+    return fallback
 
 def run_updates():
     root_dir = "/etc/ublue-update.d/"
@@ -118,12 +121,15 @@ def run_updates():
             else:
                 log.info(f"could not execute file {full_path}")
 
-config = load_config()
+config, fallback_config = load_config()
 
 dbus_notify = load_value("notify","dbus_notify")
 min_battery_percent = load_value("checks","battery_percent")
 max_cpu_load = load_value("checks","cpu_load")
 
+print(dbus_notify, min_battery_percent, max_cpu_load)
+
+exit()
 # setup logging
 logging.basicConfig(
     format="[%(asctime)s] %(name)s:%(levelname)s | %(message)s",
