@@ -127,9 +127,6 @@ dbus_notify = load_value("notify","dbus_notify")
 min_battery_percent = load_value("checks","battery_percent")
 max_cpu_load = load_value("checks","cpu_load")
 
-print(dbus_notify, min_battery_percent, max_cpu_load)
-
-exit()
 # setup logging
 logging.basicConfig(
     format="[%(asctime)s] %(name)s:%(levelname)s | %(message)s",
