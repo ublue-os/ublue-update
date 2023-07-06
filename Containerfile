@@ -13,27 +13,27 @@ RUN dnf install \
     --nodocs \
     --assumeyes \
     'dnf-command(builddep)' \
-    rpmlint \
-    rpm-build  && \
-    dnf builddep -y ublue-update.spec
-
-RUN make
+    rpkg \
+    rpm-build && \
+    mkdir -p "$UBLUE_ROOT" && \
+    rpkg spec --outdir  "$UBLUE_ROOT" && \
+    dnf builddep -y output/ublue-update.spec
 
 # Dump a file list for each RPM for easier consumption
-RUN \
-    for RPM in ${UBLUE_ROOT}/rpmbuild/RPMS/*/*.rpm; do \
-        NAME="$(rpm -q $RPM --queryformat='%{NAME}')"; \
-        mkdir -p "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
-        rpm2cpio "${RPM}" | cpio -idmv --directory "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
-        mkdir -p ${UBLUE_ROOT}/ublue-os/rpms/; \
-        cp "${RPM}" "${UBLUE_ROOT}/ublue-os/rpms/$(rpm -q "${RPM}" --queryformat='%{NAME}.%{ARCH}.rpm')"; \
-    done
-
-FROM scratch
-
-ENV UBLUE_ROOT=/app/output
-
+#RUN \
+#    for RPM in ${UBLUE_ROOT}/noarch/*.rpm; do \
+#        NAME="$(rpm -q $RPM --queryformat='%{NAME}')"; \
+#        mkdir -p "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
+#        rpm2cpio "${RPM}" | cpio -idmv --directory "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
+#        mkdir -p ${UBLUE_ROOT}/ublue-os/rpms/; \
+#        cp "${RPM}" "${UBLUE_ROOT}/ublue-os/rpms/$(rpm -q "${RPM}" --queryformat='%{NAME}.%{ARCH}.rpm')"; \
+#    done
+#
+#FROM scratch
+#
+#ENV UBLUE_ROOT=/app/output
+#
 # Copy RPMs
-COPY --from=builder ${UBLUE_ROOT}/ublue-os/rpms /rpms
+#COPY --from=builder ${UBLUE_ROOT}/ublue-os/rpms /rpms
 # Copy dumped contents
-COPY --from=builder ${UBLUE_ROOT}/ublue-os/files /files
+#COPY --from=builder ${UBLUE_ROOT}/ublue-os/files /files

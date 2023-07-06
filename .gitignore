@@ -1,1 +1,5 @@
 /output
+/dist
+*.egg-info
+*.**.pyc
+*.pyc

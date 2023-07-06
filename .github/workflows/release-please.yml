@@ -1,7 +1,6 @@
-name: build-ublue
+name: build release pacakge
 on:
   merge_group:
-  push:
     branches:
       - main
   workflow_dispatch:
@@ -53,17 +52,17 @@ jobs:
           oci: true
           extra-args: "-v ${{ github.workspace }}:/app"
 
-      - name: upload rpm packages as release artifact
+      - name: upload output artifacts as release artifact
         uses: actions/upload-artifact@v3
         with:
           name: ublue-updater-rpms
-          path: output/rpmbuild/RPMS/
+          path: output/
 
       - name: upload rpm packages
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          find output/rpmbuild/RPMS -type f -name '*.rpm' -print0 | \
+          find output/ -type f -name '*.rpm' -print0 | \
             xargs -0 -tI{} gh release upload \
               ${{ needs.release-please.outputs.tag }} \
               {} \
