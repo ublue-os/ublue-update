@@ -12,6 +12,7 @@ build:
 	flake8 src
 	black --check src
 	python3 -m build
+
 spec: output
 	rpkg spec --outdir $(PWD)/output
 build-rpm:
@@ -30,7 +31,7 @@ dnf-install:
 
 .PHONY: builder-image
 builder-image:
-	podman build -t $(TARGET):builder .
+	podman build -t $(TARGET):builder -f Containerfile.builder .
 
 .PHONY: builder-exec
 builder-exec:
@@ -50,5 +51,5 @@ builder-exec:
 		$(TARGET):builder
 
 .PHONY: clean
-clean: $(SOURCE_DIR) $(RPMBUILD)
-	rm -rf $^
+clean:
+	rm -rf $(UBLUE_ROOT)
