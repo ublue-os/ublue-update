@@ -58,3 +58,13 @@ section: `checks`
 
 `cpu_load`: checks if cpu average load is under specified percent
 
+
+## How do I build this?
+
+You can build and test this package in a container by using the provided container file.
+
+1. `make builder-image` will create a container image with all dependencies installed
+2. `make builder-exec` will execute a shell inside the builder container to allow you easily build the rpm package with `make build-rpm`
+3. `make` will trigger the build process and generate a `.whl` package that can be installed
+4. `pip install --user -e .` will allow to install an editable version of this package so you quickly edit and test the program
+
