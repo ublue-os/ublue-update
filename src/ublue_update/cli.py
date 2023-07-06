@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import psutil
 import notify2
 import os
@@ -97,6 +95,7 @@ def load_value(key,value):
         return config[key].get(value, fallback)
     return fallback
 
+
 def run_updates():
     root_dir = "/etc/ublue-update.d/"
 
@@ -117,15 +116,16 @@ def run_updates():
                         notify2.Notification(
                             "System Updater",
                             f"Error in update script: {file}, check logs for more info",
-                            "notification-message-im").show()
+                            "notification-message-im",
+                        ).show()
             else:
                 log.info(f"could not execute file {full_path}")
 
 config, fallback_config = load_config()
 
-dbus_notify = load_value("notify","dbus_notify")
-min_battery_percent = load_value("checks","battery_percent")
-max_cpu_load = load_value("checks","cpu_load")
+dbus_notify = load_value("notify", "dbus_notify")
+min_battery_percent = load_value("checks", "battery_percent")
+max_cpu_load = load_value("checks", "cpu_load")
 
 # setup logging
 logging.basicConfig(
@@ -139,14 +139,19 @@ def main():
 
     # setup argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--force", action="store_true",
-                        help="force manual update, skipping update checks")
-    parser.add_argument("-c", "--check", action="store_true",
-                        help="run update checks and exit")
+    parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="force manual update, skipping update checks",
+    )
+    parser.add_argument(
+        "-c", "--check", action="store_true", help="run update checks and exit"
+    )
     args = parser.parse_args()
 
     if dbus_notify:
-        notify2.init('ublue-update')
+        notify2.init("ublue-update")
 
     if not args.force:
         check_inhibitors()
@@ -157,7 +162,8 @@ def main():
         notify2.Notification(
             "System Updater",
             "System passed checks, updating ...",
-            "notification-message-im").show()
+            "notification-message-im",
+        ).show()
 
     if args.check:
         exit(0)
@@ -167,10 +173,6 @@ def main():
         notify2.Notification(
             "System Updater",
             "System update complete, reboot for changes to take effect",
-            "notification-message-im").show()
+            "notification-message-im",
+        ).show()
     log.info("System update complete")
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-

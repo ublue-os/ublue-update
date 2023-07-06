@@ -1,0 +1,7 @@
+function ublue_update_version {
+    if [ "$GITHUB_REF" = "" ]; then
+        echo "1.0.0+$(git rev-parse --short HEAD)"
+    else
+        awk '{print $NF}' FS='/v' <<<"$GITHUB_REF" 
+    fi
+}

@@ -1,10 +1,17 @@
-Name:   ublue-update
+Name:   {{{ git_dir_name }}}
 Vendor: ublue-os
-Version:  1.0
+Version:  {{{ ublue_update_version }}}
 Release:  1%{?dist}
 Summary:  Centralized update service/checker made for Universal Blue
 License:  Apache-2.0
-URL:      https://github.com/gerblesh/%{NAME}
+URL:      https://github.com/%{vendor}/%{name}
+# Detailed information about the source Git repository and the source commit
+# for the created rpm package
+VCS:        {{{ git_dir_vcs }}}
+
+# git_dir_pack macro places the repository content (the source files) into a tarball
+# and returns its filename. The tarball will be used to build the rpm.
+Source:     {{{ git_dir_pack }}}
 
 BuildArch:      noarch
 Supplements:    rpm-ostree flatpak
@@ -13,10 +20,13 @@ BuildRequires: systemd-rpm-macros
 BuildRequires: black
 BuildRequires: ShellCheck
 BuildRequires: python-flake8
-Requires: python3-notify2
-Requires: python3-psutil
-Source0:    %{NAME}.tar.gz
-Source1:    %{NAME}-data.tar.gz
+BuildRequires: python-build
+BuildRequires: python-setuptools
+BuildRequires: python
+BuildRequires: python-devel
+BuildRequires: pyproject-rpm-macros
+BuildRequires: python-setuptools_scm
+BuildRequires: python-wheel
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 
@@ -24,19 +34,20 @@ Source1:    %{NAME}-data.tar.gz
 Installs and configures ublue-update script, systemd services, and systemd timers for auto update
 
 %prep
-%setup -D -c -a 0
-%setup -c -a 1
+{{{ git_dir_setup_macro }}}
 
 %build
-black %{NAME}
-flake8 %{NAME}
-shellcheck etc/%{NAME}.d/*.sh
+ls
+ls src
+black src
+flake8 src
+shellcheck files/etc/%{NAME}.d/*.sh
+%pyproject_wheel
 
 %install
-mkdir -p -m0755 %{buildroot}%{_datadir}/%{VENDOR} %{buildroot}%{_bindir} %{buildroot}/%{_docdir}/%{VENDOR}
-install -m 0755 %{NAME} %{buildroot}%{_bindir}/%{NAME}
-install -m 0644 README.md LICENSE %{buildroot}%{_docdir}/%{VENDOR}
-cp -rp etc usr %{buildroot}
+%pyproject_install
+%pyproject_save_files ublue_update
+cp -rp files/etc files/usr %{buildroot}
 
 %post
 %systemd_user_post %{NAME}.timer
@@ -44,10 +55,8 @@ cp -rp etc usr %{buildroot}
 %preun
 %systemd_user_preun %{NAME}.timer
 
-%files
-%license %{_docdir}/%{VENDOR}/LICENSE
-%doc %{_docdir}/%{VENDOR}/README.md
-%attr(0755,root,root) %{_bindir}/%{NAME}
+%files -f %{pyproject_files}
+%attr(0755,root,root) %{_bindir}/%{name}
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
