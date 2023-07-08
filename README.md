@@ -70,4 +70,4 @@ You can build and test this package in a container by using the provided contain
 
 # Special Thanks
 
-Special thanks to https://github.com/cukmekerb for helping troubleshoot/add features early in project development
+Special thanks to [cukmekerb](https://github.com/cukmekerb) for helping troubleshoot/add features early in project development
