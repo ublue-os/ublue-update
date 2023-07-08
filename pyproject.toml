@@ -16,7 +16,9 @@ classifiers = [
 ]
 dependencies = [
     "notify2",
-    "psutil"
+    "psutil",
+    "pygobject",
+    "dbus-python"
 ]
 dynamic = ["version"]
 

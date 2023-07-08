@@ -1,11 +1,13 @@
 import psutil
-import notify2
+#import notify2
+import dbus
 import os
 import subprocess
 import logging
 import tomllib
 import argparse
-
+from notification_manager import NotificationManager
+from gi.repository import GLib
 
 def check_cpu_load():
     # get load average percentage in last 5 minutes:
@@ -114,11 +116,17 @@ def run_updates():
                     log.info(f"{full_path} returned error code: {out.returncode}")
                     log.info("Program output: \n {out.stdout}")
                     if dbus_notify:
-                        notify2.Notification(
+                        notification_manager.notify(
+                            0,
                             "System Updater",
                             f"Error in update script: {file}, check logs for more info",
-                            "notification-message-im",
-                        ).show()
+                            3,
+                        )
+                        #notify2.Notification(
+                        #    "System Updater",
+                        #    f"Error in update script: {file}, check logs for more info",
+                        #    "notification-message-im",
+                        #).show()
             else:
                 log.info(f"could not execute file {full_path}")
 
@@ -136,6 +144,12 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+loop = GLib.MainLoop()
+dbus_loop = dbus.DBusGMainLoop()
+bus = dbus.SessionBus(mainloop=dbus_loop)
+
+if dbus_notify:
+    notification_manager = NotificationManager("Universal Blue Updater", bus)
 
 def main():
 
@@ -152,8 +166,6 @@ def main():
     )
     args = parser.parse_args()
 
-    if dbus_notify:
-        notify2.init("ublue-update")
 
     if not args.force:
         check_inhibitors()
@@ -161,20 +173,22 @@ def main():
     # system checks passed
     log.info("System passed all update checks")
     if dbus_notify:
-        notify2.Notification(
+        notification_manager.notify(
+            0,
             "System Updater",
             "System passed checks, updating ...",
-            "notification-message-im",
-        ).show()
+            3,
+        )
 
     if args.check:
         exit(0)
 
     run_updates()
     if dbus_notify:
-        notify2.Notification(
+        notification_manager.notify(
+            0,
             "System Updater",
             "System update complete, reboot for changes to take effect",
-            "notification-message-im",
-        ).show()
+            3,
+        )
     log.info("System update complete")
