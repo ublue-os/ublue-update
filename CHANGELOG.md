@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/ublue-os/ublue-update/compare/v1.0.0...v1.0.1) (2023-07-06)
+
+
+### Bug Fixes
+
+* **config:** fix breakage when using fallback config, improved config logic to be more flexible ([f167dc9](https://github.com/ublue-os/ublue-update/commit/f167dc970d7b38e4ecf6d85895e800ce16760063))
+* removed exit() and print() function used for debugging ([2eca189](https://github.com/ublue-os/ublue-update/commit/2eca1892a262ff7b1381dfcecb65d27fa5cd203e))
+
 ## 1.0.0 (2023-07-04)
 
 
