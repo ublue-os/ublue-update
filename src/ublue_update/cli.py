@@ -89,7 +89,8 @@ def load_config():
     config = tomllib.load(open(config_path, "rb"))
     return config, fallback_config
 
-def load_value(key,value):
+
+def load_value(key, value):
     fallback = fallback_config[key][value]
     if key in config.keys():
         return config[key].get(value, fallback)
@@ -120,6 +121,7 @@ def run_updates():
                         ).show()
             else:
                 log.info(f"could not execute file {full_path}")
+
 
 config, fallback_config = load_config()
 
