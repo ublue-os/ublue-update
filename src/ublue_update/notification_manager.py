@@ -9,7 +9,7 @@ class NotificationManager:
         path = "/" + item.replace(".", "/")
         self._app_name = app_name
         self._actions = []
-        self._notify_interface = dbus.Interface(self._bus.get_object(item, path), item)
+        self._notify_interface = dbus.Interface(bus.get_object(item, path), item)
         bus.add_signal_receiver(self._on_action, "ActionInvoked")
 
     def get_action_list(self, actions):

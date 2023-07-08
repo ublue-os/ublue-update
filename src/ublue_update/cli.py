@@ -8,6 +8,7 @@ import logging
 import tomllib
 import argparse
 from ublue_update.notification_manager import NotificationManager
+from gi.repository import GLib
 
 
 def check_cpu_load():
@@ -123,11 +124,6 @@ def run_updates():
                             f"Error in update script: {file}, check logs for more info",
                             3,
                         )
-                        # notify2.Notification(
-                        #    "System Updater",
-                        #    f"Error in update script: {file}, check logs for more info",
-                        #    "notification-message-im",
-                        # ).show()
             else:
                 log.info(f"could not execute file {full_path}")
 
