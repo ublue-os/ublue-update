@@ -6,7 +6,7 @@ import subprocess
 import logging
 import tomllib
 import argparse
-from notification_manager import NotificationManager
+from ublue_update.notification_manager import NotificationManager
 from gi.repository import GLib
 
 def check_cpu_load():
