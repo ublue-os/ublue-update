@@ -1,15 +1,11 @@
 import psutil
 
-import dbus
-from dbus.mainloop.glib import DBusGMainLoop
 import os
 import subprocess
 import logging
 import tomllib
 import argparse
 from ublue_update.notification_manager import NotificationManager
-from gi.repository import GLib
-
 
 def check_cpu_load():
     # get load average percentage in last 5 minutes:
@@ -141,13 +137,9 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-loop = GLib.MainLoop()
-dbus_loop = DBusGMainLoop()
-bus = dbus.SessionBus(mainloop=dbus_loop)
 
 if dbus_notify:
-    notification_manager = NotificationManager("Universal Blue Updater", bus)
-
+    notification_manager = NotificationManager("Universal Blue Updater")
 
 def main():
 
