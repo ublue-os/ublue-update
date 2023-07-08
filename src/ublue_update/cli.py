@@ -1,13 +1,14 @@
 import psutil
-#import notify2
+
 import dbus
+from dbus.mainloop.glib import DBusGMainLoop
 import os
 import subprocess
 import logging
 import tomllib
 import argparse
 from ublue_update.notification_manager import NotificationManager
-from gi.repository import GLib
+
 
 def check_cpu_load():
     # get load average percentage in last 5 minutes:
@@ -122,11 +123,11 @@ def run_updates():
                             f"Error in update script: {file}, check logs for more info",
                             3,
                         )
-                        #notify2.Notification(
+                        # notify2.Notification(
                         #    "System Updater",
                         #    f"Error in update script: {file}, check logs for more info",
                         #    "notification-message-im",
-                        #).show()
+                        # ).show()
             else:
                 log.info(f"could not execute file {full_path}")
 
@@ -145,11 +146,12 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 loop = GLib.MainLoop()
-dbus_loop = dbus.DBusGMainLoop()
+dbus_loop = DBusGMainLoop()
 bus = dbus.SessionBus(mainloop=dbus_loop)
 
 if dbus_notify:
     notification_manager = NotificationManager("Universal Blue Updater", bus)
+
 
 def main():
 
@@ -165,7 +167,6 @@ def main():
         "-c", "--check", action="store_true", help="run update checks and exit"
     )
     args = parser.parse_args()
-
 
     if not args.force:
         check_inhibitors()
