@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.0](https://github.com/ublue-os/ublue-update/compare/v1.0.1...v1.1.0) (2023-07-09)
+
+
+### Features
+
+* added custom notification_manager to replace notify2 ([4b25c7c](https://github.com/ublue-os/ublue-update/commit/4b25c7c97a5f1f44a5d32e6df3a000e44cb02cfd))
+* added NotificationObject, holds all notification data and makes it easier to deal with actions ([f67e3c9](https://github.com/ublue-os/ublue-update/commit/f67e3c905ae1ff19b988787cba6023cf410946ac))
+* moved all dbus and glib logic into notification_manager ([d69ac11](https://github.com/ublue-os/ublue-update/commit/d69ac116351ce09a3839ea245f95998a3faa1e89))
+* removed dependency on notify2 ([dc3325e](https://github.com/ublue-os/ublue-update/commit/dc3325e45aaafad6c9afe174b16971d66aef347a))
+
+
+### Bug Fixes
+
+* add extra spacing to please code formatter ([99fa0a3](https://github.com/ublue-os/ublue-update/commit/99fa0a370894001860b9333d1390985f93523fee))
+* added import for DBusGMainLoop ([476c872](https://github.com/ublue-os/ublue-update/commit/476c872c58783487b9a045f1d2718590e7660543))
+* fixed issues that prevented script from running, removed commented out code ([22b83c8](https://github.com/ublue-os/ublue-update/commit/22b83c850bf8dcb5dbba008f209a3f7705dc7579))
+* fixed line length and corrected variable reference ([864e2ea](https://github.com/ublue-os/ublue-update/commit/864e2ea14872ca7c3d5b2f7b4d5848553425547f))
+* import notification_manager module properly ([ebc387f](https://github.com/ublue-os/ublue-update/commit/ebc387fadfafefdc024b071fac54d8269a648902))
+
 ## [1.0.1](https://github.com/ublue-os/ublue-update/compare/v1.0.0...v1.0.1) (2023-07-06)
 
 
