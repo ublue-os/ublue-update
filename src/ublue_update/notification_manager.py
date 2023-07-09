@@ -3,7 +3,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 
 class NotificationObject:
-    """Holds all of the data in a notification, stored in the notifications dict inside of notification_manager"""
+    """Holds all of the data in a notification"""
 
     def __init__(self, notification_manager, app_name, icon="", title="", body=""):
         self.notification_manager = notification_manager
@@ -60,7 +60,7 @@ class NotificationManager:
         self._actions.append(action)
 
     def _on_action(self, id, action_key):
-        notification = notifications.get(id)
+        notification = self.notifications.get(id)
         if notification:
             triggered_action = notification.actions.get(action_key)
             triggered_action["handler"]()
