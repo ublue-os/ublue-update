@@ -6,7 +6,6 @@ import logging
 import tomllib
 import argparse
 
-from gi.repository import GLib
 from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
 
@@ -22,7 +21,7 @@ def check_for_updates(checks_failed: bool):
         if dbus_notify and checks_failed:
             update_notif = notification_manager.notification(
                 "System Updater",
-                f"Update available, but system checks failed. Update now?",
+                "Update available, but system checks failed. Update now?",
             )
             update_notif.add_action(
                 'universal-blue-update-confirm',
@@ -31,7 +30,7 @@ def check_for_updates(checks_failed: bool):
             )
             update_notif.show(5)
         return True
-    log.info(f"No updates are available.")
+    log.info("No updates are available.")
     return False
 
 
@@ -131,7 +130,7 @@ def run_updates():
 
     for root, dirs, files in os.walk(root_dir):
         for file in files:
-            full_path = root_dir + "/" + str(file)
+            full_path = root_dir + str(file)
 
             executable = os.access(full_path, os.X_OK)
             if executable:
@@ -141,7 +140,7 @@ def run_updates():
 
                 if out.returncode != 0:
                     log.info(f"{full_path} returned error code: {out.returncode}")
-                    log.info("Program output: \n {out.stdout}")
+                    log.info(f"Program output: \n {out.stdout}")
                     if dbus_notify:
                         notification_manager.notification(
                             "System Updater",

@@ -24,7 +24,6 @@ class NotificationObject:
         self.hints.update(hint)
 
     def show(self, timeout_sec):
-        #self.notification_manager.loop.run()
         actions = self.notification_manager.get_action_list(self.actions)
         self.id = self.notification_manager.notify_interface.Notify(
             self.app_name,

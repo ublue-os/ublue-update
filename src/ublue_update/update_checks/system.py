@@ -1,6 +1,5 @@
 from json import loads
-from logging import basicConfig, getLogger, INFO
-from os import getenv
+from logging import getLogger
 from subprocess import PIPE, run
 
 
@@ -44,9 +43,9 @@ def system_update_check():
     """Compare current digest to latest digest"""
     if installation_digest == latest_digest:
         """Digests match, so no updates"""
-        log.info(f"No system update available.")
+        log.info("No system update available.")
         return False
     else:
         """Digests do not match, so updates are available"""
-        log.info(f"System update available.")
+        log.info("System update available.")
         return True
