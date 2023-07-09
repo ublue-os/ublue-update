@@ -7,6 +7,7 @@ import tomllib
 import argparse
 from ublue_update.notification_manager import NotificationManager
 
+
 def check_cpu_load():
     # get load average percentage in last 5 minutes:
     # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
@@ -114,12 +115,10 @@ def run_updates():
                     log.info(f"{full_path} returned error code: {out.returncode}")
                     log.info("Program output: \n {out.stdout}")
                     if dbus_notify:
-                        notification_manager.notify(
-                            0,
+                        notification_manager.notification(
                             "System Updater",
                             f"Error in update script: {file}, check logs for more info",
-                            3,
-                        )
+                        ).show(5)
             else:
                 log.info(f"could not execute file {full_path}")
 
@@ -137,9 +136,9 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+notification_manager = NotificationManager("Universal Blue Updater")
 
-if dbus_notify:
-    notification_manager = NotificationManager("Universal Blue Updater")
+#if dbus_notify:
 
 def main():
 
@@ -162,22 +161,18 @@ def main():
     # system checks passed
     log.info("System passed all update checks")
     if dbus_notify:
-        notification_manager.notify(
-            0,
+        notification_manager.notification(
             "System Updater",
             "System passed checks, updating ...",
-            3,
-        )
+        ).show(5)
 
     if args.check:
         exit(0)
 
     run_updates()
     if dbus_notify:
-        notification_manager.notify(
-            0,
+        notification_manager.notification(
             "System Updater",
             "System update complete, reboot for changes to take effect",
-            3,
-        )
+        ).show(5)
     log.info("System update complete")
