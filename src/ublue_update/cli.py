@@ -19,7 +19,7 @@ def check_for_updates(checks_failed: bool):
         update_available = True
     if update_available:
         """Only display override notification if checks failed"""
-        if dbus_notify: and checks_failed:
+        if dbus_notify and checks_failed:
             update_notif = notification_manager.notification(
                 "System Updater",
                 f"Update available, but system checks failed. Update now?",
