@@ -65,5 +65,5 @@ class NotificationManager:
             triggered_action = notification.actions.get(action_key)
             triggered_action["handler"]()
 
-    def notification(self, title, body, icon = ""):
+    def notification(self, title, body, icon=""):
         return NotificationObject(self, self._app_name, icon, title, body)

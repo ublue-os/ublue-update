@@ -138,7 +138,8 @@ log = logging.getLogger(__name__)
 
 notification_manager = NotificationManager("Universal Blue Updater")
 
-#if dbus_notify:
+# if dbus_notify:
+
 
 def main():
 
