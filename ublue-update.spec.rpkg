@@ -13,8 +13,8 @@ VCS:        {{{ git_dir_vcs }}}
 # and returns its filename. The tarball will be used to build the rpm.
 Source:     {{{ git_dir_pack }}}
 
-BuildArch:      noarch
-Supplements:    rpm-ostree flatpak
+BuildArch:     noarch
+Supplements:   rpm-ostree flatpak
 BuildRequires: make
 BuildRequires: systemd-rpm-macros
 BuildRequires: black
