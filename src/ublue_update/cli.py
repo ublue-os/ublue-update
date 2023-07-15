@@ -157,6 +157,13 @@ def run_updates():
                         ).show(5)
             else:
                 log.info(f"could not execute file {full_path}")
+    if dbus_notify:
+        notification_manager.notification(
+            "System Updater",
+            "System update complete, reboot for changes to take effect",
+        ).show(5)
+    log.info("System update complete")
+    sys.exit()
 
 
 config, fallback_config = load_config()
@@ -226,10 +233,3 @@ def main():
         ).show(5)
 
     run_updates()
-
-    if dbus_notify:
-        notification_manager.notification(
-            "System Updater",
-            "System update complete, reboot for changes to take effect",
-        ).show(5)
-    log.info("System update complete")
