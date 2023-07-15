@@ -68,3 +68,6 @@ You can build and test this package in a container by using the provided contain
 3. `make` will trigger the build process and generate a `.whl` package that can be installed
 4. `pip install --user -e .` will allow to install an editable version of this package so you quickly edit and test the program
 
+# Special Thanks
+
+Special thanks to [cukmekerb](https://github.com/cukmekerb) for helping troubleshoot/add features early in project development
