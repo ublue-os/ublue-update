@@ -1,5 +1,5 @@
 import psutil
-
+import sys
 import os
 import subprocess
 import logging
@@ -9,32 +9,32 @@ import argparse
 from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
 
+def ask_for_updates() -> void:
+    """Only display override notification if checks failed"""
+    if dbus_notify and checks_failed:
+        update_notif = notification_manager.notification(
+            "System Updater",
+            "Update available, but system checks failed. Update now?",
+        )
+        update_notif.add_action(
+            'universal-blue-update-confirm',
+            'Confirm',
+            lambda: run_updates(),
+        )
+    update_notif.show(15)
 
-def check_for_updates(checks_failed: bool):
+def check_for_updates(checks_failed: bool) -> bool:
     """Tracks whether any updates are available"""
-    update_available = False
-    system_update_available = system_update_check()
+    update_available: bool = False
+    system_update_available: bool = system_update_check()
     if system_update_available:
         update_available = True
     if update_available:
-        """Only display override notification if checks failed"""
-        if dbus_notify and checks_failed:
-            update_notif = notification_manager.notification(
-                "System Updater",
-                "Update available, but system checks failed. Update now?",
-            )
-            update_notif.add_action(
-                'universal-blue-update-confirm',
-                'Confirm',
-                lambda: run_updates(),
-            )
-            update_notif.show(5)
         return True
     log.info("No updates are available.")
     return False
 
-
-def check_cpu_load():
+def check_cpu_load() -> dict:
     # get load average percentage in last 5 minutes:
     # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
     cpu_load = psutil.getloadavg()[1] / psutil.cpu_count() * 100
@@ -44,7 +44,7 @@ def check_cpu_load():
     }
 
 
-def check_network_status():
+def check_network_status() -> dict:
     network_status = psutil.net_if_stats()
     # check each network interface
     network_up = False
@@ -56,11 +56,11 @@ def check_network_status():
     return {"passed": network_up, "message": "Network not enabled"}
 
 
-def check_battery_status():
-    battery_status = psutil.sensors_battery()
+def check_battery_status() -> dict:
+    battery_status := psutil.sensors_battery()
     # null safety on the battery variable, it returns "None"
     # when the system doesn't have a battery
-    battery_pass = True
+    battery_pass : bool = True
     if battery_status is not None:
         battery_pass = (
             battery_status.percent > min_battery_percent or battery_status.power_plugged
@@ -70,8 +70,16 @@ def check_battery_status():
         "message": f"Battery less than {min_battery_percent}%",
     }
 
+def update_inhibitors_failed(update_checks_failed: bool) -> void:
+    # log the failed update
+    if check_for_updates(update_checks_failed):
+        ask_for_updates()
+        # notify systemd that the checks have failed,
+        # systemd will try to rerun the unit
+        exception_log = "\n - ".join(failures)
+        raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
-def check_inhibitors():
+def check_inhibitors() -> bool:
 
     update_inhibitors = [
         check_network_status(),
@@ -79,20 +87,13 @@ def check_inhibitors():
         check_cpu_load(),
     ]
 
-    failures = []
+    failures : arr = []
     update_checks_failed = False
     for inhibitor_result in update_inhibitors:
         if not inhibitor_result["passed"]:
             update_checks_failed = True
             failures.append(inhibitor_result["message"])
-
-    # log the failed update
-    if update_checks_failed:
-        check_for_updates(update_checks_failed)
-        # notify systemd that the checks have failed,
-        # systemd will try to rerun the unit
-        exception_log = "\n - ".join(failures)
-        raise Exception(f"update failed to pass checks: \n - {exception_log}")
+    return update_checks_failed
 
 
 def load_config():
@@ -152,9 +153,9 @@ def run_updates():
 
 config, fallback_config = load_config()
 
-dbus_notify = load_value("notify", "dbus_notify")
-min_battery_percent = load_value("checks", "battery_percent")
-max_cpu_load = load_value("checks", "cpu_load")
+dbus_notify: bool = load_value("notify", "dbus_notify")
+min_battery_percent: int = load_value("checks", "max_battery_percent")
+max_cpu_load: int = load_value("checks", "max_cpu_load")
 
 # setup logging
 logging.basicConfig(
@@ -163,7 +164,10 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-notification_manager = NotificationManager("Universal Blue Updater")
+notification_manager = None
+
+if dbus_notify:
+    notification_manager = NotificationManager("Universal Blue Updater")
 
 
 def main():
@@ -186,14 +190,17 @@ def main():
         help="check for updates and exit",
     )
     args = parser.parse_args()
+    update_checks_failed = False
 
-    if not args.force:
-        check_inhibitors()
+    if not args.force and not args.updatecheck:
+        update_checks_failed = check_inhibitors()
+        if update_checks_failed and not args.check:
+            update_inhibitors_failed()
 
     if args.updatecheck:
         update_available = check_for_updates(False)
         if not update_available:
-            exit(1)
+            raise Exception("Update not available")
 
     # system checks passed
     log.info("System passed all update checks")
@@ -204,9 +211,10 @@ def main():
         ).show(5)
 
     if args.check or args.updatecheck:
-        exit(0)
+        sys.exit()
 
     run_updates()
+
     if dbus_notify:
         notification_manager.notification(
             "System Updater",
