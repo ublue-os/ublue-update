@@ -50,7 +50,9 @@ jobs:
           tags: |
             ${{ needs.release-please.outputs.tag }}
           oci: true
-          extra-args: "-v ${{ github.workspace }}:/app"
+          extra-args: |
+            -v ${{ github.workspace }}:/app
+            --target rpm
 
       - name: upload output artifacts as release artifact
         uses: actions/upload-artifact@v3
