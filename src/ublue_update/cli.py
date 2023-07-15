@@ -9,7 +9,7 @@ import argparse
 from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
 
-def ask_for_updates() -> void:
+def ask_for_updates():
     """Only display override notification if checks failed"""
     if dbus_notify and checks_failed:
         update_notif = notification_manager.notification(
@@ -57,10 +57,10 @@ def check_network_status() -> dict:
 
 
 def check_battery_status() -> dict:
-    battery_status := psutil.sensors_battery()
+    battery_status = psutil.sensors_battery()
     # null safety on the battery variable, it returns "None"
     # when the system doesn't have a battery
-    battery_pass : bool = True
+    battery_pass: bool = True
     if battery_status is not None:
         battery_pass = (
             battery_status.percent > min_battery_percent or battery_status.power_plugged
@@ -70,7 +70,7 @@ def check_battery_status() -> dict:
         "message": f"Battery less than {min_battery_percent}%",
     }
 
-def update_inhibitors_failed(update_checks_failed: bool) -> void:
+def update_inhibitors_failed(update_checks_failed: bool):
     # log the failed update
     if check_for_updates(update_checks_failed):
         ask_for_updates()
@@ -154,7 +154,7 @@ def run_updates():
 config, fallback_config = load_config()
 
 dbus_notify: bool = load_value("notify", "dbus_notify")
-min_battery_percent: int = load_value("checks", "max_battery_percent")
+min_battery_percent: int = load_value("checks", "min_battery_percent")
 max_cpu_load: int = load_value("checks", "max_cpu_load")
 
 # setup logging
