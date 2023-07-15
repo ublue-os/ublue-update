@@ -79,13 +79,10 @@ def hardware_inhibitor_checks_failed(
     if check_for_updates(hardware_checks_failed) and dbus_ask_for_updates:
         log.info("Harware checks failed, but update is available")
         ask_for_updates()
-    else:
-        # notify systemd that the checks have failed,
-        # systemd will try to rerun the unit
-        exception_log = "\n - ".join(failures)
-        raise Exception(f"update failed to pass checks: \n - {exception_log}")
-    sys.exit()
-
+    # notify systemd that the checks have failed,
+    # systemd will try to rerun the unit
+    exception_log = "\n - ".join(failures)
+    raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 def check_hardware_inhibitors() -> bool:
 
@@ -165,6 +162,7 @@ def run_updates():
             "System update complete, reboot for changes to take effect",
         ).show(5)
     log.info("System update complete")
+    os._exit(0)
 
 
 config, fallback_config = load_config()
@@ -217,13 +215,13 @@ def main():
                 dbus_notify and not args.check,
             )
         if args.check:
-            sys.exit()
+            os._exit(0)
 
     if args.updatecheck:
         update_available = check_for_updates(False)
         if not update_available:
             raise Exception("Update not available")
-        sys.exit()
+        os._exit(0)
 
     # system checks passed
     log.info("System passed all update checks")
