@@ -1,5 +1,4 @@
 import psutil
-import sys
 import os
 import subprocess
 import logging
@@ -11,17 +10,16 @@ from ublue_update.update_checks.system import system_update_check
 
 
 def ask_for_updates():
-    if dbus_notify:
-        update_notif = notification_manager.notification(
-            "System Updater",
-            "Update available, but system checks failed. Update now?",
-        )
-        update_notif.add_action(
-            "universal-blue-update-confirm",
-            "Confirm",
-            lambda: run_updates(),
-        )
-        update_notif.show(15)
+    update_notif = notification_manager.notification(
+        "System Updater",
+        "Update available, but system checks failed. Update now?",
+    )
+    update_notif.add_action(
+        "universal-blue-update-confirm",
+        "Confirm",
+        lambda: run_updates(),
+    )
+    update_notif.show(15)
 
 
 def check_for_updates(checks_failed: bool) -> bool:
@@ -76,8 +74,9 @@ def check_battery_status() -> dict:
 def hardware_inhibitor_checks_failed(
     hardware_checks_failed: bool, failures: list, dbus_ask_for_updates: bool
 ):
-    # log the failed update
+    # ask if an update can be performed through dbus notifications
     if check_for_updates(hardware_checks_failed) and dbus_ask_for_updates:
+        log.info("Harware checks failed, but update is available")
         ask_for_updates()
     # notify systemd that the checks have failed,
     # systemd will try to rerun the unit
@@ -163,7 +162,7 @@ def run_updates():
             "System update complete, reboot for changes to take effect",
         ).show(5)
     log.info("System update complete")
-    sys.exit()
+    os._exit(0)
 
 
 config, fallback_config = load_config()
@@ -181,8 +180,11 @@ log = logging.getLogger(__name__)
 
 notification_manager = None
 
-if dbus_notify:
+# Sometimes the system doesn't have a running dbus session or a notification daemon
+try:
     notification_manager = NotificationManager("Universal Blue Updater")
+except Exception:
+    dbus_notify = False
 
 
 def main():
@@ -216,13 +218,13 @@ def main():
                 dbus_notify and not args.check,
             )
         if args.check:
-            sys.exit()
+            os._exit(0)
 
     if args.updatecheck:
         update_available = check_for_updates(False)
         if not update_available:
             raise Exception("Update not available")
-        sys.exit()
+        os._exit(0)
 
     # system checks passed
     log.info("System passed all update checks")
