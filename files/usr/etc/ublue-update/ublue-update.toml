@@ -1,5 +1,5 @@
 [checks]
-    battery_percent = 50.0
-    cpu_load = 50.0
+    min_battery_percent = 50.0
+    max_cpu_load = 50.0
 [notify]
     dbus_notify = true

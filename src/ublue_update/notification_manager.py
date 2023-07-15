@@ -1,5 +1,5 @@
 import dbus
-
+from typing import Callable
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 
@@ -17,13 +17,13 @@ class NotificationObject:
         self.actions = {}
         self.hints = {}
 
-    def add_action(self, key, text, handler):
+    def add_action(self, key: str, text: str, handler: Callable):
         self.actions.update({key: {"text": text, "handler": handler}})
 
-    def add_hint(self, hint):
+    def add_hint(self, hint: dict):
         self.hints.update(hint)
 
-    def show(self, timeout_sec):
+    def show(self, timeout_sec: float):
         actions = self.notification_manager.get_action_list(self.actions)
         self.id = self.notification_manager.notify_interface.Notify(
             self.app_name,
@@ -43,7 +43,7 @@ class NotificationObject:
 class NotificationManager:
     """Manages DBus notifications and action dispatching"""
 
-    def __init__(self, app_name):
+    def __init__(self, app_name: str):
         item = "org.freedesktop.Notifications"
         path = "/" + item.replace(".", "/")
         self.dbus_loop = DBusGMainLoop()
@@ -55,7 +55,7 @@ class NotificationManager:
         self.notifications = {}
         self.notify_interface = dbus.Interface(self._bus.get_object(item, path), item)
 
-    def get_action_list(self, actions):
+    def get_action_list(self, actions: dict):
         dbus_actions = []
         for action in actions:
             action_dict = actions.get(action)
@@ -63,19 +63,16 @@ class NotificationManager:
             dbus_actions.append(action_dict["text"])
         return dbus_actions
 
-    def add_action(self, action):
-        self._actions.append(action)
-
-    def _on_action(self, id, action_key):
+    def _on_action(self, id: int, action_key: str):
         notification = self.notifications.get(id)
         if notification:
             triggered_action = notification.actions.get(action_key)
             triggered_action["handler"]()
         self.loop.quit()
 
-    def _on_closed(self, id, reason):
+    def _on_closed(self, id: int, reason: str):
         if self.loop.is_running():
             self.loop.quit()
 
-    def notification(self, title, body, icon=""):
+    def notification(self, title: str, body: str, icon: str = ""):
         return NotificationObject(self, self._app_name, icon, title, body)
