@@ -73,14 +73,16 @@ def check_battery_status() -> dict:
     }
 
 
-def hardware_inhibitor_checks_failed(hardware_checks_failed: bool, failures: list):
+def hardware_inhibitor_checks_failed(
+    hardware_checks_failed: bool, failures: list, dbus_ask_for_updates: bool
+):
     # log the failed update
-    if check_for_updates(hardware_checks_failed):
+    if check_for_updates(hardware_checks_failed) and dbus_ask_for_updates:
         ask_for_updates()
-        # notify systemd that the checks have failed,
-        # systemd will try to rerun the unit
-        exception_log = "\n - ".join(failures)
-        raise Exception(f"update failed to pass checks: \n - {exception_log}")
+    # notify systemd that the checks have failed,
+    # systemd will try to rerun the unit
+    exception_log = "\n - ".join(failures)
+    raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
 def check_hardware_inhibitors() -> bool:
@@ -200,10 +202,14 @@ def main():
 
     if not args.force and not args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
+        if hardware_checks_failed:
+            hardware_inhibitor_checks_failed(
+                hardware_checks_failed,
+                failures,
+                dbus_notify and not args.check,
+            )
         if args.check:
             sys.exit()
-        if hardware_checks_failed:
-            hardware_inhibitor_checks_failed(failures)
 
     if args.updatecheck:
         update_available = check_for_updates(False)
