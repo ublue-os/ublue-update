@@ -49,7 +49,7 @@ builder-exec:
 		-v "${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}" \
 		--security-opt label=disable \
 		$(TARGET):builder
-# Remove output dir
+
 .PHONY: clean
 clean:
 	rm -rf $(UBLUE_ROOT)
