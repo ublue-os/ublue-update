@@ -73,9 +73,9 @@ def check_battery_status() -> dict:
     }
 
 
-def update_inhibitors_failed(update_checks_failed: bool, failures: list):
+def hardware_inhibitor_checks_failed(hardware_checks_failed: bool, failures: list):
     # log the failed update
-    if check_for_updates(update_checks_failed):
+    if check_for_updates(hardware_checks_failed):
         ask_for_updates()
         # notify systemd that the checks have failed,
         # systemd will try to rerun the unit
@@ -83,21 +83,23 @@ def update_inhibitors_failed(update_checks_failed: bool, failures: list):
         raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
-def check_inhibitors() -> bool:
+def check_hardware_inhibitors() -> bool:
 
-    update_inhibitors = [
+    hardware_inhibitors = [
         check_network_status(),
         check_battery_status(),
         check_cpu_load(),
     ]
 
     failures = []
-    update_checks_failed = False
-    for inhibitor_result in update_inhibitors:
+    hardware_checks_failed = False
+    for inhibitor_result in hardware_inhibitors:
         if not inhibitor_result["passed"]:
-            update_checks_failed = True
+            hardware_checks_failed = True
             failures.append(inhibitor_result["message"])
-    return update_checks_failed, failures
+    if not hardware_checks_failed:
+        log.info("System passed hardware checks")
+    return hardware_checks_failed, failures
 
 
 def load_config():
@@ -194,28 +196,28 @@ def main():
         help="check for updates and exit",
     )
     args = parser.parse_args()
-    update_checks_failed = False
+    hardware_checks_failed = False
 
     if not args.force and not args.updatecheck:
-        update_checks_failed, failures = check_inhibitors()
-        if update_checks_failed and not args.check:
-            update_inhibitors_failed(failures)
+        hardware_checks_failed, failures = check_hardware_inhibitors()
+        if args.check:
+            sys.exit()
+        if hardware_checks_failed:
+            hardware_inhibitor_checks_failed(failures)
 
     if args.updatecheck:
         update_available = check_for_updates(False)
         if not update_available:
             raise Exception("Update not available")
+        sys.exit()
 
     # system checks passed
     log.info("System passed all update checks")
-    if dbus_notify and not args.check:
+    if dbus_notify:
         notification_manager.notification(
             "System Updater",
             "System passed checks, updating ...",
         ).show(5)
-
-    if args.check or args.updatecheck:
-        sys.exit()
 
     run_updates()
 
