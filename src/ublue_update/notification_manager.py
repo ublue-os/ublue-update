@@ -49,8 +49,8 @@ class NotificationManager:
         self.dbus_loop = DBusGMainLoop()
         self.loop = GLib.MainLoop()
         self._bus = dbus.SessionBus(mainloop=self.dbus_loop)
-        self._bus.add_signal_receiver(self._on_action, "ActionInvoked")
-        self._bus.add_signal_receiver(self._on_closed, "NotificationClosed")
+        self._bus.add_signal_receiver(self._on_action, "ActionInvoked", item)
+        self._bus.add_signal_receiver(self._on_closed, "NotificationClosed", item)
         self._app_name = app_name
         self.notifications = {}
         self.notify_interface = dbus.Interface(self._bus.get_object(item, path), item)

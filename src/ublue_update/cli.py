@@ -5,6 +5,7 @@ import subprocess
 import logging
 import tomllib
 import argparse
+import signal
 
 from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
@@ -76,14 +77,16 @@ def check_battery_status() -> dict:
 def hardware_inhibitor_checks_failed(
     hardware_checks_failed: bool, failures: list, dbus_ask_for_updates: bool
 ):
-    # log the failed update
+    # ask if an update can be performed through dbus notifications
     if check_for_updates(hardware_checks_failed) and dbus_ask_for_updates:
+        log.info("Harware checks failed, but update is available")
         ask_for_updates()
-    # notify systemd that the checks have failed,
-    # systemd will try to rerun the unit
-    exception_log = "\n - ".join(failures)
-    raise Exception(f"update failed to pass checks: \n - {exception_log}")
-
+    else:
+        # notify systemd that the checks have failed,
+        # systemd will try to rerun the unit
+        exception_log = "\n - ".join(failures)
+        raise Exception(f"update failed to pass checks: \n - {exception_log}")
+    sys.exit()
 
 def check_hardware_inhibitors() -> bool:
 
@@ -163,8 +166,6 @@ def run_updates():
             "System update complete, reboot for changes to take effect",
         ).show(5)
     log.info("System update complete")
-    sys.exit()
-
 
 config, fallback_config = load_config()
 
@@ -233,3 +234,4 @@ def main():
         ).show(5)
 
     run_updates()
+
