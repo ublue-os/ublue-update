@@ -12,17 +12,16 @@ from ublue_update.update_checks.system import system_update_check
 
 
 def ask_for_updates():
-    if dbus_notify:
-        update_notif = notification_manager.notification(
-            "System Updater",
-            "Update available, but system checks failed. Update now?",
-        )
-        update_notif.add_action(
-            "universal-blue-update-confirm",
-            "Confirm",
-            lambda: run_updates(),
-        )
-        update_notif.show(15)
+    update_notif = notification_manager.notification(
+        "System Updater",
+        "Update available, but system checks failed. Update now?",
+    )
+    update_notif.add_action(
+        "universal-blue-update-confirm",
+        "Confirm",
+        lambda: run_updates(),
+    )
+    update_notif.show(15)
 
 
 def check_for_updates(checks_failed: bool) -> bool:
