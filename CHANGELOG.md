@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ublue-os/ublue-update/compare/v1.1.0...v1.1.1) (2023-07-15)
+
+
+### Bug Fixes
+
+* use builder container file for release ([51b496a](https://github.com/ublue-os/ublue-update/commit/51b496a6a43ebfe3cb64ee5fbb2e308c79b9cb3c))
+
 ## [1.1.0](https://github.com/ublue-os/ublue-update/compare/v1.0.1...v1.1.0) (2023-07-09)
 
 
