@@ -9,19 +9,20 @@ import argparse
 from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
 
+
 def ask_for_updates():
-    """Only display override notification if checks failed"""
-    if dbus_notify and checks_failed:
+    if dbus_notify:
         update_notif = notification_manager.notification(
             "System Updater",
             "Update available, but system checks failed. Update now?",
         )
         update_notif.add_action(
-            'universal-blue-update-confirm',
-            'Confirm',
+            "universal-blue-update-confirm",
+            "Confirm",
             lambda: run_updates(),
         )
-    update_notif.show(15)
+        update_notif.show(15)
+
 
 def check_for_updates(checks_failed: bool) -> bool:
     """Tracks whether any updates are available"""
@@ -33,6 +34,7 @@ def check_for_updates(checks_failed: bool) -> bool:
         return True
     log.info("No updates are available.")
     return False
+
 
 def check_cpu_load() -> dict:
     # get load average percentage in last 5 minutes:
@@ -70,7 +72,8 @@ def check_battery_status() -> dict:
         "message": f"Battery less than {min_battery_percent}%",
     }
 
-def update_inhibitors_failed(update_checks_failed: bool):
+
+def update_inhibitors_failed(update_checks_failed: bool, failures: list):
     # log the failed update
     if check_for_updates(update_checks_failed):
         ask_for_updates()
@@ -78,6 +81,7 @@ def update_inhibitors_failed(update_checks_failed: bool):
         # systemd will try to rerun the unit
         exception_log = "\n - ".join(failures)
         raise Exception(f"update failed to pass checks: \n - {exception_log}")
+
 
 def check_inhibitors() -> bool:
 
@@ -87,13 +91,13 @@ def check_inhibitors() -> bool:
         check_cpu_load(),
     ]
 
-    failures : arr = []
+    failures = []
     update_checks_failed = False
     for inhibitor_result in update_inhibitors:
         if not inhibitor_result["passed"]:
             update_checks_failed = True
             failures.append(inhibitor_result["message"])
-    return update_checks_failed
+    return update_checks_failed, failures
 
 
 def load_config():
@@ -193,9 +197,9 @@ def main():
     update_checks_failed = False
 
     if not args.force and not args.updatecheck:
-        update_checks_failed = check_inhibitors()
+        update_checks_failed, failures = check_inhibitors()
         if update_checks_failed and not args.check:
-            update_inhibitors_failed()
+            update_inhibitors_failed(failures)
 
     if args.updatecheck:
         update_available = check_for_updates(False)
