@@ -180,8 +180,11 @@ log = logging.getLogger(__name__)
 
 notification_manager = None
 
-if dbus_notify:
+# Sometimes the system doesn't have a running dbus session or a notification daemon
+try:
     notification_manager = NotificationManager("Universal Blue Updater")
+except Exception:
+    dbus_notify = False
 
 
 def main():
