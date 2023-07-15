@@ -29,12 +29,13 @@ RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /t
 ## Command Line
 
 ```
-usage: ublue-update [-h] [-f] [-c]
+usage: ublue-update [-h] [-f] [-c] [-u]
 
 options:
-  -h, --help   show this help message and exit
-  -f, --force  force manual update, skipping update checks
-  -c, --check  run update checks and exit
+  -h, --help         show this help message and exit
+  -f, --force        force manual update, skipping update checks
+  -c, --check        run update checks and exit
+  -u, --updatecheck  check for updates and exit
 ```
 
 
@@ -58,6 +59,9 @@ section: `checks`
 
 `cpu_load`: checks if cpu average load is under specified percent
 
+section: `notify`
+
+`dbus_notify`: enable graphical notifications via dbus
 
 ## How do I build this?
 
