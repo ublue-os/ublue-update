@@ -5,7 +5,6 @@ import subprocess
 import logging
 import tomllib
 import argparse
-import signal
 
 from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
@@ -87,6 +86,7 @@ def hardware_inhibitor_checks_failed(
         raise Exception(f"update failed to pass checks: \n - {exception_log}")
     sys.exit()
 
+
 def check_hardware_inhibitors() -> bool:
 
     hardware_inhibitors = [
@@ -166,6 +166,7 @@ def run_updates():
         ).show(5)
     log.info("System update complete")
 
+
 config, fallback_config = load_config()
 
 dbus_notify: bool = load_value("notify", "dbus_notify")
@@ -233,4 +234,3 @@ def main():
         ).show(5)
 
     run_updates()
-
