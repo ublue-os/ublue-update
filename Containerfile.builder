@@ -17,4 +17,5 @@ RUN dnf install \
     rpm-build && \
     mkdir -p "$UBLUE_ROOT" && \
     rpkg spec --outdir  "$UBLUE_ROOT" && \
-    dnf builddep -y output/ublue-update.spec
+    dnf builddep -y output/ublue-update.spec && \
+    [ "$CI" = "true" ] && make build-rpm
