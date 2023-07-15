@@ -45,7 +45,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
-            ./Containerfile
+            ./Containerfile.builder
           image: ${{ env.IMAGE_NAME }}
           tags: |
             ${{ needs.release-please.outputs.tag }}
