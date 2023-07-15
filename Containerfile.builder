@@ -3,6 +3,7 @@ FROM registry.fedoraproject.org/fedora:latest AS builder
 ENV UBLUE_ROOT=/app/output
 
 WORKDIR /app 
+
 ADD . /app
 
 RUN dnf install \
@@ -21,3 +22,5 @@ RUN dnf install \
 FROM builder AS rpm
 
 RUN make build-rpm
+
+

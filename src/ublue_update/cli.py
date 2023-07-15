@@ -1,5 +1,4 @@
 import psutil
-import sys
 import os
 import subprocess
 import logging
@@ -83,6 +82,7 @@ def hardware_inhibitor_checks_failed(
     # systemd will try to rerun the unit
     exception_log = "\n - ".join(failures)
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
+
 
 def check_hardware_inhibitors() -> bool:
 
