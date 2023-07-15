@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/ublue-os/ublue-update/compare/v1.1.2...v1.1.3) (2023-07-15)
+
+
+### Bug Fixes
+
+* try to build release rpm ([83dfafa](https://github.com/ublue-os/ublue-update/commit/83dfafab19b46364aab689a4dc6b68d06f22f541))
+* try to build release rpm ([#39](https://github.com/ublue-os/ublue-update/issues/39)) ([12b2ac2](https://github.com/ublue-os/ublue-update/commit/12b2ac2da57bfe35b29f96bf655365643c7a34cc))
+
 ## [1.1.2](https://github.com/ublue-os/ublue-update/compare/v1.1.1...v1.1.2) (2023-07-15)
 
 
