@@ -204,7 +204,7 @@ def main():
 
     # system checks passed
     log.info("System passed all update checks")
-    if dbus_notify:
+    if dbus_notify and not args.check:
         notification_manager.notification(
             "System Updater",
             "System passed checks, updating ...",
