@@ -23,22 +23,18 @@ def system_update_check():
     """Parse installation digest and image"""
     deployments = loads(out)["deployments"][0]
     installation_digest = deployments["base-commit-meta"]["ostree.manifest-digest"]
-    current_image = deployments["container-image-reference"].split(":")
+    current_image = deployments["container-image-reference"].split(":", 1)
 
     """Dissect current image to form URL to latest image"""
     protocol = "docker://"
     url = current_image[1]
-    tag = current_image[2]
 
-    """Shift when image contains protocol"""
-    if url in protocol:
-        protocol = current_image[1] + ":"
-        url = current_image[2]
-        tag = current_image[3]
+    """Add protocol if URL doesn't contain it"""
+    if protocol not in url:
+        url = protocol + url
 
     """Pull digest from latest image"""
-    latest_image = protocol + url + ":" + tag
-    latest_digest = skopeo_inspect(latest_image)
+    latest_digest = skopeo_inspect(url)
 
     """Compare current digest to latest digest"""
     if installation_digest == latest_digest:
