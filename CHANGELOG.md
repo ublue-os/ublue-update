@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.5](https://github.com/ublue-os/ublue-update/compare/v1.1.4...v1.1.5) (2023-07-16)
+
+
+### Bug Fixes
+
+* Properly pull URL and tag from current image ([b0a35a2](https://github.com/ublue-os/ublue-update/commit/b0a35a2b1bc9d674cc651200afc0796bcdfc9150))
+* Properly pull URL and tag from current image ([#46](https://github.com/ublue-os/ublue-update/issues/46)) ([aedb3cb](https://github.com/ublue-os/ublue-update/commit/aedb3cb8e55a8c64ce6580d9e8a3210500ca17ab))
+
 ## [1.1.4](https://github.com/ublue-os/ublue-update/compare/v1.1.3...v1.1.4) (2023-07-15)
 
 
