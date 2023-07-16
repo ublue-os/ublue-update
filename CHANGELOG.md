@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.4](https://github.com/ublue-os/ublue-update/compare/v1.1.3...v1.1.4) (2023-07-15)
+
+
+### Bug Fixes
+
+* added back Containerfile.builder to fix build action ([abf152e](https://github.com/ublue-os/ublue-update/commit/abf152ee44a36dbd5bbdb233fbd01c271c1abb3c))
+* fix program exiting telling user checks have failed when running from notification ([7b24b8c](https://github.com/ublue-os/ublue-update/commit/7b24b8cb4b31a2406c55cc88e60a9a90bda1b173))
+* fix program exiting telling user checks have failed when running from notification ([#43](https://github.com/ublue-os/ublue-update/issues/43)) ([2b42c62](https://github.com/ublue-os/ublue-update/commit/2b42c628660f3fa5999d8eb1542c919b9c44a087))
+* fix updater throwing exception when dbus is inactive ([ee226b7](https://github.com/ublue-os/ublue-update/commit/ee226b7cfd164ec71487ea73b476eb8213775fb4))
+* fixed and simplified argument behavior, use better naming ([3068671](https://github.com/ublue-os/ublue-update/commit/30686717c4e8ad5c4b369694d8f147718efa6656))
+* formatting ([2a25ca0](https://github.com/ublue-os/ublue-update/commit/2a25ca02bbf18d1b8911107f04bb0f753783f115))
+* make -c option work as intended ([c743b98](https://github.com/ublue-os/ublue-update/commit/c743b9844e1455ba07e33b159afee6c8a931f9df))
+* move update logging into run_updates() function ([cb309ac](https://github.com/ublue-os/ublue-update/commit/cb309ac12863ac72fbbbe95372bbed542c16ecdf))
+* reformat ([083a87a](https://github.com/ublue-os/ublue-update/commit/083a87a867bad87afc421e102031aaeff1f63b42))
+* reformat to please the formatting gods ([38a18ec](https://github.com/ublue-os/ublue-update/commit/38a18ecbbf5a6c3bffeafc4d5e1668b4271d8d39))
+* remove build remnent from git ([0e2fe81](https://github.com/ublue-os/ublue-update/commit/0e2fe8197cdc5b9a0debc61f07c5d209c7c8bf6e))
+* remove ignores for **.md and **.txt ([837f0d5](https://github.com/ublue-os/ublue-update/commit/837f0d55e8ba7e540621ac6d941beec1ea411526))
+* remove notification when system passes checks when running with -c ([0e1fa6e](https://github.com/ublue-os/ublue-update/commit/0e1fa6eedd18a86cef6c98aa90685e06a77e42a8))
+* remove unnecessary if statement ([704e80e](https://github.com/ublue-os/ublue-update/commit/704e80e12e1f33e618fca4b880d6efdbcb55c41f))
+* rename config file value to be loaded ([f5f7673](https://github.com/ublue-os/ublue-update/commit/f5f76732c8f2d7e37ca90e744b88430417fd2397))
+* use os._exit() instead of sys.exit() to completely kill program ([abca773](https://github.com/ublue-os/ublue-update/commit/abca7739599b6bbb0cbef7b7312aed69c84e846f))
+
 ## [1.1.3](https://github.com/ublue-os/ublue-update/compare/v1.1.2...v1.1.3) (2023-07-15)
 
 
