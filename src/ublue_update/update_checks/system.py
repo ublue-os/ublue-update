@@ -31,7 +31,10 @@ def system_update_check():
     tag = current_image[2]
 
     """Pull digest from latest image"""
-    latest_image = protocol + url + ":" + tag
+    if protocol in url:
+        latest_image = url + ":" + tag
+    else:
+        latest_image = protocol + url + ":" + tag
     latest_digest = skopeo_inspect(latest_image)
 
     """Compare current digest to latest digest"""
