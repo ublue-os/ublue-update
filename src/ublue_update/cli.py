@@ -11,27 +11,26 @@ from ublue_update.update_checks.system import system_update_check
 def notify(title: str, body: str, actions: list = [], expire_time: int = 0):
     args = [
         "/usr/bin/notify-send",
-         title,
-         body,
-         "--app-name=Univeral Blue Updater",
-         "--icon=software-update-available-symbolic"
-        ]
+        title,
+        body,
+        "--app-name=Univeral Blue Updater",
+        "--icon=software-update-available-symbolic",
+    ]
     if expire_time != 0:
         args.append(f"--expire-time={expire_time}")
     if actions != []:
         for action in actions:
             args.append(f"--action={action}")
-    out = subprocess.run(
-    args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-    )
+    out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return out
+
 
 def ask_for_updates():
     out = notify(
-        "System Updater", 
+        "System Updater",
         "Update available, but system checks failed. Update now?",
         ["universal-blue-update-confirm=Confirm"],
-        15000
+        15000,
     )
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
         run_updates()
@@ -68,10 +67,7 @@ def check_network_status() -> dict:
             if network_status[key][0]:
                 network_up = True
                 break
-    return {
-        "passed": network_up,
-        "message": "Network not enabled"
-    }
+    return {"passed": network_up, "message": "Network not enabled"}
 
 
 def check_battery_status() -> dict:
@@ -200,6 +196,8 @@ log = logging.getLogger(__name__)
 
 ask_for_updates()
 os._exit(0)
+
+
 def main():
 
     # setup argparse
