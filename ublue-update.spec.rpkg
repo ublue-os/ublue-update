@@ -28,6 +28,7 @@ BuildRequires: pyproject-rpm-macros
 BuildRequires: python-setuptools_scm
 BuildRequires: python-wheel
 Requires: skopeo
+Requires: libnotify
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 
