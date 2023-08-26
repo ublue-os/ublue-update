@@ -2,5 +2,9 @@
 Description=Universal Blue Update Oneshot Service
 
 [Service]
+Restart=on-failure
+RestartSec=1h
 Type=oneshot
 ExecStart=/usr/bin/ublue-update
+
+

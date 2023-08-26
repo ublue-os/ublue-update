@@ -32,6 +32,7 @@ def ask_for_updates():
         ["universal-blue-update-confirm=Confirm"],
         15000,
     )
+    # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
         run_updates()
 
