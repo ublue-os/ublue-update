@@ -1,10 +1,11 @@
 [Unit]
-Description=auto update system timer for uBlue
+Description=Auto Update System Timer For Universal Blue
 Wants=network-online.target
 
 [Timer]
-OnBootSec=15min
-OnUnitInactiveSec=6h
+RandomizedDelaySec=10m
+OnBootSec=2m
+OnCalendar=*-*-* 4:00:00
 Persistent=true
 
 [Install]

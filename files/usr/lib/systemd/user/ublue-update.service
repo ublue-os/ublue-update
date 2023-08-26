@@ -1,5 +1,8 @@
 [Unit]
-Description=auto-update oneshot service
+Description=Universal Blue Update Oneshot Service
+Wants=network-online.target
+After=network-online.target
+
 
 [Service]
 Type=oneshot
