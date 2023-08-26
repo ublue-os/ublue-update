@@ -4,7 +4,7 @@ Small update program written in python intended for use in Universal Blue, execu
 
 Includes systemd timers and services for auto update
 
-dependencies (fedora): ```sudo dnf install python3-notify2 python3-psutil```
+dependencies (fedora): ```sudo dnf install python3-psutil libnotify```
 
 
 # Usage
@@ -45,11 +45,11 @@ options:
 ## Location
 valid config paths (in order of priority)
 
-```"$HOME"/.config/ublue-update/ublue-update.conf```
+```"$HOME"/.config/ublue-update/ublue-update.toml```
 
-```/etc/ublue-update/ublue-update.conf```
+```/etc/ublue-update/ublue-update.toml```
 
-```/usr/etc/ublue-update/ublue-update.conf```
+```/usr/etc/ublue-update/ublue-update.toml```
 
 
 ## Config Variables

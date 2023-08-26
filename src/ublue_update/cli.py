@@ -5,21 +5,36 @@ import logging
 import tomllib
 import argparse
 
-from ublue_update.notification_manager import NotificationManager
 from ublue_update.update_checks.system import system_update_check
 
 
+def notify(title: str, body: str, actions: list = [], expire_time: int = 0):
+    args = [
+        "/usr/bin/notify-send",
+        title,
+        body,
+        "--app-name=Univeral Blue Updater",
+        "--icon=software-update-available-symbolic",
+    ]
+    if expire_time != 0:
+        args.append(f"--expire-time={expire_time}")
+    if actions != []:
+        for action in actions:
+            args.append(f"--action={action}")
+    out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    return out
+
+
 def ask_for_updates():
-    update_notif = notification_manager.notification(
+    out = notify(
         "System Updater",
         "Update available, but system checks failed. Update now?",
+        ["universal-blue-update-confirm=Confirm"],
+        15000,
     )
-    update_notif.add_action(
-        "universal-blue-update-confirm",
-        "Confirm",
-        lambda: run_updates(),
-    )
-    update_notif.show(15)
+    # if the user has confirmed
+    if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
+        run_updates()
 
 
 def check_for_updates(checks_failed: bool) -> bool:
@@ -136,6 +151,8 @@ def load_value(key, value):
 def run_updates():
     root_dir = "/etc/ublue-update.d/"
 
+    log.info("Running system update")
+
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             full_path = root_dir + str(file)
@@ -150,17 +167,17 @@ def run_updates():
                     log.info(f"{full_path} returned error code: {out.returncode}")
                     log.info(f"Program output: \n {out.stdout}")
                     if dbus_notify:
-                        notification_manager.notification(
+                        notify(
                             "System Updater",
                             f"Error in update script: {file}, check logs for more info",
-                        ).show(5)
+                        )
             else:
                 log.info(f"could not execute file {full_path}")
     if dbus_notify:
-        notification_manager.notification(
+        notify(
             "System Updater",
             "System update complete, reboot for changes to take effect",
-        ).show(5)
+        )
     log.info("System update complete")
     os._exit(0)
 
@@ -177,15 +194,6 @@ logging.basicConfig(
     level=os.getenv("UBLUE_LOG", default=logging.INFO),
 )
 log = logging.getLogger(__name__)
-
-notification_manager = None
-
-# Sometimes the system doesn't have a running dbus session or a notification daemon
-try:
-    notification_manager = NotificationManager("Universal Blue Updater")
-except Exception:
-    dbus_notify = False
-
 
 def main():
 
@@ -229,9 +237,8 @@ def main():
     # system checks passed
     log.info("System passed all update checks")
     if dbus_notify:
-        notification_manager.notification(
+        notify(
             "System Updater",
             "System passed checks, updating ...",
-        ).show(5)
-
+        )
     run_updates()
