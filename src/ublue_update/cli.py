@@ -194,10 +194,6 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-ask_for_updates()
-os._exit(0)
-
-
 def main():
 
     # setup argparse
