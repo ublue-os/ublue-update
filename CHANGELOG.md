@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/ublue-os/ublue-update/compare/v1.1.5...v1.1.6) (2023-08-26)
+
+
+### Bug Fixes
+
+* update ublue_update_version macro to match version with github tag ([60ad5fd](https://github.com/ublue-os/ublue-update/commit/60ad5fd263253d2759e8d359b6bae94f55fae7ae))
+* update ublue_update_version macro to match version with github tag ([#49](https://github.com/ublue-os/ublue-update/issues/49)) ([f0bbc04](https://github.com/ublue-os/ublue-update/commit/f0bbc048556680f710fae4b3906f0244b9c043dc))
+
 ## [1.1.5](https://github.com/ublue-os/ublue-update/compare/v1.1.4...v1.1.5) (2023-07-16)
 
 
