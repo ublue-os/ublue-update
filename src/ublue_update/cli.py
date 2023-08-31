@@ -13,7 +13,7 @@ def notify(title: str, body: str, actions: list = [], expire_time: int = 0):
         "/usr/bin/notify-send",
         title,
         body,
-        "--app-name=Univeral Blue Updater",
+        "--app-name=Universal Blue Updater",
         "--icon=software-update-available-symbolic",
     ]
     if expire_time != 0:
