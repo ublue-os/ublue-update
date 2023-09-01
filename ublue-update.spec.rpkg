@@ -63,12 +63,7 @@ cp -rp files/etc files/usr %{buildroot}
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
 %attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.toml
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/00-system-update.sh
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/01-flatpak-system-update.sh
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/02-flatpak-user-update.sh
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/03-flatpak-system-repair-cleanup.sh
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/04-flatpak-user-repair-cleanup.sh
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/05-distrobox-user-update.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/*.sh
 
 %changelog
 %autochangelog
