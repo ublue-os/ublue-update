@@ -1,3 +1,5 @@
 #!/usr/bin/bash
 
-/usr/bin/distrobox upgrade -a
+if [ -f /usr/bin/distrobox ]; then
+    /usr/bin/distrobox upgrade -a
+fi
