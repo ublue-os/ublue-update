@@ -23,6 +23,7 @@ BuildRequires: python-flake8
 BuildRequires: python-build
 BuildRequires: python-setuptools
 BuildRequires: python
+BuildRequires: python-pip
 BuildRequires: python-devel
 BuildRequires: pyproject-rpm-macros
 BuildRequires: python-setuptools_scm
