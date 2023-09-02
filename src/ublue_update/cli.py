@@ -5,7 +5,9 @@ import logging
 import tomllib
 import argparse
 
+
 from ublue_update.update_checks.system import system_update_check
+from ublue_update.update_checks.wait import transaction_wait
 
 
 def notify(title: str, body: str, actions: list = [], expire_time: int = 0):
@@ -153,6 +155,9 @@ def run_updates():
 
     log.info("Running system update")
 
+    """Wait on any existing transactions to complete before updating"""
+    transaction_wait()
+
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             full_path = root_dir + str(file)
@@ -214,8 +219,18 @@ def main():
         action="store_true",
         help="check for updates and exit",
     )
+    parser.add_argument(
+        "-w",
+        "--wait",
+        action="store_true",
+        help="wait for transactions to complete and exit",
+    )
     args = parser.parse_args()
     hardware_checks_failed = False
+
+    if args.wait:
+        transaction_wait()
+        os._exit(0)
 
     if not args.force and not args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
