@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/ublue-os/ublue-update/compare/v1.1.6...v1.2.0) (2023-09-02)
+
+
+### Features
+
+* Add module that waits for transaction completion before updating ([0abd5dc](https://github.com/ublue-os/ublue-update/commit/0abd5dccf0a805daed435ad791bfc94afd10a91c))
+* Add module that waits for transaction completion before updating ([#55](https://github.com/ublue-os/ublue-update/issues/55)) ([d8d038b](https://github.com/ublue-os/ublue-update/commit/d8d038bb945a34b8c4fd562ba14c696355ea4ff4))
+* Add support for updating with Fleek ([bcc731c](https://github.com/ublue-os/ublue-update/commit/bcc731cf609372ec54e5b5a0f692d8f895b01f0a))
+* Add support for updating with Fleek ([#53](https://github.com/ublue-os/ublue-update/issues/53)) ([6bd7568](https://github.com/ublue-os/ublue-update/commit/6bd75682077d45f2cbf1b8c6a61c95a77cab5c43))
+
+
+### Bug Fixes
+
+* typo ([6d1a817](https://github.com/ublue-os/ublue-update/commit/6d1a817a9ebbb2d14603c1d1b2e3348c02ee4464))
+
 ## [1.1.6](https://github.com/ublue-os/ublue-update/compare/v1.1.5...v1.1.6) (2023-08-26)
 
 
