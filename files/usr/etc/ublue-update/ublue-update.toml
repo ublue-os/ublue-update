@@ -4,6 +4,4 @@
     max_mem_percent = 50.0
 [notify]
     dbus_notify = true
-[schedule]
-    frequency="weekly"
 
