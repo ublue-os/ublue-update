@@ -50,7 +50,7 @@ def check_cpu_load() -> dict:
 def check_mem_percentage() -> dict:
     mem = psutil.virtual_memory()
     return {
-        "passed": mem > max_mem_percent,
+        "passed": mem.percent < max_mem_percent,
         "message": f"Memory usage is above {max_mem_percent}%",
     }
 
