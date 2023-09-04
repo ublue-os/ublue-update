@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/ublue-os/ublue-update/compare/v1.2.0...v1.2.1) (2023-09-04)
+
+
+### Bug Fixes
+
+* missing build requires python-pip ([#56](https://github.com/ublue-os/ublue-update/issues/56)) ([c583cae](https://github.com/ublue-os/ublue-update/commit/c583cae21c10eca1b7bf146f2ee066d65dc8af2a))
+
 ## [1.2.0](https://github.com/ublue-os/ublue-update/compare/v1.1.6...v1.2.0) (2023-09-02)
 
 
