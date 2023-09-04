@@ -9,6 +9,7 @@ min_battery_percent: float = load_value("checks", "min_battery_percent")
 max_cpu_load_percent: float = load_value("checks", "max_cpu_load_percent")
 max_mem_percent: float = load_value("checks", "max_mem_percent")
 
+
 def check_network_status() -> dict:
     network_status = psutil.net_if_stats()
     # check each network interface
@@ -39,10 +40,10 @@ def check_battery_status() -> dict:
 def check_cpu_load() -> dict:
     # get load average percentage in last 5 minutes:
     # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
-    cpu_load = psutil.getloadavg()[1] / psutil.cpu_count() * 100
+    cpu_load_percent = psutil.getloadavg()[1] / psutil.cpu_count() * 100
     return {
-        "passed": cpu_load < max_cpu_load,
-        "message": f"CPU load is above {max_cpu_load}%",
+        "passed": cpu_load_percent < max_cpu_load_percent,
+        "message": f"CPU load is above {max_cpu_load_percent}%",
     }
 
 

@@ -34,7 +34,7 @@ def ask_for_updates():
         "System Updater",
         "Update available, but system checks failed. Update now?",
         ["universal-blue-update-confirm=Confirm"],
-        "critical"
+        "critical",
     )
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
