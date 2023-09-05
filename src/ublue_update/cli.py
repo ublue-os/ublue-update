@@ -18,7 +18,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         body,
         "--app-name=Universal Blue Updater",
         "--icon=software-update-available-symbolic",
-        f"--urgency=${urgency}",
+        f"--urgency={urgency}",
     ]
     if actions != []:
         for action in actions:
