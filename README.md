@@ -59,7 +59,7 @@ section: `checks`
 
 `max_cpu_load_percent`: checks if cpu average load is under specified percent
 
-`max_mem_percent`: checks memory usage is below specified the percent
+`max_mem_percent`: checks if memory usage is below specified the percent
 
 
 section: `notify`
