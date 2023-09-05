@@ -55,9 +55,12 @@ valid config paths (in order of priority)
 ## Config Variables
 section: `checks`
 
-`battery_percent`: checks if battery is above specified percent
+`min_battery_percent`: checks if battery is above specified percent
 
-`cpu_load`: checks if cpu average load is under specified percent
+`max_cpu_load_percent`: checks if cpu average load is under specified percent
+
+`max_mem_percent`: checks if memory usage is below specified the percent
+
 
 section: `notify`
 
