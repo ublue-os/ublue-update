@@ -79,7 +79,7 @@ def run_user_updates(user: str, root_dir: str):
                 )
                 if out.returncode != 0:
                     log.info(f"{full_path} returned error code: {out.returncode}")
-                    log.info(f"Program output: \n {out.stdout}")
+                    log.info(f"Program output: \n {out.stdout.decode('utf-8')}")
                 notify(
                     "System Updater",
                     f"Error in update script: {file}, check logs for more info",
@@ -88,6 +88,16 @@ def run_user_updates(user: str, root_dir: str):
                 log.info(f"could not execute file {full_path}")
 
 def run_updates():
+    if os.getuid() != 0:
+        notify(
+            "System Updater",
+            "ublue-update needs root to run updates!",
+        )
+        raise Exception("ublue-update needs root to run updates!")
+    notify(
+        "System Updater",
+        "System passed checks, updating ...",
+    )
     root_dir = "/etc/ublue-update.d"
 
     log.info("Running system update")
@@ -97,12 +107,13 @@ def run_updates():
     users=[]
     for user in pwd.getpwall():
         if "/home" in user.pw_dir:
-            users.append(user.pw_name)
-
-    run_user_updates("root", root_dir + "/system")
+            users.append(str(user.pw_name))
+    print(users)
+    run_user_updates("root", root_dir + "/system/")
 
     for user in users:
-        run_user_updates(user, root_dir + "/user")
+        print("why?")
+        run_user_updates(user, root_dir + "/user/")
 
 
     notify(
@@ -172,8 +183,4 @@ def main():
 
     # system checks passed
     log.info("System passed all update checks")
-    notify(
-        "System Updater",
-        "System passed checks, updating ...",
-    )
     run_updates()
