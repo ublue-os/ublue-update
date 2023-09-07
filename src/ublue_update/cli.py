@@ -39,7 +39,7 @@ def ask_for_updates():
     )
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
-        run_updates(args)
+        run_updates(cli_args)
 
 
 def check_for_updates(checks_failed: bool) -> bool:
@@ -78,7 +78,9 @@ def run_user_updates(process_uid: int, user_uid: int, root_dir: str):
         return
 
     user_name = pwd.getpwuid(user_uid).pw_name
-    log.info(f"Running update for user: '{user_name}', update script directory: '{root_dir}'")
+    log.info(
+        f"Running update for user: '{user_name}', update script directory: '{root_dir}'"
+    )
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             full_path = root_dir + str(file)
@@ -86,7 +88,9 @@ def run_user_updates(process_uid: int, user_uid: int, root_dir: str):
             if executable:
                 log.info(f"Running update script: {full_path}")
                 out = subprocess.run(
-                    ["/usr/bin/sudo","-u",f"{user_name}",full_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                    ["/usr/bin/sudo", "-u", f"{user_name}", full_path],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
                 )
                 if out.returncode != 0:
                     log.info(f"{full_path} returned error code: {out.returncode}")
@@ -98,6 +102,7 @@ def run_user_updates(process_uid: int, user_uid: int, root_dir: str):
             else:
                 log.info(f"could not execute file {full_path}")
 
+
 def run_updates(args):
     notify(
         "System Updater",
@@ -107,8 +112,8 @@ def run_updates(args):
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
-    user_uids=[]
-    not_specified=(not args.user and not args.system)
+    user_uids = []
+    not_specified = not args.user and not args.system
 
     if not_specified or args.user:
         for user in pwd.getpwall():
@@ -121,13 +126,13 @@ def run_updates(args):
     for user_uid in user_uids:
         run_user_updates(process_uid, user_uid, root_dir + "/user/")
 
-
     notify(
         "System Updater",
         "System update complete, reboot for changes to take effect",
     )
     log.info("System update complete")
     os._exit(0)
+
 
 dbus_notify: bool = load_value("notify", "dbus_notify")
 
@@ -137,6 +142,9 @@ logging.basicConfig(
     level=os.getenv("UBLUE_LOG", default=logging.INFO),
 )
 log = logging.getLogger(__name__)
+
+cli_args = None
+
 
 def main():
 
@@ -173,25 +181,25 @@ def main():
         action="store_true",
         help="run system updates",
     )
-    args = parser.parse_args()
+    cli_args = parser.parse_args()
     hardware_checks_failed = False
 
-    if args.wait:
+    if cli_args.wait:
         transaction_wait()
         os._exit(0)
 
-    if not args.force and not args.updatecheck:
+    if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
             hardware_inhibitor_checks_failed(
                 hardware_checks_failed,
                 failures,
-                args.check,
+                cli_args.check,
             )
-        if args.check:
+        if cli_args.check:
             os._exit(0)
 
-    if args.updatecheck:
+    if cli_args.updatecheck:
         update_available = check_for_updates(False)
         if not update_available:
             raise Exception("Update not available")
@@ -199,4 +207,4 @@ def main():
 
     # system checks passed
     log.info("System passed all update checks")
-    run_updates(args)
+    run_updates(cli_args)
