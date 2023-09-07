@@ -5,7 +5,6 @@ import os
 def load_config():
     # load config values
     config_paths = [
-        os.path.expanduser("~/.config/ublue-update/ublue-update.toml"),
         "/etc/ublue-update/ublue-update.toml",
         "/usr/etc/ublue-update/ublue-update.toml",
     ]

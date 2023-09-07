@@ -45,8 +45,6 @@ options:
 ## Location
 valid config paths (in order of priority)
 
-```"$HOME"/.config/ublue-update/ublue-update.toml```
-
 ```/etc/ublue-update/ublue-update.toml```
 
 ```/usr/etc/ublue-update/ublue-update.toml```
