@@ -108,11 +108,9 @@ def run_updates():
     for user in pwd.getpwall():
         if "/home" in user.pw_dir:
             users.append(str(user.pw_name))
-    print(users)
     run_user_updates("root", root_dir + "/system/")
 
     for user in users:
-        print("why?")
         run_user_updates(user, root_dir + "/user/")
 
 
