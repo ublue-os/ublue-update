@@ -2,6 +2,7 @@ import os
 import subprocess
 import logging
 import argparse
+import pwd
 
 from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
@@ -66,41 +67,50 @@ def hardware_inhibitor_checks_failed(
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
+def run_user_updates(user: str, root_dir: str):
+    for root, dirs, files in os.walk(root_dir):
+        for file in files:
+            full_path = root_dir + str(file)
+            executable = os.access(full_path, os.X_OK)
+            if executable:
+                log.info(f"Running update script: {full_path}")
+                out = subprocess.run(
+                    ["/usr/bin/sudo","-u",f"{user}",full_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                )
+                if out.returncode != 0:
+                    log.info(f"{full_path} returned error code: {out.returncode}")
+                    log.info(f"Program output: \n {out.stdout}")
+                notify(
+                    "System Updater",
+                    f"Error in update script: {file}, check logs for more info",
+                )
+            else:
+                log.info(f"could not execute file {full_path}")
+
 def run_updates():
-    root_dir = "/etc/ublue-update.d/"
+    root_dir = "/etc/ublue-update.d"
 
     log.info("Running system update")
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
+    users=[]
+    for user in pwd.getpwall():
+        if "/home" in user.pw_dir:
+            users.append(user.pw_name)
 
-    for root, dirs, files in os.walk(root_dir):
-        for file in files:
-            full_path = root_dir + str(file)
+    run_user_updates("root", root_dir + "/system")
 
-            executable = os.access(full_path, os.X_OK)
-            if executable:
-                log.info(f"Running update script: {full_path}")
-                out = subprocess.run(
-                    [full_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-                )
+    for user in users:
+        run_user_updates(user, root_dir + "/user")
 
-                if out.returncode != 0:
-                    log.info(f"{full_path} returned error code: {out.returncode}")
-                    log.info(f"Program output: \n {out.stdout}")
-                    notify(
-                        "System Updater",
-                        f"Error in update script: {file}, check logs for more info",
-                    )
-            else:
-                log.info(f"could not execute file {full_path}")
+
     notify(
         "System Updater",
         "System update complete, reboot for changes to take effect",
     )
     log.info("System update complete")
     os._exit(0)
-
 
 dbus_notify: bool = load_value("notify", "dbus_notify")
 
@@ -110,7 +120,6 @@ logging.basicConfig(
     level=os.getenv("UBLUE_LOG", default=logging.INFO),
 )
 log = logging.getLogger(__name__)
-
 
 def main():
 
