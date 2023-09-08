@@ -16,8 +16,6 @@ classifiers = [
 ]
 dependencies = [
     "psutil",
-    "pygobject",
-    "dbus-python",
 ]
 dynamic = ["version"]
 
