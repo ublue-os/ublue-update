@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: '0 5 * * *'  # 5 am everyday
   workflow_dispatch:  
 env:
     IMAGE_NAME: ublue-update
@@ -105,3 +103,20 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
+          
+  copr-build:
+    permissions:
+      contents: read
+      packages: read
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/akdev1l/copr-build:latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: trigger copr build
+        uses: akdev1l/copr-build@main
+        id: copr-build
+        env:
+          COPR_API_TOKEN_CONFIG: ${{ secrets.UBLUE_COPR_API_TOKEN }}
+        with:
+          owner: ublue-os
