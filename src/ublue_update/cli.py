@@ -67,20 +67,11 @@ def hardware_inhibitor_checks_failed(
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
-def run_user_updates(process_uid: int, user_uid: int, root_dir: str):
-    if process_uid != 0 and user_uid != process_uid:
-        if user_uid == 0:
-            notify(
-                "System Updater",
-                "ublue-update needs root for system updates!",
-            )
-            raise Exception("ublue-update needs root for system updates!")
-        return
+def get_xdg_runtime_dir(uid):
+    return f"/run/{os.getpwuid(uid).pw_name}/{uid}"
 
-    user_name = pwd.getpwuid(user_uid).pw_name
-    log.info(
-        f"Running update for user: '{user_name}', update script directory: '{root_dir}'"
-    )
+
+def run_updates(root_dir: str):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             full_path = root_dir + str(file)
@@ -112,19 +103,39 @@ def run_updates(args):
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
-    user_uids = []
-    not_specified = not args.user and not args.system
 
-    if not_specified or args.user:
-        for user in pwd.getpwall():
-            if "/home" in user.pw_dir:
-                user_uids.append(user.pw_uid)
     process_uid = os.getuid()
-    if not_specified or args.system:
-        run_user_updates(process_uid, 0, root_dir + "/system/")
+    if process_uid == 0:
+        user_uids = []
+        not_specified = not args.user and not args.system
+        if not_specified or args.user:
+            for user in pwd.getpwall():
+                if "/home" in user.pw_dir:
+                    user_uids.append(user.pw_uid)
 
-    for user_uid in user_uids:
-        run_user_updates(process_uid, user_uid, root_dir + "/user/")
+        if not_specified or args.system:
+            run_updates(root_dir + "/system")
+
+        for user_uid in user_uids:
+            log.info(
+                f"Running update for user: '{user_name}', update script directory: '{root_dir}'"
+            )
+            subprocess.run(
+                [
+                    f"XDG_RUNTIME_DIR={get_xdg_runtime_dir()}",
+                    f"DBUS_SESSION_BUS=unix://{get_xdg_runtime_dir(process_uid)}/bus",
+                    "sudo",
+                    "-u",
+                    f"{os.getpwuid(process_uid).pw_name}",
+                    "/usr/bin/ublue-update",
+                    "--user",
+                    "-f",
+                ]
+            )
+    else:
+        run_updates(root_dir + "/user")
+
+
 
     notify(
         "System Updater",
