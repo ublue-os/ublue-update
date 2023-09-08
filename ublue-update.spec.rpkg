@@ -44,7 +44,8 @@ ls
 ls src
 black src
 flake8 src
-shellcheck files/etc/%{NAME}.d/*.sh
+shellcheck files/etc/%{NAME}.d/user/*.sh
+shellcheck files/etc/%{NAME}.d/system/*.sh
 %pyproject_wheel
 
 %install
