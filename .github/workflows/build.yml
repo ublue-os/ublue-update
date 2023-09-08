@@ -111,6 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/akdev1l/copr-build:latest
+    if: github.event_name != 'pull_request'
     steps:
       - name: trigger copr build
         uses: akdev1l/copr-build@main
