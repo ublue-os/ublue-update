@@ -71,7 +71,7 @@ def get_xdg_runtime_dir(uid):
     return f"/run/{os.getpwuid(uid).pw_name}/{uid}"
 
 
-def run_updates(root_dir: str):
+def run_update_scripts(root_dir: str):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             full_path = root_dir + str(file)
@@ -79,7 +79,7 @@ def run_updates(root_dir: str):
             if executable:
                 log.info(f"Running update script: {full_path}")
                 out = subprocess.run(
-                    ["/usr/bin/sudo", "-u", f"{user_name}", full_path],
+                    [full_path],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                 )
@@ -103,7 +103,6 @@ def run_updates(args):
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
-
     process_uid = os.getuid()
     if process_uid == 0:
         user_uids = []
@@ -112,11 +111,10 @@ def run_updates(args):
                 if "/home" in user.pw_dir:
                     user_uids.append(user.pw_uid)
 
-        run_updates(root_dir + "/system")
-
+        run_updates(root_dir + "/system/")
         for user_uid in user_uids:
             log.info(
-                f"Running update for user: '{user_name}', update script directory: '{root_dir}'"
+                f"Running update for user: '{pwd.getpwuid(process_uid).pw_name}', update script directory: '{root_dir}/user'"
             )
             subprocess.run(
                 [
@@ -132,7 +130,7 @@ def run_updates(args):
     else:
         if args.system:
             raise Exception("ublue-update needs to be run as root to perform system updates!")
-        run_updates(root_dir + "/user")
+        run_update_scripts(root_dir + "/user/")
 
     notify(
         "System Updater",
