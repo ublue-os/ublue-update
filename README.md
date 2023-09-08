@@ -26,16 +26,23 @@ COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /
 RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 ```
 
+> **Note**
+> If you are on an image derived from uBlue main, you will need to remove or disable automatic updates with rpm-ostreed, to do this, you need to remove or change this line in the config file: `AutomaticUpdatePolicy=stage` (set to `none` if you don't want to remove it)
+
+
 ## Command Line
 
 ```
-usage: ublue-update [-h] [-f] [-c] [-u]
+usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--user] [--system]
 
 options:
   -h, --help         show this help message and exit
   -f, --force        force manual update, skipping update checks
   -c, --check        run update checks and exit
   -u, --updatecheck  check for updates and exit
+  -w, --wait         wait for transactions to complete and exit
+  --user             run user updates
+  --system           run system updates
 ```
 
 
