@@ -107,14 +107,12 @@ def run_updates(args):
     process_uid = os.getuid()
     if process_uid == 0:
         user_uids = []
-        not_specified = not args.user and not args.system
-        if not_specified or args.user:
+        if not args.system:
             for user in pwd.getpwall():
                 if "/home" in user.pw_dir:
                     user_uids.append(user.pw_uid)
 
-        if not_specified or args.system:
-            run_updates(root_dir + "/system")
+        run_updates(root_dir + "/system")
 
         for user_uid in user_uids:
             log.info(
@@ -128,14 +126,13 @@ def run_updates(args):
                     "-u",
                     f"{os.getpwuid(process_uid).pw_name}",
                     "/usr/bin/ublue-update",
-                    "--user",
                     "-f",
                 ]
             )
     else:
+        if args.system:
+            raise Exception("ublue-update needs to be run as root to perform system updates!")
         run_updates(root_dir + "/user")
-
-
 
     notify(
         "System Updater",
@@ -183,14 +180,9 @@ def main():
         help="wait for transactions to complete and exit",
     )
     parser.add_argument(
-        "--user",
-        action="store_true",
-        help="run user updates",
-    )
-    parser.add_argument(
         "--system",
         action="store_true",
-        help="run system updates",
+        help="only run system updates (requires root)",
     )
     cli_args = parser.parse_args()
     hardware_checks_failed = False
