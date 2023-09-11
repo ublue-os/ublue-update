@@ -3,6 +3,7 @@ import subprocess
 import logging
 import argparse
 import pwd
+import psutil
 
 from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
@@ -10,9 +11,14 @@ from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
 
 
+def get_xdg_runtime_dir(uid):
+    return f"/run/{os.getpwuid(uid).pw_name}/{uid}"
+
+
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
         return
+    process_uid = os.getuid()
     args = [
         "/usr/bin/notify-send",
         title,
@@ -21,6 +27,20 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         "--icon=software-update-available-symbolic",
         f"--urgency={urgency}",
     ]
+    if process_uid == 0:
+        users = psutil.users()
+        for user in users:
+            uid = pwd.getpwuid(user.name)
+            user_args = [
+                "DISPLAY=:0",
+                "DBUS_SESSION_BUS_ADDRESS=unix:path={get_xdg_runtime_dir(uid)}/bus",
+                "sudo",
+                "-u",
+                f"{user.name}",
+            ]
+            user_args += args
+            out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return
     if actions != []:
         for action in actions:
             args.append(f"--action={action}")
@@ -66,11 +86,6 @@ def hardware_inhibitor_checks_failed(
     exception_log = "\n - ".join(failures)
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
-
-def get_xdg_runtime_dir(uid):
-    return f"/run/{os.getpwuid(uid).pw_name}/{uid}"
-
-
 def run_update_scripts(root_dir: str):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
@@ -103,6 +118,7 @@ def run_updates(args):
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
+
     process_uid = os.getuid()
     if process_uid == 0:
         user_uids = []
@@ -111,7 +127,7 @@ def run_updates(args):
                 if "/home" in user.pw_dir:
                     user_uids.append(user.pw_uid)
 
-        run_updates(root_dir + "/system/")
+        run_update_scripts(root_dir + "/system/")
         for user_uid in user_uids:
             log.info(
                 f"Running update for user: '{pwd.getpwuid(process_uid).pw_name}', update script directory: '{root_dir}/user'"
