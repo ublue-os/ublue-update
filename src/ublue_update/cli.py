@@ -30,10 +30,10 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if process_uid == 0:
         users = psutil.users()
         for user in users:
-            uid = pwd.getpwuid(user.name)
+            xdg_runtime_dir = get_xdg_runtime_dir(pwd.getpwuid(user.name))
             user_args = [
                 "DISPLAY=:0",
-                "DBUS_SESSION_BUS_ADDRESS=unix:path={get_xdg_runtime_dir(uid)}/bus",
+                f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
                 "sudo",
                 "-u",
                 f"{user.name}",
@@ -86,6 +86,7 @@ def hardware_inhibitor_checks_failed(
     exception_log = "\n - ".join(failures)
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
+
 def run_update_scripts(root_dir: str):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
@@ -130,7 +131,11 @@ def run_updates(args):
         run_update_scripts(root_dir + "/system/")
         for user_uid in user_uids:
             log.info(
-                f"Running update for user: '{pwd.getpwuid(process_uid).pw_name}', update script directory: '{root_dir}/user'"
+                f"""
+                Running update for user:
+                '{pwd.getpwuid(process_uid).pw_name}',
+                update script directory: '{root_dir}/user'
+                """
             )
             subprocess.run(
                 [
@@ -145,7 +150,9 @@ def run_updates(args):
             )
     else:
         if args.system:
-            raise Exception("ublue-update needs to be run as root to perform system updates!")
+            raise Exception(
+                "ublue-update needs to be run as root to perform system updates!"
+            )
         run_update_scripts(root_dir + "/user/")
 
     notify(
