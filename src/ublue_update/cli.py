@@ -27,6 +27,9 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         "--icon=software-update-available-symbolic",
         f"--urgency={urgency}",
     ]
+    if actions != []:
+        for action in actions:
+            args.append(f"--action={action}")
     if process_uid == 0:
         users = psutil.users()
         for user in users:
@@ -43,10 +46,9 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
             out = subprocess.run(
                 user_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
             )
+            if actions != []:
+                return out
         return
-    if actions != []:
-        for action in actions:
-            args.append(f"--action={action}")
     out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return out
 
