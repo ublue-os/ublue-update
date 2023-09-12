@@ -68,7 +68,7 @@ cp -rp files/etc files/usr %{buildroot}
 %attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.toml
 %attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/user/*.sh
 %attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/system/*.sh
-%attr(0644,root,root) %{_sysconfdir}/polkit-1/rules.d/%{NAME}.rules
+%attr(0644,root,root) %{_exec_prefix}/etc/polkit-1/rules.d/%{NAME}.rules
 
 %changelog
 %autochangelog
