@@ -112,10 +112,6 @@ def run_update_scripts(root_dir: str):
 
 
 def run_updates(args):
-    notify(
-        "System Updater",
-        "System passed checks, updating ...",
-    )
     root_dir = "/etc/ublue-update.d"
 
     """Wait on any existing transactions to complete before updating"""
@@ -123,6 +119,10 @@ def run_updates(args):
 
     process_uid = os.getuid()
     if process_uid == 0:
+        notify(
+            "System Updater",
+            "System passed checks, updating ...",
+        )
         user_uids = []
         if not args.system:
             for user in pwd.getpwall():
@@ -140,27 +140,27 @@ def run_updates(args):
             )
             subprocess.run(
                 [
-                    f"XDG_RUNTIME_DIR={get_xdg_runtime_dir()}",
-                    f"DBUS_SESSION_BUS=unix://{get_xdg_runtime_dir(process_uid)}/bus",
                     "sudo",
                     "-u",
-                    f"{os.getpwuid(process_uid).pw_name}",
+                    "DISPLAY=:0",
+                    f"XDG_RUNTIME_DIR={get_xdg_runtime_dir()}",
+                    f"DBUS_SESSION_BUS_ADDRESS=unix:path={get_xdg_runtime_dir(process_uid)}/bus",
+                    f"{pwd.getpwuid(process_uid).pw_name}",
                     "/usr/bin/ublue-update",
                     "-f",
                 ]
             )
+            notify(
+                "System Updater",
+                "System update complete, reboot for changes to take effect",
+            )
+            log.info("System update complete")
     else:
         if args.system:
             raise Exception(
                 "ublue-update needs to be run as root to perform system updates!"
             )
         run_update_scripts(root_dir + "/user/")
-
-    notify(
-        "System Updater",
-        "System update complete, reboot for changes to take effect",
-    )
-    log.info("System update complete")
     os._exit(0)
 
 
