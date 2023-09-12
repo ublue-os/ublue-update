@@ -133,19 +133,21 @@ def run_updates(args):
 
         run_update_scripts(root_dir + "/system/")
         for user_uid in user_uids:
-            xdg_runtime_dir = get_xdg_runtime_dir(process_uid)
+            xdg_runtime_dir = get_xdg_runtime_dir(user_uid)
+            user = pwd.getpwuid(user_uid)
             log.info(
                 f"""
                 Running update for user:
-                '{pwd.getpwuid(process_uid).pw_name}',
+                'user.pw_name}',
                 update script directory: '{root_dir}/user'
                 """
             )
+
             subprocess.run(
                 [
                     "sudo",
                     "-u",
-                    f"{pwd.getpwuid(process_uid).pw_name}",
+                    f"{user.pw_name}",
                     "DISPLAY=:0",
                     f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
                     f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
