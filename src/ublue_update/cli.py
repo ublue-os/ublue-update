@@ -145,10 +145,10 @@ def run_updates(args):
                 [
                     "sudo",
                     "-u",
+                    f"{pwd.getpwuid(process_uid).pw_name}",
                     "DISPLAY=:0",
                     f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
                     f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
-                    f"{pwd.getpwuid(process_uid).pw_name}",
                     "/usr/bin/ublue-update",
                     "-f",
                 ]
