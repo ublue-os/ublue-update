@@ -138,7 +138,7 @@ def run_updates(args):
             log.info(
                 f"""
                 Running update for user:
-                'user.pw_name}',
+                '{user.pw_name}',
                 update script directory: '{root_dir}/user'
                 """
             )
