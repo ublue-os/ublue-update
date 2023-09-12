@@ -12,7 +12,7 @@ from ublue_update.config import load_value
 
 
 def get_xdg_runtime_dir(uid):
-    return f"/run/{os.getpwuid(uid).pw_name}/{uid}"
+    return f"/run/{pwd.getpwuid(uid).pw_name}/{uid}"
 
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
@@ -30,16 +30,17 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if process_uid == 0:
         users = psutil.users()
         for user in users:
-            xdg_runtime_dir = get_xdg_runtime_dir(pwd.getpwuid(user.name))
+            xdg_runtime_dir = get_xdg_runtime_dir(pwd.getpwnam(user.name).pw_uid)
             user_args = [
-                "DISPLAY=:0",
-                f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
                 "sudo",
                 "-u",
                 f"{user.name}",
+                "DISPLAY=:0",
+                f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
             ]
+            print(user_args)
             user_args += args
-            out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            out = subprocess.run(user_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return
     if actions != []:
         for action in actions:
