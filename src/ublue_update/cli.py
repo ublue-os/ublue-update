@@ -155,11 +155,11 @@ def run_updates(args):
                     "-f",
                 ]
             )
-            notify(
-                "System Updater",
-                "System update complete, reboot for changes to take effect",
-            )
-            log.info("System update complete")
+        notify(
+            "System Updater",
+            "System update complete, reboot for changes to take effect",
+        )
+        log.info("System update complete")
     else:
         if args.system:
             raise Exception(
