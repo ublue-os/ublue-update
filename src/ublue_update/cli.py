@@ -40,7 +40,9 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
             ]
             print(user_args)
             user_args += args
-            out = subprocess.run(user_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            out = subprocess.run(
+                user_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            )
         return
     if actions != []:
         for action in actions:
@@ -131,6 +133,7 @@ def run_updates(args):
 
         run_update_scripts(root_dir + "/system/")
         for user_uid in user_uids:
+            xdg_runtime_dir = get_xdg_runtime_dir(process_uid)
             log.info(
                 f"""
                 Running update for user:
@@ -143,8 +146,8 @@ def run_updates(args):
                     "sudo",
                     "-u",
                     "DISPLAY=:0",
-                    f"XDG_RUNTIME_DIR={get_xdg_runtime_dir()}",
-                    f"DBUS_SESSION_BUS_ADDRESS=unix:path={get_xdg_runtime_dir(process_uid)}/bus",
+                    f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
+                    f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
                     f"{pwd.getpwuid(process_uid).pw_name}",
                     "/usr/bin/ublue-update",
                     "-f",
