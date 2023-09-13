@@ -34,20 +34,26 @@ RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /t
 
 To run a complete system update, it's recommended to use systemd:
 
-``` systemctl start ublue-update.service```
+```sh
+$ systemctl start ublue-update.service
+```
 
 This makes sure that the service will not be triggered again by timers while also making use systemd-inhibit, and allows for passwordless system updates
 
 
 ### Run updates from command line (not recommended)
 
-only run user updates:
-```ublue-update```
-
-only run system updates:
-```pkexec ublue-update --system```
-
+only run user updates (rootless):
+```sh
+$ ublue-update
 ```
+
+only run system updates (requires root):
+```sh
+$ pkexec ublue-update --system
+```
+
+```sh
 usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--system]
 
 options:
@@ -68,15 +74,15 @@ Update scripts are separated into two directories inside of `/etc/ublue-update.d
 ### `/etc/ublue-update.d/user`
 
 Update scripts are ran as user. Scripts included:
-  - per-user flatpak updates
-  - distrobox/rootless podman updates
-  - fleek/nix updates
+  - per-user flatpak update scripts (uninstalling unused deps and repairing flatpak install for maintenence)
+  - distrobox update script
+  - fleek update script
 
 ### `/etc/ublue-update.d/system`
 
 Update scripts are ran as root, these updates are meant to be system-wide. Scripts included:
-  - OS updates
-  - system-wide flatpak updates
+  - OS update script (depends on [`rpm-ostree`](https://github.com/coreos/rpm-ostree))
+  - system-wide flatpak update scripts (uninstalling unused deps and repairing flatpak install for maintenence)
 
 
 ## Location
