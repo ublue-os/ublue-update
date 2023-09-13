@@ -16,12 +16,14 @@ def get_xdg_runtime_dir(uid):
         ["loginctl", "show-user", f"{uid}"],
         capture_output=True,
     )
+    if out.returncode != 0:
+        log.error(f"failed to get xdg runtime dir for user: {uid}")
+        return None
     loginctl_output = {
         line.split("=")[0]: line.split("=")[1]
-        for line in out.stdout.decode("utf-8").split("\n")
-        if not line.isspace()
+        for line in out.stdout.decode("utf-8").splitlines()
     }
-    return loginctl_output.get("RuntimePath")
+    return loginctl_output["RuntimePath"]
 
 
 def get_active_sessions():
@@ -30,6 +32,7 @@ def get_active_sessions():
         capture_output=True,
     )
     if out.returncode != 0:
+        log.error("failed to get active logind sessions")
         return []
     sessions = json.loads(out.stdout.decode("utf-8"))
     session_properties = []
@@ -43,8 +46,7 @@ def get_active_sessions():
         out = subprocess.run(args, capture_output=True)
         loginctl_output = {
             line.split("=")[0]: line.split("=")[1]
-            for line in None, out.stdout.decode("utf-8").split("\n")
-            if not line.isspace()
+            for line in None, out.stdout.decode("utf-8").splitlines()
         }
         session_properties.append(loginctl_output)
     for session_info in session_properties:
