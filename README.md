@@ -36,7 +36,7 @@ To run a complete system update, it's recommended to use systemd:
 
 ``` systemctl start ublue-update.service```
 
-This makes sure that the service isn't triggered again by timers, uses systemd-inhibit, and does passwordless system updates
+This makes sure that the service will not be triggered again by timers while also making use systemd-inhibit, and allows for passwordless system updates
 
 
 ### Run updates from command line (not recommended)
@@ -63,21 +63,20 @@ options:
 # Configuration
 
 ## Update Scripts
-update scripts are seperated into two places
+Update scripts are separated into two directories inside of `/etc/ublue-update.d`
 
 ### `/etc/ublue-update.d/user`
 
-This is for userspace updates, updates are ran as user. Examples include:
-  - user flatpak updates
+Update scripts are ran as user. Scripts included:
+  - per-user flatpak updates
   - distrobox/rootless podman updates
   - fleek/nix updates
 
 ### `/etc/ublue-update.d/system`
 
-This is for system-level updates, update scripts are ran as root. Examples include:
+Update scripts are ran as root, these updates are meant to be system-wide. Scripts included:
   - OS updates
-  - flatpak updates
-  - rootful podman/distrobox updates
+  - system-wide flatpak updates
 
 
 ## Location
