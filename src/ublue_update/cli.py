@@ -3,7 +3,7 @@ import subprocess
 import logging
 import argparse
 import pwd
-import psutil
+import json
 
 from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
@@ -12,33 +12,45 @@ from ublue_update.config import load_value
 
 
 def get_xdg_runtime_dir(uid):
-    return f"/run/{pwd.getpwuid(uid).pw_name}/{uid}"
+    out = subprocess.run(
+        ["loginctl", "show-user", f"{uid}"],
+        capture_output=True,
+    )
+    loginctl_output = {
+        line.split("=")[0]: line.split("=")[1]
+        for line in list(filter(None, out.stdout.decode("utf-8").split("\n")))
+    }
+    return loginctl_output.get("RuntimePath")
+
 
 def get_active_sessions():
     out = subprocess.run(
         ["loginctl", "list-sessions", "--output=json"],
         capture_output=True,
     )
-    sessions = json.loads(out.stdout.decode('utf-8'))
+    sessions = json.loads(out.stdout.decode("utf-8"))
     session_properties = []
     active_sessions = []
     for session in sessions:
         args = [
             "loginctl",
             "show-session",
-            f"{session.get('session')}",
+            session.get("session"),
         ]
         out = subprocess.run(args, capture_output=True)
         loginctl_output = {
             line.split("=")[0]: line.split("=")[1]
-            for line in list(filter(None, out.stdout.decode('utf-8').split("\n")))
+            for line in list(filter(None, out.stdout.decode("utf-8").split("\n")))
         }
         session_properties.append(loginctl_output)
     for session_info in session_properties:
-        graphical = session_info.get("Type") == "x11" or session_info.get("Type") == "wayland"
+        graphical = (
+            session_info.get("Type") == "x11" or session_info.get("Type") == "wayland"
+        )
         if graphical and session_info.get("Active") == "yes":
             active_sessions.append(session_info)
     return active_sessions
+
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
@@ -62,14 +74,12 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
             user_args = [
                 "sudo",
                 "-u",
-                f"{user.get('Name')}",
+                user.get("Name"),
                 "DISPLAY=:0",
                 f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
             ]
             user_args += args
-            out = subprocess.run(
-                user_args, capture_output=True
-            )
+            out = subprocess.run(user_args, capture_output=True)
             if actions != []:
                 return out
         return
@@ -205,7 +215,6 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 cli_args = None
-
 
 def main():
 
