@@ -32,6 +32,21 @@ RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /t
 
 ## Command Line
 
+To run a complete system update, it's recommended to use systemd:
+
+``` systemctl start ublue-update.service```
+
+This makes sure that the service isn't triggered again by timers, uses systemd-inhibit, and does passwordless system updates
+
+
+### Run updates from command line (not recommended)
+
+only run user updates:
+```ublue-update```
+
+only run system updates:
+```pkexec ublue-update --system```
+
 ```
 usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--system]
 
@@ -60,7 +75,7 @@ This is for userspace updates, updates are ran as user. Examples include:
 ### `/etc/ublue-update.d/system`
 
 This is for system-level updates, update scripts are ran as root. Examples include:
-  - OS image updates
+  - OS updates
   - flatpak updates
   - rootful podman/distrobox updates
 
