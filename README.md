@@ -27,13 +27,13 @@ RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /t
 ```
 
 > **Note**
-> If you are on an image derived from uBlue main, you will need to remove or disable automatic updates with rpm-ostreed, to do this, you need to remove or change this line in the config file: `AutomaticUpdatePolicy=stage` (set to `none` if you don't want to remove it)
+> If you are on an image derived from uBlue main, you will need to remove or disable automatic updates with rpm-ostreed, to do this, you need to remove or change this line in the config file: `AutomaticUpdatePolicy=stage` (set to `none` if you don't want to remove the line)
 
 
 ## Command Line
 
 ```
-usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--user] [--system]
+usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--system]
 
 options:
   -h, --help         show this help message and exit
@@ -41,16 +41,33 @@ options:
   -c, --check        run update checks and exit
   -u, --updatecheck  check for updates and exit
   -w, --wait         wait for transactions to complete and exit
-  --user             run user updates
-  --system           run system updates
+  --system           only run system updates (requires root)
 ```
 
 
 # Configuration
 
+## Update Scripts
+update scripts are seperated into two places
+
+### `/etc/ublue-update.d/user`
+
+This is for userspace updates, updates are ran as user. Examples include:
+  - user flatpak updates
+  - distrobox/rootless podman updates
+  - fleek/nix updates
+
+### `/etc/ublue-update.d/system`
+
+This is for system-level updates, update scripts are ran as root. Examples include:
+  - OS image updates
+  - flatpak updates
+  - rootful podman/distrobox updates
+
 
 ## Location
-valid config paths (in order of priority)
+
+### Valid config paths (in order of priority):
 
 ```/etc/ublue-update/ublue-update.toml```
 
@@ -58,7 +75,7 @@ valid config paths (in order of priority)
 
 
 ## Config Variables
-section: `checks`
+Section: `checks`
 
 `min_battery_percent`: checks if battery is above specified percent
 
@@ -67,7 +84,7 @@ section: `checks`
 `max_mem_percent`: checks if memory usage is below specified the percent
 
 
-section: `notify`
+Section: `notify`
 
 `dbus_notify`: enable graphical notifications via dbus
 
