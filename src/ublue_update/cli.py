@@ -44,9 +44,7 @@ def get_active_sessions():
         }
         session_properties.append(loginctl_output)
     for session_info in session_properties:
-        graphical = (
-            session_info["Type"] == "x11" or session_info["Type"] == "wayland"
-        )
+        graphical = session_info["Type"] == "x11" or session_info["Type"] == "wayland"
         if graphical and session_info["Active"] == "yes":
             active_sessions.append(session_info)
     return active_sessions
@@ -71,12 +69,12 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         try:
             users = get_active_sessions()
         except KeyError as e:
-            log.error("failed to get active logind session info", e);
+            log.error("failed to get active logind session info", e)
         for user in users:
             try:
                 xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
             except KeyError as e:
-                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e);
+                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
                 return
             user_args = [
                 "sudo",
@@ -103,7 +101,7 @@ def ask_for_updates():
         ["universal-blue-update-confirm=Confirm"],
         "critical",
     )
-    if out == None:
+    if out is None:
         return
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
@@ -224,6 +222,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 cli_args = None
+
 
 def main():
 
