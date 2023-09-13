@@ -38,7 +38,7 @@ To run a complete system update, it's recommended to use systemd:
 $ systemctl start ublue-update.service
 ```
 
-This makes sure that the service will not be triggered again by timers while also making use systemd-inhibit, and allows for passwordless system updates
+This makes sure there's only one instance of `ublue-update`, uses systemd-inhibit, and allows for passwordless system updates (user must be in `wheel` group)
 
 
 ### Run updates from command line (not recommended)
