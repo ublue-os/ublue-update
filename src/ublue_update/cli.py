@@ -14,6 +14,31 @@ from ublue_update.config import load_value
 def get_xdg_runtime_dir(uid):
     return f"/run/{pwd.getpwuid(uid).pw_name}/{uid}"
 
+def get_active_sessions():
+    out = subprocess.run(
+        ["loginctl", "list-sessions", "--output=json"],
+        capture_output=True,
+    )
+    sessions = json.loads(out.stdout.decode('utf-8'))
+    session_properties = []
+    active_sessions = []
+    for session in sessions:
+        args = [
+            "loginctl",
+            "show-session",
+            f"{session.get('session')}",
+        ]
+        out = subprocess.run(args, capture_output=True)
+        loginctl_output = {
+            line.split("=")[0]: line.split("=")[1]
+            for line in list(filter(None, out.stdout.decode('utf-8').split("\n")))
+        }
+        session_properties.append(loginctl_output)
+    for session_info in session_properties:
+        graphical = session_info.get("Type") == "x11" or session_info.get("Type") == "wayland"
+        if graphical and session_info.get("Active") == "yes":
+            active_sessions.append(session_info)
+    return active_sessions
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
@@ -31,25 +56,24 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         for action in actions:
             args.append(f"--action={action}")
     if process_uid == 0:
-        users = psutil.users()
+        users = get_active_sessions()
         for user in users:
-            xdg_runtime_dir = get_xdg_runtime_dir(pwd.getpwnam(user.name).pw_uid)
+            xdg_runtime_dir = get_xdg_runtime_dir(user.get("User"))
             user_args = [
                 "sudo",
                 "-u",
-                f"{user.name}",
+                f"{user.get('Name')}",
                 "DISPLAY=:0",
                 f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
             ]
-            print(user_args)
             user_args += args
             out = subprocess.run(
-                user_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                user_args, capture_output=True
             )
             if actions != []:
                 return out
         return
-    out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out = subprocess.run(args, capture_output=True)
     return out
 
 
@@ -101,8 +125,7 @@ def run_update_scripts(root_dir: str):
                 log.info(f"Running update script: {full_path}")
                 out = subprocess.run(
                     [full_path],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
+                    capture_output=True,
                 )
                 if out.returncode != 0:
                     log.info(f"{full_path} returned error code: {out.returncode}")
@@ -155,7 +178,8 @@ def run_updates(args):
                     f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
                     "/usr/bin/ublue-update",
                     "-f",
-                ]
+                ],
+                capture_output=True,
             )
         notify(
             "System Updater",
