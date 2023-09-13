@@ -16,9 +16,6 @@ def get_xdg_runtime_dir(uid):
         ["loginctl", "show-user", f"{uid}"],
         capture_output=True,
     )
-    if out.returncode != 0:
-        log.error(f"failed to get xdg runtime dir for user: {uid}")
-        return None
     loginctl_output = {
         line.split("=")[0]: line.split("=")[1]
         for line in out.stdout.decode("utf-8").splitlines()
@@ -31,9 +28,6 @@ def get_active_sessions():
         ["loginctl", "list-sessions", "--output=json"],
         capture_output=True,
     )
-    if out.returncode != 0:
-        log.error("failed to get active logind sessions")
-        return []
     sessions = json.loads(out.stdout.decode("utf-8"))
     session_properties = []
     active_sessions = []
@@ -41,12 +35,12 @@ def get_active_sessions():
         args = [
             "loginctl",
             "show-session",
-            sessiob["session"],
+            session["session"],
         ]
         out = subprocess.run(args, capture_output=True)
         loginctl_output = {
             line.split("=")[0]: line.split("=")[1]
-            for line in None, out.stdout.decode("utf-8").splitlines()
+            for line in out.stdout.decode("utf-8").splitlines()
         }
         session_properties.append(loginctl_output)
     for session_info in session_properties:
@@ -74,10 +68,15 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         for action in actions:
             args.append(f"--action={action}")
     if process_uid == 0:
-        users = get_active_sessions()
+        try:
+            users = get_active_sessions()
+        except KeyError as e:
+            log.error("failed to get active logind session info", e);
         for user in users:
-            xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
-            if xdg_runtime_dir == None:
+            try:
+                xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
+            except KeyError as e:
+                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e);
                 return
             user_args = [
                 "sudo",
@@ -104,6 +103,8 @@ def ask_for_updates():
         ["universal-blue-update-confirm=Confirm"],
         "critical",
     )
+    if out == None:
+        return
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
         run_updates(cli_args)
