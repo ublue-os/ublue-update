@@ -18,7 +18,8 @@ def get_xdg_runtime_dir(uid):
     )
     loginctl_output = {
         line.split("=")[0]: line.split("=")[1]
-        for line in list(filter(None, out.stdout.decode("utf-8").split("\n")))
+        for line in out.stdout.decode("utf-8").split("\n")
+        if not line.isspace()
     }
     return loginctl_output.get("RuntimePath")
 
@@ -28,6 +29,8 @@ def get_active_sessions():
         ["loginctl", "list-sessions", "--output=json"],
         capture_output=True,
     )
+    if out.returncode != 0:
+        return []
     sessions = json.loads(out.stdout.decode("utf-8"))
     session_properties = []
     active_sessions = []
@@ -35,19 +38,20 @@ def get_active_sessions():
         args = [
             "loginctl",
             "show-session",
-            session.get("session"),
+            sessiob["session"],
         ]
         out = subprocess.run(args, capture_output=True)
         loginctl_output = {
             line.split("=")[0]: line.split("=")[1]
-            for line in list(filter(None, out.stdout.decode("utf-8").split("\n")))
+            for line in None, out.stdout.decode("utf-8").split("\n")
+            if not line.isspace()
         }
         session_properties.append(loginctl_output)
     for session_info in session_properties:
         graphical = (
-            session_info.get("Type") == "x11" or session_info.get("Type") == "wayland"
+            session_info["Type"] == "x11" or session_info["Type"] == "wayland"
         )
-        if graphical and session_info.get("Active") == "yes":
+        if graphical and session_info["Active"] == "yes":
             active_sessions.append(session_info)
     return active_sessions
 
@@ -70,11 +74,13 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if process_uid == 0:
         users = get_active_sessions()
         for user in users:
-            xdg_runtime_dir = get_xdg_runtime_dir(user.get("User"))
+            xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
+            if xdg_runtime_dir == None:
+                return
             user_args = [
                 "sudo",
                 "-u",
-                user.get("Name"),
+                user["Name"],
                 "DISPLAY=:0",
                 f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
             ]
