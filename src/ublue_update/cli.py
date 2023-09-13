@@ -13,7 +13,7 @@ from ublue_update.config import load_value
 
 def get_xdg_runtime_dir(uid):
     out = subprocess.run(
-        ["loginctl", "show-user", f"{uid}"],
+        ["/usr/bin/loginctl", "show-user", f"{uid}"],
         capture_output=True,
     )
     loginctl_output = {
@@ -25,7 +25,7 @@ def get_xdg_runtime_dir(uid):
 
 def get_active_sessions():
     out = subprocess.run(
-        ["loginctl", "list-sessions", "--output=json"],
+        ["/usr/bin/loginctl", "list-sessions", "--output=json"],
         capture_output=True,
     )
     sessions = json.loads(out.stdout.decode("utf-8"))
@@ -33,7 +33,7 @@ def get_active_sessions():
     active_sessions = []
     for session in sessions:
         args = [
-            "loginctl",
+            "/usr/bin/loginctl",
             "show-session",
             session["session"],
         ]
@@ -77,7 +77,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
                 log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
                 return
             user_args = [
-                "sudo",
+                "/usr/bin/sudo",
                 "-u",
                 user["Name"],
                 "DISPLAY=:0",
@@ -187,7 +187,7 @@ def run_updates(args):
 
             subprocess.run(
                 [
-                    "sudo",
+                    "/usr/bin/sudo",
                     "-u",
                     f"{user.pw_name}",
                     "DISPLAY=:0",
