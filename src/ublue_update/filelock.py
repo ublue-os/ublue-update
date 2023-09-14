@@ -2,6 +2,8 @@ import os
 import fcntl
 import time
 
+log = logging.getLogger(__name__)
+
 
 def acquire_lock(lock_file):
     open_mode = os.O_RDWR | os.O_CREAT | os.O_TRUNC
@@ -26,7 +28,7 @@ def acquire_lock(lock_file):
         else:
             lock_file_fd = fd
             break
-        print(f'  {pid} waiting for lock')
+        log.info(f"  {pid} waiting for lock")
         time.sleep(1.0)
         current_time = time.time()
     if lock_file_fd is None:
