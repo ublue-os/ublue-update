@@ -28,7 +28,7 @@ def acquire_lock(lock_file):
         else:
             lock_file_fd = fd
             break
-        log.info(f"  {pid} waiting for lock")
+        log.info(f"{pid} waiting for lock")
         time.sleep(1.0)
         current_time = time.time()
     if lock_file_fd is None:

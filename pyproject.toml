@@ -16,7 +16,6 @@ classifiers = [
 ]
 dependencies = [
     "psutil",
-    "filelock",
 ]
 dynamic = ["version"]
 
