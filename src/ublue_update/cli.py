@@ -9,46 +9,7 @@ from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
-
-
-def get_xdg_runtime_dir(uid):
-    out = subprocess.run(
-        ["/usr/bin/loginctl", "show-user", f"{uid}"],
-        capture_output=True,
-    )
-    loginctl_output = {
-        line.split("=")[0]: line.split("=")[-1]
-        for line in out.stdout.decode("utf-8").splitlines()
-    }
-    return loginctl_output["RuntimePath"]
-
-
-def get_active_sessions():
-    out = subprocess.run(
-        ["/usr/bin/loginctl", "list-sessions", "--output=json"],
-        capture_output=True,
-    )
-    sessions = json.loads(out.stdout.decode("utf-8"))
-    session_properties = []
-    active_sessions = []
-    for session in sessions:
-        args = [
-            "/usr/bin/loginctl",
-            "show-session",
-            session["session"],
-        ]
-        out = subprocess.run(args, capture_output=True)
-        loginctl_output = {
-            line.split("=")[0]: line.split("=")[-1]
-            for line in out.stdout.decode("utf-8").splitlines()
-        }
-        session_properties.append(loginctl_output)
-    for session_info in session_properties:
-        graphical = session_info["Type"] == "x11" or session_info["Type"] == "wayland"
-        if graphical and session_info["Active"] == "yes":
-            active_sessions.append(session_info)
-    return active_sessions
-
+from ublue_update.session import get_xdg_runtime_dir get_active_sessions check_pidlock
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
@@ -66,6 +27,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         for action in actions:
             args.append(f"--action={action}")
     if process_uid == 0:
+        users = []
         try:
             users = get_active_sessions()
         except KeyError as e:
@@ -156,6 +118,7 @@ def run_update_scripts(root_dir: str):
 
 
 def run_updates(args):
+    check_pidlock()
     root_dir = "/etc/ublue-update.d"
 
     """Wait on any existing transactions to complete before updating"""
@@ -167,16 +130,22 @@ def run_updates(args):
             "System Updater",
             "System passed checks, updating ...",
         )
-        user_uids = []
-        if not args.system:
-            for user in pwd.getpwall():
-                if "/home" in user.pw_dir:
-                    user_uids.append(user.pw_uid)
+        users = []
+        try:
+            users = get_active_sessions()
+        except KeyError as e:
+            log.error("failed to get active logind session info", e)
+
+        if args.system:
+            users = []
 
         run_update_scripts(root_dir + "/system/")
-        for user_uid in user_uids:
-            xdg_runtime_dir = get_xdg_runtime_dir(user_uid)
-            user = pwd.getpwuid(user_uid)
+        for user in users:
+            try:
+                xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
+            except KeyError as e:
+                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
+                break
             log.info(
                 f"""
                 Running update for user:
