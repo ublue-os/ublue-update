@@ -7,10 +7,8 @@ from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
-from ublue_update.session import get_xdg_runtime_dir
-from ublue_update.session import get_active_sessions
-from ublue_update.session import check_pidlock
-
+from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
+from ublue_update.filelock import acquire_lock, release_lock
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
@@ -119,13 +117,21 @@ def run_update_scripts(root_dir: str):
 
 
 def run_updates(args):
-    check_pidlock()
+    process_uid = os.getuid()
+    filelock_path = "/run/ublue-update.lock"
+    if process_uid != 0:
+        xdg_runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
+        if os.path.isdir(xdg_runtime_dir):
+            filelock_path = f"{xdg_runtime_dir}/ublue-update.lock"
+    print(filelock_path)
+    fd = acquire_lock(filelock_path)
+    if fd is None:
+        raise Exception("updates are already running for this user")
     root_dir = "/etc/ublue-update.d"
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
 
-    process_uid = os.getuid()
     if process_uid == 0:
         notify(
             "System Updater",
@@ -150,7 +156,7 @@ def run_updates(args):
             log.info(
                 f"""
                 Running update for user:
-                '{user.pw_name}',
+                '{user['Name']}',
                 update script directory: '{root_dir}/user'
                 """
             )
@@ -179,6 +185,7 @@ def run_updates(args):
                 "ublue-update needs to be run as root to perform system updates!"
             )
         run_update_scripts(root_dir + "/user/")
+    release_lock(fd)
     os._exit(0)
 
 

@@ -1,6 +1,4 @@
 import subprocess
-import os
-import psutil
 import json
 
 
@@ -41,21 +39,3 @@ def get_active_sessions():
         if graphical and session_info["Active"] == "yes":
             active_sessions.append(session_info)
     return active_sessions
-
-
-def check_pidlock():
-    path = ""
-    if os.getuid() != 0:
-        path = os.environ["XDG_RUNTIME_DIR"] + "/ublue-update.pid"
-    else:
-        path = "/run/ublue-update.pid"
-
-    if os.path.isfile(path):
-        with open(path, "r", encoding="utf-8") as file:
-            if psutil.pid_exists(int(file.read())):
-                raise Exception(
-                    "Another instance of ublue-update is running for this user!"
-                )
-
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(str(os.getpid()))
