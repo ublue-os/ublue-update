@@ -10,6 +10,7 @@ from ublue_update.config import load_value
 from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
 from ublue_update.filelock import acquire_lock, release_lock
 
+
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
         return

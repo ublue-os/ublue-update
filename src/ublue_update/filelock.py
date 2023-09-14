@@ -1,8 +1,9 @@
 import os
 import fcntl
 import time
+from logging import getLogger
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 def acquire_lock(lock_file):
@@ -38,8 +39,6 @@ def acquire_lock(lock_file):
 
 def release_lock(lock_file_fd):
     # Do not remove the lockfile:
-    #
-    #   https://github.com/benediktschmitt/py-filelock/issues/31
     #   https://stackoverflow.com/questions/17708885/flock-removing-locked-file-without-race-condition
     fcntl.flock(lock_file_fd, fcntl.LOCK_UN)
     os.close(lock_file_fd)
