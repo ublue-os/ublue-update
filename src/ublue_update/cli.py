@@ -2,14 +2,15 @@ import os
 import subprocess
 import logging
 import argparse
-import pwd
-import json
 
 from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
-from ublue_update.session import get_xdg_runtime_dir get_active_sessions check_pidlock
+from ublue_update.session import get_xdg_runtime_dir
+from ublue_update.session import get_active_sessions
+from ublue_update.session import check_pidlock
+
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
