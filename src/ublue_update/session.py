@@ -31,6 +31,7 @@ def get_active_sessions():
         out = subprocess.run(args, capture_output=True)
         print(out.stdout.decode("utf-8"))
         print(out.stdout.decode("utf-8").splitlines())
+        print("loginctl return code: ", out.returncode)
         loginctl_output = {
             line.split("=")[0]: line.split("=")[-1]
             for line in out.stdout.decode("utf-8").splitlines()
