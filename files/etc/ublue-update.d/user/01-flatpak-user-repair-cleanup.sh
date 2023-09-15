@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 
 /usr/bin/flatpak uninstall --user --unused -y --noninteractive

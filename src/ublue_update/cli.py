@@ -107,8 +107,7 @@ def run_update_scripts(root_dir: str):
                     capture_output=True,
                 )
                 if out.returncode != 0:
-                    log.info(f"{full_path} returned error code: {out.returncode}")
-                    log.info(f"Program output: \n {out.stdout.decode('utf-8')}")
+                    log.error(f"{full_path} returned error code: {out.returncode}", out.stdout.decode('utf-8'))
                     notify(
                         "System Updater",
                         f"Error in update script: {file}, check logs for more info",
