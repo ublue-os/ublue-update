@@ -34,7 +34,7 @@ RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /t
 
 To run a complete system update, it's recommended to use systemd:
 
-```sh
+```
 $ systemctl start ublue-update.service
 ```
 
@@ -43,17 +43,17 @@ This makes sure there's only one instance of `ublue-update` and allows for passw
 
 ### Run updates from command line (not recommended)
 
-only run user updates (rootless):
-```sh
+Only run user updates (rootless):
+```
 $ ublue-update
 ```
 
-only run system updates (requires root):
-```sh
+Only run system updates (requires root):
+```
 $ pkexec ublue-update --system
 ```
 
-```sh
+```
 usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--system]
 
 options:
@@ -65,6 +65,12 @@ options:
   --system           only run system updates (requires root)
 ```
 
+## Troubleshooting
+
+You can check the ublue-update logs by running this command:
+```
+$ journalctl -exu ublue-update.service
+```
 
 # Configuration
 
