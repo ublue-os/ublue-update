@@ -69,7 +69,7 @@ options:
 
 You can check the ublue-update logs by running this command:
 ```
-$ journalctl -exu ublue-update.service
+$ journalctl -exu 'ublue-update.service'
 ```
 
 # Configuration

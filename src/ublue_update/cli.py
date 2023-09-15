@@ -41,7 +41,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
             user_args = [
                 "/usr/bin/sudo",
                 "-u",
-                user["Name"],
+                f"{user['Name']}",
                 "DISPLAY=:0",
                 f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
             ]
@@ -124,7 +124,6 @@ def run_updates(args):
         xdg_runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
         if os.path.isdir(xdg_runtime_dir):
             filelock_path = f"{xdg_runtime_dir}/ublue-update.lock"
-    print(filelock_path)
     fd = acquire_lock(filelock_path)
     if fd is None:
         raise Exception("updates are already running for this user")
@@ -147,7 +146,7 @@ def run_updates(args):
         if args.system:
             users = []
 
-        run_update_scripts(root_dir + "/system/")
+        run_update_scripts(f"{root_dir}/system/")
         for user in users:
             try:
                 xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
@@ -185,7 +184,7 @@ def run_updates(args):
             raise Exception(
                 "ublue-update needs to be run as root to perform system updates!"
             )
-        run_update_scripts(root_dir + "/user/")
+        run_update_scripts(f"{root_dir}/user/")
     release_lock(fd)
     os._exit(0)
 

@@ -26,7 +26,7 @@ def get_active_sessions():
         args = [
             "/usr/bin/loginctl",
             "show-session",
-            session["session"],
+            f"{session['session']}",
         ]
         out = subprocess.run(args, capture_output=True)
         loginctl_output = {
