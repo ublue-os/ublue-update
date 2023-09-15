@@ -38,5 +38,5 @@ def get_active_sessions():
     for session_info in session_properties:
         graphical = session_info["Type"] == "x11" or session_info["Type"] == "wayland"
         if graphical and session_info["Active"] == "yes":
-                active_sessions.append(session_info)
+            active_sessions.append(session_info)
     return active_sessions
