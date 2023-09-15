@@ -255,7 +255,3 @@ def main():
     # system checks passed
     log.info("System passed all update checks")
     run_updates(cli_args)
-    notify(
-        "System Updater",
-        "System passed checks, updating ...",
-    )
