@@ -11,7 +11,6 @@ from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
 from ublue_update.filelock import acquire_lock, release_lock
 
 
-
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
         return
@@ -108,13 +107,17 @@ def run_update_scripts(root_dir: str):
                     capture_output=True,
                 )
                 if out.returncode != 0:
-                    log.error(f"{full_path} returned error code: {out.returncode}", out.stdout.decode('utf-8'))
+                    log.error(
+                        f"{full_path} returned error code: {out.returncode}",
+                        out.stdout.decode("utf-8"),
+                    )
                     notify(
                         "System Updater",
                         f"Error in update script: {file}, check logs for more info",
                     )
             else:
                 log.info(f"could not execute file {full_path}")
+
 
 def run_updates(args):
     process_uid = os.getuid()
