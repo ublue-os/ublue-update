@@ -166,7 +166,7 @@ def run_updates(args):
                 [
                     "/usr/bin/sudo",
                     "-u",
-                    f"{user.pw_name}",
+                    f"{user['Name']}",
                     "DISPLAY=:0",
                     f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
                     f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
