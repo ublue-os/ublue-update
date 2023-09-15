@@ -29,18 +29,12 @@ def get_active_sessions():
             f"{session['session']}",
         ]
         out = subprocess.run(args, capture_output=True)
-        if out.returncode != 0:
-            print(f"Session: {session}")
-        print(out.stdout.decode("utf-8"))
-        print(out.stdout.decode("utf-8").splitlines())
-        print("loginctl return code: ", out.returncode)
-        loginctl_output = {
-            line.split("=")[0]: line.split("=")[-1]
-            for line in out.stdout.decode("utf-8").splitlines()
-        }
-
-        print(loginctl_output)
-        session_properties.append(loginctl_output)
+        if out.returncode == 0:
+            loginctl_output = {
+                line.split("=")[0]: line.split("=")[-1]
+                for line in out.stdout.decode("utf-8").splitlines()
+            }
+            session_properties.append(loginctl_output)
     for session_info in session_properties:
         graphical = session_info["Type"] == "x11" or session_info["Type"] == "wayland"
         if graphical and session_info["Active"] == "yes":

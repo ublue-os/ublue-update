@@ -138,11 +138,10 @@ def run_updates(args):
             "System passed checks, updating ...",
         )
         users = []
-        users = get_active_sessions()
-        #try:
-        #    users = get_active_sessions()
-        #except KeyError as e:
-        #    log.error("failed to get active logind session info", e)
+        try:
+            users = get_active_sessions()
+        except KeyError as e:
+            log.error("failed to get active logind session info", e)
 
         if args.system:
             users = []
