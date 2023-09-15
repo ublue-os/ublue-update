@@ -11,6 +11,7 @@ from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
 from ublue_update.filelock import acquire_lock, release_lock
 
 
+
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
         return
@@ -115,7 +116,6 @@ def run_update_scripts(root_dir: str):
             else:
                 log.info(f"could not execute file {full_path}")
 
-
 def run_updates(args):
     process_uid = os.getuid()
     filelock_path = "/run/ublue-update.lock"
@@ -153,9 +153,7 @@ def run_updates(args):
                 log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
                 break
             log.info(
-                f"""
-                Running update for user:
-                '{user['Name']}',
+                f"""Running update for user: '{user['Name']}',
                 update script directory: '{root_dir}/user'
                 """
             )
@@ -257,3 +255,7 @@ def main():
     # system checks passed
     log.info("System passed all update checks")
     run_updates(cli_args)
+    notify(
+        "System Updater",
+        "System passed checks, updating ...",
+    )

@@ -38,7 +38,7 @@ To run a complete system update, it's recommended to use systemd:
 $ systemctl start ublue-update.service
 ```
 
-This makes sure there's only one instance of `ublue-update` and allows for passwordless system updates (user must be in `wheel` group)
+This allows for passwordless system updates (user must be in `wheel` group)
 
 
 ### Run updates from command line (not recommended)
