@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 if [ -x /usr/bin/distrobox ]; then
     /usr/bin/distrobox upgrade -a

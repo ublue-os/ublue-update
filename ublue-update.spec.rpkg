@@ -30,6 +30,7 @@ BuildRequires: python-setuptools_scm
 BuildRequires: python-wheel
 Requires: skopeo
 Requires: libnotify
+Requires: sudo
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 
@@ -44,7 +45,8 @@ ls
 ls src
 black src
 flake8 src
-shellcheck files/etc/%{NAME}.d/*.sh
+shellcheck files/etc/%{NAME}.d/user/*.sh
+shellcheck files/etc/%{NAME}.d/system/*.sh
 %pyproject_wheel
 
 %install
@@ -53,18 +55,20 @@ shellcheck files/etc/%{NAME}.d/*.sh
 cp -rp files/etc files/usr %{buildroot}
 
 %post
-%systemd_user_post %{NAME}.timer
+%systemd_post %{NAME}.timer
 
 %preun
-%systemd_user_preun %{NAME}.timer
+%systemd_preun %{NAME}.timer
 
 %files -f %{pyproject_files}
 %attr(0755,root,root) %{_bindir}/%{name}
-%attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.service
-%attr(0644,root,root) %{_exec_prefix}/lib/systemd/user/%{NAME}.timer
-%attr(0644,root,root) %{_exec_prefix}/lib/systemd/user-preset/00-%{NAME}.preset
+%attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.service
+%attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.timer
+%attr(0644,root,root) %{_exec_prefix}/lib/systemd/system-preset/00-%{NAME}.preset
 %attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.toml
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/*.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/user/*.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/system/*.sh
+%attr(0644,root,root) %{_exec_prefix}/etc/polkit-1/rules.d/%{NAME}.rules
 
 %changelog
 %autochangelog

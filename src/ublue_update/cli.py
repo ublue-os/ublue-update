@@ -7,11 +7,14 @@ from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
+from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
+from ublue_update.filelock import acquire_lock, release_lock
 
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if not dbus_notify:
         return
+    process_uid = os.getuid()
     args = [
         "/usr/bin/notify-send",
         title,
@@ -23,7 +26,31 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if actions != []:
         for action in actions:
             args.append(f"--action={action}")
-    out = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if process_uid == 0:
+        users = []
+        try:
+            users = get_active_sessions()
+        except KeyError as e:
+            log.error("failed to get active logind session info", e)
+        for user in users:
+            try:
+                xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
+            except KeyError as e:
+                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
+                return
+            user_args = [
+                "/usr/bin/sudo",
+                "-u",
+                f"{user['Name']}",
+                "DISPLAY=:0",
+                f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
+            ]
+            user_args += args
+            out = subprocess.run(user_args, capture_output=True)
+            if actions != []:
+                return out
+        return
+    out = subprocess.run(args, capture_output=True)
     return out
 
 
@@ -36,9 +63,11 @@ def ask_for_updates():
         ["universal-blue-update-confirm=Confirm"],
         "critical",
     )
+    if out is None:
+        return
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
-        run_updates()
+        run_updates(cli_args)
 
 
 def check_for_updates(checks_failed: bool) -> bool:
@@ -66,39 +95,97 @@ def hardware_inhibitor_checks_failed(
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
-def run_updates():
-    root_dir = "/etc/ublue-update.d/"
-
-    log.info("Running system update")
-
-    """Wait on any existing transactions to complete before updating"""
-    transaction_wait()
-
+def run_update_scripts(root_dir: str):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             full_path = root_dir + str(file)
-
             executable = os.access(full_path, os.X_OK)
             if executable:
                 log.info(f"Running update script: {full_path}")
                 out = subprocess.run(
-                    [full_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                    [full_path],
+                    capture_output=True,
                 )
-
                 if out.returncode != 0:
-                    log.info(f"{full_path} returned error code: {out.returncode}")
-                    log.info(f"Program output: \n {out.stdout}")
+                    log.error(
+                        f"{full_path} returned error code: {out.returncode}",
+                        out.stdout.decode("utf-8"),
+                    )
                     notify(
                         "System Updater",
                         f"Error in update script: {file}, check logs for more info",
                     )
             else:
                 log.info(f"could not execute file {full_path}")
-    notify(
-        "System Updater",
-        "System update complete, reboot for changes to take effect",
-    )
-    log.info("System update complete")
+
+
+def run_updates(args):
+    process_uid = os.getuid()
+    filelock_path = "/run/ublue-update.lock"
+    if process_uid != 0:
+        xdg_runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
+        if os.path.isdir(xdg_runtime_dir):
+            filelock_path = f"{xdg_runtime_dir}/ublue-update.lock"
+    fd = acquire_lock(filelock_path)
+    if fd is None:
+        raise Exception("updates are already running for this user")
+    root_dir = "/etc/ublue-update.d"
+
+    """Wait on any existing transactions to complete before updating"""
+    transaction_wait()
+
+    if process_uid == 0:
+        notify(
+            "System Updater",
+            "System passed checks, updating ...",
+        )
+        users = []
+        try:
+            users = get_active_sessions()
+        except KeyError as e:
+            log.error("failed to get active logind session info", e)
+
+        if args.system:
+            users = []
+
+        run_update_scripts(f"{root_dir}/system/")
+        for user in users:
+            try:
+                xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
+            except KeyError as e:
+                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
+                break
+            log.info(
+                f"""Running update for user: '{user['Name']}',
+                update script directory: '{root_dir}/user'
+                """
+            )
+
+            subprocess.run(
+                [
+                    "/usr/bin/sudo",
+                    "-u",
+                    f"{user['Name']}",
+                    "DISPLAY=:0",
+                    f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
+                    f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
+                    "/usr/bin/ublue-update",
+                    "-f",
+                ],
+                capture_output=True,
+            )
+        notify(
+            "System Updater",
+            "System update complete, reboot for changes to take effect",
+        )
+        log.info("System update complete")
+    else:
+        if args.system:
+            raise Exception(
+                "ublue-update needs to be run as root to perform system updates!"
+            )
+        run_update_scripts(f"{root_dir}/user/")
+    release_lock(fd)
     os._exit(0)
 
 
@@ -110,6 +197,8 @@ logging.basicConfig(
     level=os.getenv("UBLUE_LOG", default=logging.INFO),
 )
 log = logging.getLogger(__name__)
+
+cli_args = None
 
 
 def main():
@@ -137,25 +226,30 @@ def main():
         action="store_true",
         help="wait for transactions to complete and exit",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--system",
+        action="store_true",
+        help="only run system updates (requires root)",
+    )
+    cli_args = parser.parse_args()
     hardware_checks_failed = False
 
-    if args.wait:
+    if cli_args.wait:
         transaction_wait()
         os._exit(0)
 
-    if not args.force and not args.updatecheck:
+    if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
             hardware_inhibitor_checks_failed(
                 hardware_checks_failed,
                 failures,
-                args.check,
+                cli_args.check,
             )
-        if args.check:
+        if cli_args.check:
             os._exit(0)
 
-    if args.updatecheck:
+    if cli_args.updatecheck:
         update_available = check_for_updates(False)
         if not update_available:
             raise Exception("Update not available")
@@ -163,8 +257,4 @@ def main():
 
     # system checks passed
     log.info("System passed all update checks")
-    notify(
-        "System Updater",
-        "System passed checks, updating ...",
-    )
-    run_updates()
+    run_updates(cli_args)

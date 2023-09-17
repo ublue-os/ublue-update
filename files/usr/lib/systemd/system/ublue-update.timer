@@ -3,9 +3,8 @@ Description=Auto Update System Timer For Universal Blue
 Wants=network-online.target
 
 [Timer]
-RandomizedDelaySec=10m
-OnBootSec=2m
-OnCalendar=*-*-* 4:00:00
+OnBootSec=20min
+OnUnitInactiveSec=6h
 Persistent=true
 
 [Install]

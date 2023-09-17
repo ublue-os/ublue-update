@@ -26,26 +26,74 @@ COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /
 RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 ```
 
+> **Note**
+> If you are on an image derived from uBlue main, you will need to remove or disable automatic updates with rpm-ostreed, to do this, you need to remove or change this line in the config file: `AutomaticUpdatePolicy=stage` (set to `none` if you don't want to remove the line)
+
+
 ## Command Line
 
+To run a complete system update, it's recommended to use systemd:
+
 ```
-usage: ublue-update [-h] [-f] [-c] [-u]
+$ systemctl start ublue-update.service
+```
+
+This allows for passwordless system updates (user must be in `wheel` group)
+
+
+### Run updates from command line (not recommended)
+
+Only run user updates (rootless):
+```
+$ ublue-update
+```
+
+Only run system updates (requires root):
+```
+$ pkexec ublue-update --system
+```
+
+```
+usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--system]
 
 options:
   -h, --help         show this help message and exit
   -f, --force        force manual update, skipping update checks
   -c, --check        run update checks and exit
   -u, --updatecheck  check for updates and exit
+  -w, --wait         wait for transactions to complete and exit
+  --system           only run system updates (requires root)
 ```
 
+## Troubleshooting
+
+You can check the ublue-update logs by running this command:
+```
+$ journalctl -exu 'ublue-update.service'
+```
 
 # Configuration
 
+## Update Scripts
+Update scripts are separated into two directories inside of `/etc/ublue-update.d`
+
+### `/etc/ublue-update.d/user`
+
+Update scripts are ran as user. Scripts included:
+  - per-user flatpak update scripts (uninstalling unused deps and repairing flatpak install for maintenence)
+  - distrobox update script
+  - fleek update script
+
+### `/etc/ublue-update.d/system`
+
+Update scripts are ran as root, these updates are meant to be system-wide. Scripts included:
+  - OS update script (depends on [`rpm-ostree`](https://github.com/coreos/rpm-ostree))
+  - system-wide flatpak update scripts (uninstalling unused deps and repairing flatpak install for maintenence)
+
 
 ## Location
-valid config paths (in order of priority)
 
-```"$HOME"/.config/ublue-update/ublue-update.toml```
+### Valid config paths (in order of priority):
 
 ```/etc/ublue-update/ublue-update.toml```
 
@@ -53,7 +101,7 @@ valid config paths (in order of priority)
 
 
 ## Config Variables
-section: `checks`
+Section: `checks`
 
 `min_battery_percent`: checks if battery is above specified percent
 
@@ -62,7 +110,7 @@ section: `checks`
 `max_mem_percent`: checks if memory usage is below specified the percent
 
 
-section: `notify`
+Section: `notify`
 
 `dbus_notify`: enable graphical notifications via dbus
 
