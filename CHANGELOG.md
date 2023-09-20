@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ublue-os/ublue-update/compare/v1.2.2...v1.3.0) (2023-09-20)
+
+
+### Features
+
+* **ci:** Split build for Fedora 38 and 39 ([#67](https://github.com/ublue-os/ublue-update/issues/67)) ([bd27a84](https://github.com/ublue-os/ublue-update/commit/bd27a84414aa917dbf4940defa062d9886164972))
+
 ## [1.2.2](https://github.com/ublue-os/ublue-update/compare/v1.2.1...v1.2.2) (2023-09-17)
 
 
