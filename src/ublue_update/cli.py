@@ -3,6 +3,8 @@ import subprocess
 import logging
 import argparse
 
+
+from ublue_update.update_checks.sign import sign_image
 from ublue_update.update_checks.system import system_update_check
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
@@ -142,6 +144,21 @@ def run_updates(args):
             "System Updater",
             "System passed checks, updating ...",
         )
+
+        # Sign image before proceeding with updates
+        if not os.path.exists("/etc/ublue-update/image-signed"):
+            notify(
+                "System Updater",
+                "Signing your current installation...",
+            )
+            log.info("Signing image...")
+            sign_image()
+            notify(
+                "System Updater",
+                "Installation successfully signed. Please reboot.",
+            )
+            log.info("Image successfully signed.")
+
         users = []
         try:
             users = get_active_sessions()
