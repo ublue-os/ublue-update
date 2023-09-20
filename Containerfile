@@ -1,4 +1,6 @@
-FROM registry.fedoraproject.org/fedora:latest AS builder
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
+
+FROM registry.fedoraproject.org/fedora:${FEDORA_MAJOR_VERSION} AS builder
 
 ENV UBLUE_ROOT=/app/output
 
