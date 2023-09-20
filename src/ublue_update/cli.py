@@ -108,8 +108,11 @@ def run_update_scripts(root_dir: str):
                 )
                 if out.returncode != 0:
                     log.error(
-                        f"{full_path} returned error code: {out.returncode}",
-                        out.stdout.decode("utf-8"),
+                        f"""{full_path} returned error code: {out.returncode}
+
+                        Program output:
+                        {out.stdout.decode("utf-8")}
+                        """,
                     )
                     notify(
                         "System Updater",
@@ -124,6 +127,7 @@ def run_updates(args):
     filelock_path = "/run/ublue-update.lock"
     if process_uid != 0:
         xdg_runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
+        print("")
         if os.path.isdir(xdg_runtime_dir):
             filelock_path = f"{xdg_runtime_dir}/ublue-update.lock"
     fd = acquire_lock(filelock_path)
