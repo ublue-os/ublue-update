@@ -156,3 +156,4 @@ jobs:
           COPR_API_TOKEN_CONFIG: ${{ secrets.UBLUE_COPR_API_TOKEN }}
         with:
           owner: ublue-os
+          project-name: staging
