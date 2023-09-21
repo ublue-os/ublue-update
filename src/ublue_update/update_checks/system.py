@@ -1,4 +1,5 @@
 from json import loads
+from json.decoder import JSONDecodeError
 from logging import getLogger
 from subprocess import PIPE, run
 
@@ -21,7 +22,13 @@ def system_update_check():
     status = "rpm-ostree status --json"
     out = run(status, shell=True, stdout=PIPE).stdout
     """Parse installation digest and image"""
-    deployments = loads(out)["deployments"][0]
+    try:
+        deployments = loads(out)["deployments"][0]
+    except JSONDecodeError:
+        log.error(
+            "update check failed, system isn't managed by rpm-ostree container native"
+        )
+        return False
     installation_digest = deployments["base-commit-meta"]["ostree.manifest-digest"]
     current_image = deployments["container-image-reference"].split(":", 1)
 
