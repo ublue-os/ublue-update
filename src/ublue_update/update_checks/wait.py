@@ -14,4 +14,3 @@ def transaction():
 def transaction_wait():
     while transaction() is not None:
         sleep(1)
-

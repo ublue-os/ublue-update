@@ -73,7 +73,15 @@ def ask_for_updates():
 def check_for_updates(checks_failed: bool) -> bool:
     """Tracks whether any updates are available"""
     update_available: bool = False
-    system_update_available: bool = system_update_check()
+    system_update_available: bool = False
+    try:
+        system_update_available = system_update_check()
+    except KeyError as e:
+        log.error(
+            "update check failed, system isn't container native or managed by rpm-ostree",
+            e,
+        )
+        return False
     if system_update_available:
         update_available = True
     if update_available:
@@ -132,7 +140,13 @@ def run_updates(args):
     root_dir = "/etc/ublue-update.d"
 
     """Wait on any existing transactions to complete before updating"""
-    transaction_wait()
+    try:
+        transaction_wait()
+    except KeyError as e:
+        log.error(
+            "waiting for transaction failed, system isn't managed by rpm-ostree", e
+        )
+        return
 
     if process_uid == 0:
         notify(
