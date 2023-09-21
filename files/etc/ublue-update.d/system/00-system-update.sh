@@ -19,7 +19,7 @@ check_for_rebase() {
 }
 
 if [ -x /usr/bin/rpm-ostree ]; then
-    IMAGE_REF_FILE='/var/home/user/ublue-image-info.json'
+    IMAGE_REF_FILE='/usr/share/ublue-os/image-info.json'
     check_for_rebase $IMAGE_REF_FILE
     /usr/bin/rpm-ostree upgrade
 fi
