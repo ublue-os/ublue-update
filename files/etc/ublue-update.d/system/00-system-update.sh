@@ -9,10 +9,10 @@ check_for_rebase() {
         fi
         LOCAL_IMAGE_REF_UNTAGGED=$(echo "$LOCAL_IMAGE_REF" | awk -F ":" '{print $1":"$2":"$3}')
         IMAGE_REF=$(jq -r '."image-ref"' < "$IMAGE_REF_FILE")
-        IMAGE_DEFAULT_TAG=$(jq -r '."image-default-tag"' < "$IMAGE_REF_FILE")
+        IMAGE_TAG=$(jq -r '."image-tag"' < "$IMAGE_REF_FILE")
 
         if [[ "$LOCAL_IMAGE_REF_UNTAGGED" != "$IMAGE_REF" ]]; then
-            /usr/bin/rpm-ostree rebase "$IMAGE_REF:$IMAGE_DEFAULT_TAG"
+            /usr/bin/rpm-ostree rebase "$IMAGE_REF:$IMAGE_TAG"
             exit
         fi
     fi
