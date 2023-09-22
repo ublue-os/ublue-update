@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.3.0](https://github.com/ublue-os/ublue-update/compare/v1.2.2...v1.3.0) (2023-09-20)
+
+
+### Features
+
+* **ci:** Split build for Fedora 38 and 39 ([#67](https://github.com/ublue-os/ublue-update/issues/67)) ([bd27a84](https://github.com/ublue-os/ublue-update/commit/bd27a84414aa917dbf4940defa062d9886164972))
+
+## [1.2.2](https://github.com/ublue-os/ublue-update/compare/v1.2.1...v1.2.2) (2023-09-17)
+
+
+### Bug Fixes
+
+* change default max_mem_percent to 90.0 ([6119d3b](https://github.com/ublue-os/ublue-update/commit/6119d3b162ee72a28698ff501f7c7b6ead9c3594))
+* formatting and errors ([53da743](https://github.com/ublue-os/ublue-update/commit/53da7431e5c4268519809c0d69bd4f1dd30a7aca))
+* **hardware.py:** fixed memory check ([3f9aaec](https://github.com/ublue-os/ublue-update/commit/3f9aaec05fd04183f3eacdf1fef1b3260522c055))
+* remove typo in arguments for notify-send ([41e3ed9](https://github.com/ublue-os/ublue-update/commit/41e3ed90b919891d98fd4a6b86a0bc3c04aa1831))
+* remove typo in arguments for notify-send ([#61](https://github.com/ublue-os/ublue-update/issues/61)) ([0b0edf0](https://github.com/ublue-os/ublue-update/commit/0b0edf048a02a5a15ab9fb9c909383818dd2146e))
+* skip copr-build on PRs ([9d1b30a](https://github.com/ublue-os/ublue-update/commit/9d1b30aecc9eb815eb34205f6a2128bd77f7ed37))
+
 ## [1.2.1](https://github.com/ublue-os/ublue-update/compare/v1.2.0...v1.2.1) (2023-09-04)
 
 

@@ -109,8 +109,11 @@ def run_update_scripts(root_dir: str):
                 )
                 if out.returncode != 0:
                     log.error(
-                        f"{full_path} returned error code: {out.returncode}",
-                        out.stdout.decode("utf-8"),
+                        f"""{full_path} returned error code: {out.returncode}
+
+                        Program output:
+                        {out.stdout.decode("utf-8")}
+                        """,
                     )
                     notify(
                         "System Updater",
