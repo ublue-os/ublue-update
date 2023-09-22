@@ -2,11 +2,11 @@
 
 check_for_rebase() {
     IMAGE_REF_FILE="$1"
-    LOCAL_IMAGE_REF=$(rpm-ostree status --pending-exit-77 -b --json | jq -r '.deployments[0]["container-image-reference"]')
-    if [[ "$LOCAL_IMAGE_REF" == "null" ]]; then
-        return
-    fi
     if [ -f "$IMAGE_REF_FILE" ]; then
+        LOCAL_IMAGE_REF=$(rpm-ostree status --pending-exit-77 -b --json | jq -r '.deployments[0]["container-image-reference"]')
+        if [[ "$LOCAL_IMAGE_REF" == "null" ]]; then
+            return
+        fi
         LOCAL_IMAGE_REF_UNTAGGED=$(echo "$LOCAL_IMAGE_REF" | awk -F ":" '{print $1":"$2":"$3}')
         IMAGE_REF=$(jq -r '."image-ref"' < "$IMAGE_REF_FILE")
         IMAGE_DEFAULT_TAG=$(jq -r '."image-default-tag"' < "$IMAGE_REF_FILE")
