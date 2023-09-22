@@ -1,4 +1,5 @@
 from json import loads
+from json.decoder import JSONDecodeError
 from logging import getLogger
 from subprocess import PIPE, run
 
@@ -9,19 +10,25 @@ log = getLogger(__name__)
 
 def skopeo_inspect(latest_image: str):
     """Inspect latest image with Skopeo"""
-    inspect = "skopeo inspect " + latest_image
-    out = run(inspect, shell=True, stdout=PIPE).stdout
+    skopeo_inspect = ["skopeo", "inspect", latest_image]
+    inspect = run(skopeo_inspect, stdout=PIPE).stdout
     """Parse and return digest"""
-    digest = loads(out)["Digest"]
+    digest = loads(inspect)["Digest"]
     return digest
 
 
 def system_update_check():
     """Pull deployment status via rpm-ostree"""
-    status = "rpm-ostree status --json"
-    out = run(status, shell=True, stdout=PIPE).stdout
+    rpm_ostree_status = ["rpm-ostree", "status", "--json"]
+    status = run(rpm_ostree_status, stdout=PIPE).stdout
     """Parse installation digest and image"""
-    deployments = loads(out)["deployments"][0]
+    try:
+        deployments = loads(status)["deployments"][0]
+    except (JSONDecodeError, KeyError):
+        log.error(
+            "update check failed, system isn't managed by rpm-ostree container native"
+        )
+        return False
     installation_digest = deployments["base-commit-meta"]["ostree.manifest-digest"]
     current_image = deployments["container-image-reference"].split(":", 1)
 

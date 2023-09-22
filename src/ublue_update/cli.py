@@ -73,7 +73,8 @@ def ask_for_updates():
 def check_for_updates(checks_failed: bool) -> bool:
     """Tracks whether any updates are available"""
     update_available: bool = False
-    system_update_available: bool = system_update_check()
+    system_update_available: bool = False
+    system_update_available = system_update_check()
     if system_update_available:
         update_available = True
     if update_available:
