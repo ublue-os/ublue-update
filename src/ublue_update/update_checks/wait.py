@@ -15,8 +15,8 @@ def transaction():
         status = run(rpm_ostree_status, stdout=PIPE)
         """Parse transaction state"""
         return loads(status.stdout)["transaction"]
-    except JSONDecodeError:
-        log.error("failed to wait for transaction, system not managed with rpm-ostree")
+    except (JSONDecodeError, KeyError):
+        log.error("unable to get transaction, system not managed with rpm-ostree container native")
         return None
 
 

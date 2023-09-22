@@ -24,7 +24,7 @@ def system_update_check():
     """Parse installation digest and image"""
     try:
         deployments = loads(out)["deployments"][0]
-    except JSONDecodeError:
+    except (JSONDecodeError, KeyError):
         log.error(
             "update check failed, system isn't managed by rpm-ostree container native"
         )
