@@ -7,7 +7,7 @@ check_for_rebase() {
         STATUS_COMMAND="rpm-ostree status --pending-exit-77 -b --json"
         LOCAL_IMAGE_REF=$($STATUS_COMMAND | jq -r '.deployments[0]["container-image-reference"]')
 
-        if ! $STATUS_COMMAND >/dev/null || [[ "$LOCAL_IMAGE_REF" -eq "null" ]]; then
+        if ! $STATUS_COMMAND >/dev/null || [[ "$LOCAL_IMAGE_REF" == "null" ]]; then
             # if jq failed to get the variable, or rpm-ostree had a nonzero exit code, return
             return
         fi
@@ -20,10 +20,9 @@ check_for_rebase() {
         IMAGE_TAG=$(jq -r '."image-tag"' < "$IMAGE_REF_FILE")
 
         if [[ "$LOCAL_IMAGE_REF_UNTAGGED" != "$IMAGE_REF" ]]; then
-            if [[ "$LOCAL_IMAGE_PREFIX" -eq "ostree-unverified-image" ]]; then
+            if [[ "$LOCAL_IMAGE_PREFIX" == "ostree-unverified-image" ]]; then
                 # preserve image tags
                 IMAGE_TAG="$LOCAL_IMAGE_REF_TAG"
-
             fi
             /usr/bin/rpm-ostree rebase "$IMAGE_REF:$IMAGE_TAG"
             exit
