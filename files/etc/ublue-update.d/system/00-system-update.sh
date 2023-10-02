@@ -5,7 +5,7 @@ check_for_rebase() {
     if [ -f "$IMAGE_REF_FILE" ]; then
 
         STATUS_COMMAND="rpm-ostree status --pending-exit-77 -b --json"
-        LOCAL_IMAGE_REF=$($STATUS_COMMAND | jq -r '.deployments[0]["container-image-reference"]')
+        LOCAL_IMAGE_REF=$($STATUS_COMMAND | jq -r '.deployments[0]["container-image-reference"]' | sed 's@ostree-unverified-registry:@ostree-unverified-image:docker://@g')
 
         if ! $STATUS_COMMAND >/dev/null || [[ "$LOCAL_IMAGE_REF" == "null" ]]; then
             # if jq failed to get the variable, or rpm-ostree had a nonzero exit code, return
