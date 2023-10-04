@@ -109,12 +109,9 @@ def run_update_scripts(root_dir: str):
                 )
                 if out.returncode != 0:
                     log.error(
-                        f"""{full_path} returned error code: {out.returncode}
-
-                        Program output:
-                        {out.stdout.decode("utf-8")}
-                        """,
+                        f"{full_path} returned error code: {out.returncode}, program output below:"
                     )
+                    log.error(out.stdout.decode('utf-8'))
                     notify(
                         "System Updater",
                         f"Error in update script: {file}, check logs for more info",
@@ -165,7 +162,7 @@ def run_updates(args):
                 """
             )
 
-            subprocess.run(
+            out = subprocess.run(
                 [
                     "/usr/bin/sudo",
                     "-u",
@@ -178,6 +175,7 @@ def run_updates(args):
                 ],
                 capture_output=True,
             )
+            log.debug(out.stdout.decode('utf-8'))
         notify(
             "System Updater",
             "System update complete, reboot for changes to take effect",
