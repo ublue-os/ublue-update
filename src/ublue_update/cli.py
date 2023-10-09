@@ -72,23 +72,9 @@ def ask_for_updates():
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
         run_updates(cli_args)
 
-
-def check_for_updates() -> bool:
-    """Tracks whether any updates are available"""
-    update_available: bool = False
-    if system_update_available:
-        update_available = True
-    if update_available:
-        return True
-    log.info("No updates are available.")
-    return False
-
-
-def hardware_inhibitor_checks_failed(
-    hardware_checks_failed: bool, failures: list, hardware_check: bool
-):
+def hardware_inhibitor_checks_failed(failures: list, hardware_check: bool):
     # ask if an update can be performed through dbus notifications
-    if check_for_updates() and not hardware_check:
+    if system_update_available and not hardware_check:
         log.info("Harware checks failed, but update is available")
         ask_for_updates()
     # notify systemd that the checks have failed,
@@ -209,6 +195,7 @@ log = logging.getLogger(__name__)
 cli_args = None
 system_update_available: bool = False
 
+
 def main():
 
     # setup argparse
@@ -245,12 +232,13 @@ def main():
     if cli_args.wait:
         transaction_wait()
         os._exit(0)
+
     system_update_available = system_update_check()
+
     if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
             hardware_inhibitor_checks_failed(
-                hardware_checks_failed,
                 failures,
                 cli_args.check,
             )
@@ -258,8 +246,7 @@ def main():
             os._exit(0)
 
     if cli_args.updatecheck:
-        update_available = check_for_updates()
-        if not update_available:
+        if not system_update_available:
             raise Exception("Update not available")
         os._exit(0)
 
