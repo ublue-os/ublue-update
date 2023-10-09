@@ -3,7 +3,10 @@ import subprocess
 import logging
 import argparse
 
-from ublue_update.update_checks.system import system_update_check
+from ublue_update.update_checks.system import (
+    system_update_check,
+    pending_deployment_check,
+)
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
@@ -70,7 +73,7 @@ def ask_for_updates():
         run_updates(cli_args)
 
 
-def check_for_updates(checks_failed: bool) -> bool:
+def check_for_updates() -> bool:
     """Tracks whether any updates are available"""
     update_available: bool = False
     system_update_available: bool = False
@@ -87,7 +90,7 @@ def hardware_inhibitor_checks_failed(
     hardware_checks_failed: bool, failures: list, hardware_check: bool
 ):
     # ask if an update can be performed through dbus notifications
-    if check_for_updates(hardware_checks_failed) and not hardware_check:
+    if check_for_updates() and not hardware_check:
         log.info("Harware checks failed, but update is available")
         ask_for_updates()
     # notify systemd that the checks have failed,
@@ -176,10 +179,11 @@ def run_updates(args):
                 capture_output=True,
             )
             log.debug(out.stdout.decode("utf-8"))
-        notify(
-            "System Updater",
-            "System update complete, reboot for changes to take effect",
-        )
+        if pending_deployment_check():
+            notify(
+                "System Updater",
+                "System update complete, reboot for changes to take effect",
+            )
         log.info("System update complete")
     else:
         if args.system:
@@ -252,7 +256,7 @@ def main():
             os._exit(0)
 
     if cli_args.updatecheck:
-        update_available = check_for_updates(False)
+        update_available = check_for_updates()
         if not update_available:
             raise Exception("Update not available")
         os._exit(0)
