@@ -180,11 +180,14 @@ def run_updates(args):
             )
             log.debug(out.stdout.decode("utf-8"))
         if pending_deployment_check():
-            notify(
+            out = notify(
                 "System Updater",
-                "System update complete, reboot for changes to take effect",
+                "System update complete, pending changes will take effect after reboot. Reboot now?",
+                ["universal-blue-update-reboot=Reboot Now"],
             )
-        log.info("System update complete")
+            # if the user has confirmed the reboot
+            if "universal-blue-update-reboot" in out.stdout.decode("utf-8"):
+                subprocess.run(["systemctl", "reboot"])
     else:
         if args.system:
             raise Exception(
@@ -205,7 +208,6 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 cli_args = None
-
 
 def main():
 
