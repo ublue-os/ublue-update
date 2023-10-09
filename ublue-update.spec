@@ -48,6 +48,10 @@ black src
 flake8 src
 shellcheck files/etc/%{NAME}.d/user/*.sh
 shellcheck files/etc/%{NAME}.d/system/*.sh
+black files/etc/%{NAME}.d/system/*.py
+black files/etc/%{NAME}.d/user/*.py
+flake8 files/etc/%{NAME}.d/system/*.py
+flake8 files/etc/%{NAME}.d/user/*.py
 %pyproject_wheel
 
 %install

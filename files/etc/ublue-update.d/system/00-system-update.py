@@ -8,7 +8,7 @@ import os
 
 def check_for_rebase():
     # initialize variables
-    image_default_ref = []
+    default_image_ref = []
     current_image_ref = []
     default_image_tag = ""
     image_tag = ""
@@ -37,7 +37,9 @@ def check_for_rebase():
     try:
         current_image_ref = (
             loads(status_out.stdout)["deployments"][0]["container-image-reference"]
-            .replace("ostree-unverified-registry:", "ostree-unverified-image:docker://") # replace shorthand
+            .replace(
+                "ostree-unverified-registry:", "ostree-unverified-image:docker://"
+            )  # replace shorthand
             .split(":")
         )
         if current_image_ref == default_image_ref:
@@ -47,7 +49,7 @@ def check_for_rebase():
         print(status_out.stdout.decode("utf-8"))
         return False, ""
 
-    try: # preserve image tag when rebasing unsigned
+    try:  # preserve image tag when rebasing unsigned
         if current_image_ref[2] == default_image_ref[2]:
             image_tag = current_image_ref[3]
     except KeyError:
@@ -67,15 +69,15 @@ if __name__ == "__main__":
         rebase_cmd = ["rpm-ostree", "rebase", image_ref]
         rebase_out = run(rebase_cmd, capture_output=True)
         if rebase_out.returncode == 0:
-            os._exit(0) # rebase sucessful
+            os._exit(0)  # rebase sucessful
         else:
             print("rebase failed!, command output:")
             print(rebase_out.stdout.decode("utf-8"))
     update_cmd = ["rpm-ostree", "upgrade"]
     update_out = run(update_cmd, capture_output=True)
     if update_out.returncode != 0:
-        print(f"rpm-ostree upgrade returned code {update_out.returncode}, program output:")
+        print(
+            f"rpm-ostree upgrade returned code {update_out.returncode}, program output:"
+        )
         print(update_out.stdout.decode("utf-8"))
         os._exit(update_out.returncode)
-
-
