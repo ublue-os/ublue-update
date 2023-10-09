@@ -76,8 +76,6 @@ def ask_for_updates():
 def check_for_updates() -> bool:
     """Tracks whether any updates are available"""
     update_available: bool = False
-    system_update_available: bool = False
-    system_update_available = system_update_check()
     if system_update_available:
         update_available = True
     if update_available:
@@ -180,7 +178,7 @@ def run_updates(args):
             )
             log.debug(out.stdout.decode("utf-8"))
         log.info("System update complete")
-        if pending_deployment_check():
+        if pending_deployment_check() and system_update_available:
             out = notify(
                 "System Updater",
                 "System update complete, pending changes will take effect after reboot. Reboot now?",
@@ -209,6 +207,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 cli_args = None
+system_update_available: bool = False
 
 def main():
 
@@ -246,7 +245,7 @@ def main():
     if cli_args.wait:
         transaction_wait()
         os._exit(0)
-
+    system_update_available = system_update_check()
     if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
