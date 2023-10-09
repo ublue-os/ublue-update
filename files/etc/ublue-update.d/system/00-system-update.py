@@ -56,7 +56,7 @@ def check_for_rebase():
         print("unable to get image tag from current deployment!")
         image_tag = default_image_tag
 
-    return True, f"{image_ref[0]}:{image_ref[1]}:{image_ref[2]}:{image_tag}"
+    return True, f"{default_image_ref[0]}:{default_image_ref[1]}:{default_image_ref[2]}:{image_tag}"
 
 
 if __name__ == "__main__":
