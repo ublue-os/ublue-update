@@ -179,6 +179,7 @@ def run_updates(args):
                 capture_output=True,
             )
             log.debug(out.stdout.decode("utf-8"))
+        log.info("System update complete")
         if pending_deployment_check():
             out = notify(
                 "System Updater",
