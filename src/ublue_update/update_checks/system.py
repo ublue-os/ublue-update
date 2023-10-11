@@ -18,7 +18,7 @@ def skopeo_inspect(latest_image: str):
 
 def system_update_check():
     """Pull deployment status via rpm-ostree"""
-    rpm_ostree_status = ["rpm-ostree", "status", "--json", "--booted"]
+    rpm_ostree_status = ["rpm-ostree", "status", "--json"]
     status = run(rpm_ostree_status, stdout=PIPE).stdout
     """Parse installation digest and image"""
     try:
