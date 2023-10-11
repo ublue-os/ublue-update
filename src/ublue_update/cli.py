@@ -3,7 +3,10 @@ import subprocess
 import logging
 import argparse
 
-from ublue_update.update_checks.system import system_update_check
+from ublue_update.update_checks.system import (
+    system_update_check,
+    pending_deployment_check,
+)
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.config import load_value
@@ -69,25 +72,9 @@ def ask_for_updates():
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
         run_updates(cli_args)
 
-
-def check_for_updates(checks_failed: bool) -> bool:
-    """Tracks whether any updates are available"""
-    update_available: bool = False
-    system_update_available: bool = False
-    system_update_available = system_update_check()
-    if system_update_available:
-        update_available = True
-    if update_available:
-        return True
-    log.info("No updates are available.")
-    return False
-
-
-def hardware_inhibitor_checks_failed(
-    hardware_checks_failed: bool, failures: list, hardware_check: bool
-):
+def hardware_inhibitor_checks_failed(failures: list, hardware_check: bool):
     # ask if an update can be performed through dbus notifications
-    if check_for_updates(hardware_checks_failed) and not hardware_check:
+    if system_update_available and not hardware_check:
         log.info("Harware checks failed, but update is available")
         ask_for_updates()
     # notify systemd that the checks have failed,
@@ -176,11 +163,16 @@ def run_updates(args):
                 capture_output=True,
             )
             log.debug(out.stdout.decode("utf-8"))
-        notify(
-            "System Updater",
-            "System update complete, reboot for changes to take effect",
-        )
         log.info("System update complete")
+        if pending_deployment_check() and system_update_available:
+            out = notify(
+                "System Updater",
+                "System update complete, pending changes will take effect after reboot. Reboot now?",
+                ["universal-blue-update-reboot=Reboot Now"],
+            )
+            # if the user has confirmed the reboot
+            if "universal-blue-update-reboot" in out.stdout.decode("utf-8"):
+                subprocess.run(["systemctl", "reboot"])
     else:
         if args.system:
             raise Exception(
@@ -201,6 +193,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 cli_args = None
+system_update_available: bool = False
 
 
 def main():
@@ -240,11 +233,12 @@ def main():
         transaction_wait()
         os._exit(0)
 
+    system_update_available = system_update_check()
+
     if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
             hardware_inhibitor_checks_failed(
-                hardware_checks_failed,
                 failures,
                 cli_args.check,
             )
@@ -252,8 +246,7 @@ def main():
             os._exit(0)
 
     if cli_args.updatecheck:
-        update_available = check_for_updates(False)
-        if not update_available:
+        if not system_update_available:
             raise Exception("Update not available")
         os._exit(0)
 
