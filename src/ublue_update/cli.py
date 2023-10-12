@@ -110,7 +110,7 @@ def run_update_scripts(root_dir: str):
                 log.info(f"could not execute file {full_path}")
 
 
-def run_updates(system):
+def run_updates(system, system_update_available):
     process_uid = os.getuid()
     filelock_path = "/run/ublue-update.lock"
     if process_uid != 0:
@@ -242,7 +242,7 @@ def main():
                 failures,
                 cli_args.check,
                 system_update_available,
-                args.system,
+                cli_args.system,
             )
         if cli_args.check:
             os._exit(0)
