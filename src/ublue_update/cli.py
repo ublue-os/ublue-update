@@ -74,7 +74,7 @@ def ask_for_updates(system):
 
 
 def hardware_inhibitor_checks_failed(
-    failures: list, hardware_check: bool, system_update_available, system
+    failures: list, hardware_check: bool, system_update_available: bool, system: bool
 ):
     # ask if an update can be performed through dbus notifications
     if system_update_available and not hardware_check:
@@ -195,7 +195,6 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-
 def main():
 
     # setup argparse
@@ -232,9 +231,7 @@ def main():
     if cli_args.wait:
         transaction_wait()
         os._exit(0)
-
     system_update_available: bool = system_update_check()
-
     if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
