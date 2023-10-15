@@ -40,9 +40,9 @@ def check_for_rebase():
             .replace(
                 "ostree-unverified-registry:", "ostree-unverified-image:docker://"
             )  # replace shorthand
-            .split(":")[:-1]
+            .split(":")
         )
-        if current_image_ref == default_image_ref:
+        if current_image_ref[:-1] == default_image_ref:
             return False, ""
     except (JSONDecodeError, KeyError):
         print("unable to parse JSON output")
