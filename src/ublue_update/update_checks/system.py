@@ -1,7 +1,7 @@
 from json import loads
 from json.decoder import JSONDecodeError
 from logging import getLogger
-from subprocess import PIPE, run
+from subprocess import run
 
 """Setup logging"""
 log = getLogger(__name__)
@@ -10,7 +10,7 @@ log = getLogger(__name__)
 def skopeo_inspect(latest_image: str):
     """Inspect latest image with Skopeo"""
     skopeo_inspect = ["skopeo", "inspect", latest_image]
-    inspect = run(skopeo_inspect, stdout=PIPE).stdout
+    inspect = run(skopeo_inspect, capture_output=True).stdout
     """Parse and return digest"""
     digest = loads(inspect)["Digest"]
     return digest
@@ -19,7 +19,7 @@ def skopeo_inspect(latest_image: str):
 def system_update_check():
     """Pull deployment status via rpm-ostree"""
     rpm_ostree_status = ["rpm-ostree", "status", "--json"]
-    status = run(rpm_ostree_status, stdout=PIPE).stdout
+    status = run(rpm_ostree_status, capture_output=True).stdout
     """Parse installation digest and image"""
     try:
         deployments = loads(status)["deployments"][0]
