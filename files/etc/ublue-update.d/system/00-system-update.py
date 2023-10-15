@@ -49,12 +49,12 @@ def check_for_rebase():
         print(status_out.stdout.decode("utf-8"))
         return False, ""
 
+    image_tag = default_image_tag
     try:  # preserve image tag when rebasing unsigned
         if current_image_ref[2] == default_image_ref[2]:
             image_tag = current_image_ref[3]
     except KeyError:
         print("unable to get image tag from current deployment!")
-        image_tag = default_image_tag
 
     return True, f"{default_image_ref[0]}:{default_image_ref[1]}:{default_image_ref[2]}:{image_tag}"
 
