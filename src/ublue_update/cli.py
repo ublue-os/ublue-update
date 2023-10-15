@@ -79,7 +79,7 @@ def hardware_inhibitor_checks_failed(
     # ask if an update can be performed through dbus notifications
     if system_update_available and not hardware_check:
         log.info("Harware checks failed, but update is available")
-        ask_for_updates()
+        ask_for_updates(system)
     # notify systemd that the checks have failed,
     # systemd will try to rerun the unit
     exception_log = "\n - ".join(failures)
