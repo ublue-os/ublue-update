@@ -44,7 +44,7 @@ def check_for_rebase():
         )
         if current_image_ref[:-1] == default_image_ref:
             return False, ""
-    except (JSONDecodeError, KeyError, IndexEror):
+    except (JSONDecodeError, KeyError, IndexError):
         print("unable to parse JSON output")
         print(status_out.stdout.decode("utf-8"))
         return False, ""
@@ -53,7 +53,7 @@ def check_for_rebase():
     try:  # preserve image tag when rebasing unsigned
         if current_image_ref[2] == default_image_ref[2]:
             image_tag = current_image_ref[3]
-    except IndexEror:
+    except IndexError:
         print("unable to get image tag from current deployment!")
 
     return (
