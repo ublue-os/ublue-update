@@ -3,7 +3,6 @@ from json.decoder import JSONDecodeError
 from logging import getLogger
 from subprocess import run
 
-
 """Setup logging"""
 log = getLogger(__name__)
 
@@ -24,13 +23,13 @@ def system_update_check():
     """Parse installation digest and image"""
     try:
         deployments = loads(status)["deployments"][0]
+        installation_digest = deployments["base-commit-meta"]["ostree.manifest-digest"]
+        current_image = deployments["container-image-reference"].split(":", 1)
     except (JSONDecodeError, KeyError):
         log.error(
             "update check failed, system isn't managed by rpm-ostree container native"
         )
         return False
-    installation_digest = deployments["base-commit-meta"]["ostree.manifest-digest"]
-    current_image = deployments["container-image-reference"].split(":", 1)
 
     """Dissect current image to form URL to latest image"""
     protocol = "docker://"
@@ -48,7 +47,14 @@ def system_update_check():
         """Digests match, so no updates"""
         log.info("No system update available.")
         return False
-    else:
-        """Digests do not match, so updates are available"""
-        log.info("System update available.")
+    """Digests do not match, so updates are available"""
+    log.info("System update available.")
+    return True
+
+
+def pending_deployment_check():
+    rpm_ostree_cmd = ["rpm-ostree", "status", "--pending-exit-77"]
+    status = run(rpm_ostree_cmd, capture_output=True)
+    if status.returncode == 77:  # no pending deployment
         return True
+    return False
