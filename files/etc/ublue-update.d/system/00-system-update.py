@@ -40,7 +40,7 @@ def check_for_rebase():
             .replace(
                 "ostree-unverified-registry:", "ostree-unverified-image:docker://"
             )  # replace shorthand
-            .split(":").pop()
+            .split(":")[:-1]
         )
         if current_image_ref == default_image_ref:
             return False, ""
@@ -56,7 +56,10 @@ def check_for_rebase():
     except KeyError:
         print("unable to get image tag from current deployment!")
 
-    return True, f"{default_image_ref[0]}:{default_image_ref[1]}:{default_image_ref[2]}:{image_tag}"
+    return (
+        True,
+        f"{default_image_ref[0]}:{default_image_ref[1]}:{default_image_ref[2]}:{image_tag}",
+    )
 
 
 if __name__ == "__main__":
@@ -67,6 +70,7 @@ if __name__ == "__main__":
     rebase, image_ref = check_for_rebase()
     if rebase:
         rebase_cmd = ["rpm-ostree", "rebase", image_ref]
+        print(image_ref)
         rebase_out = run(rebase_cmd, capture_output=True)
         if rebase_out.returncode == 0:
             os._exit(0)  # rebase sucessful
