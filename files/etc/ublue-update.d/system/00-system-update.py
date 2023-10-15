@@ -40,7 +40,7 @@ def check_for_rebase():
             .replace(
                 "ostree-unverified-registry:", "ostree-unverified-image:docker://"
             )  # replace shorthand
-            .split(":")
+            .split(":").pop()
         )
         if current_image_ref == default_image_ref:
             return False, ""
