@@ -31,7 +31,6 @@ BuildRequires: python-wheel
 Requires:      skopeo
 Requires:      libnotify
 Requires:      sudo
-Requires:      jq
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 
