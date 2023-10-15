@@ -48,6 +48,8 @@ black src
 flake8 src
 shellcheck files/etc/%{NAME}.d/user/*.sh
 shellcheck files/etc/%{NAME}.d/system/*.sh
+black files/etc/%{NAME}.d/system/*.py
+flake8 files/etc/%{NAME}.d/system/*.py
 %pyproject_wheel
 
 %install
@@ -67,8 +69,8 @@ cp -rp files/etc files/usr %{buildroot}
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.timer
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system-preset/00-%{NAME}.preset
 %attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.toml
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/user/*.sh
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/system/*.sh
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/user/*
+%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/system/*
 %attr(0644,root,root) %{_exec_prefix}/etc/polkit-1/rules.d/%{NAME}.rules
 
 %changelog
