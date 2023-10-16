@@ -167,7 +167,7 @@ def run_updates(system, system_update_available):
             )
             log.debug(out.stdout.decode("utf-8"))
         log.info("System update complete")
-        if pending_deployment_check() and system_update_available:
+        if pending_deployment_check() and system_update_available and dbus_notify:
             out = notify(
                 "System Updater",
                 "System update complete, pending changes will take effect after reboot. Reboot now?",
