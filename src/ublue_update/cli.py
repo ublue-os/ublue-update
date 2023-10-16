@@ -57,7 +57,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     return out
 
 
-def ask_for_updates():
+def ask_for_updates(system):
     if not dbus_notify:
         return
     out = notify(
@@ -70,13 +70,16 @@ def ask_for_updates():
         return
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
-        run_updates(cli_args)
+        run_updates(system, True)
 
-def hardware_inhibitor_checks_failed(failures: list, hardware_check: bool):
+
+def hardware_inhibitor_checks_failed(
+    failures: list, hardware_check: bool, system_update_available: bool, system: bool
+):
     # ask if an update can be performed through dbus notifications
     if system_update_available and not hardware_check:
         log.info("Harware checks failed, but update is available")
-        ask_for_updates()
+        ask_for_updates(system)
     # notify systemd that the checks have failed,
     # systemd will try to rerun the unit
     exception_log = "\n - ".join(failures)
@@ -107,7 +110,7 @@ def run_update_scripts(root_dir: str):
                 log.info(f"could not execute file {full_path}")
 
 
-def run_updates(args):
+def run_updates(system, system_update_available):
     process_uid = os.getuid()
     filelock_path = "/run/ublue-update.lock"
     if process_uid != 0:
@@ -133,7 +136,7 @@ def run_updates(args):
         except KeyError as e:
             log.error("failed to get active logind session info", e)
 
-        if args.system:
+        if system:
             users = []
 
         run_update_scripts(f"{root_dir}/system/")
@@ -174,7 +177,7 @@ def run_updates(args):
             if "universal-blue-update-reboot" in out.stdout.decode("utf-8"):
                 subprocess.run(["systemctl", "reboot"])
     else:
-        if args.system:
+        if system:
             raise Exception(
                 "ublue-update needs to be run as root to perform system updates!"
             )
@@ -191,9 +194,6 @@ logging.basicConfig(
     level=os.getenv("UBLUE_LOG", default=logging.INFO),
 )
 log = logging.getLogger(__name__)
-
-cli_args = None
-system_update_available: bool = False
 
 
 def main():
@@ -232,15 +232,15 @@ def main():
     if cli_args.wait:
         transaction_wait()
         os._exit(0)
-
-    system_update_available = system_update_check()
-
+    system_update_available: bool = system_update_check()
     if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()
         if hardware_checks_failed:
             hardware_inhibitor_checks_failed(
                 failures,
                 cli_args.check,
+                system_update_available,
+                cli_args.system,
             )
         if cli_args.check:
             os._exit(0)
@@ -252,4 +252,4 @@ def main():
 
     # system checks passed
     log.info("System passed all update checks")
-    run_updates(cli_args)
+    run_updates(cli_args.system, system_update_available)
