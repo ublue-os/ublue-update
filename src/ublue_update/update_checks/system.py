@@ -35,6 +35,9 @@ def system_update_check():
     protocol = "docker://"
     url = current_image[1]
 
+    if url == "oci:/var/ublue-os/image":
+        return True
+
     """Add protocol if URL doesn't contain it"""
     if protocol not in url:
         url = protocol + url
