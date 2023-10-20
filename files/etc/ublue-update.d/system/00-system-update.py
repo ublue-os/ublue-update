@@ -42,6 +42,7 @@ def check_for_rebase():
             )  # replace shorthand
             .split(":")
         )
+         # if the same ref as image-info.json then skip rebase
         if current_image_ref[:-1] == default_image_ref:
             return False, ""
     except (JSONDecodeError, KeyError, IndexError):
@@ -50,7 +51,21 @@ def check_for_rebase():
         return False, ""
 
     image_tag = default_image_tag
-    try:  # preserve image tag when rebasing unsigned
+    try:
+        # if we are on an offline ISO installation
+        # rebase to image-info.json defaults
+        if current_image_ref[2] == "/var/ublue-os/image":
+            return (
+                True,
+                f"{default_image_ref[0]}:{default_image_ref[1]}:{default_image_ref[2]}:{default_image_tag}",
+            )
+
+        # if current installation doesn't match image-info.json
+        # skip rebase to be safe
+        if current_image_ref[2] != default_image_ref[2]:
+            return False, ""
+
+        # We want to rebase so preserve image tag when rebasing unsigned
         if current_image_ref[2] == default_image_ref[2]:
             image_tag = current_image_ref[3]
     except IndexError:
