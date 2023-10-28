@@ -29,7 +29,7 @@ def check_battery_status() -> dict:
     battery_pass: bool = True
     if battery_status is not None:
         battery_pass = (
-            battery_status.percent > min_battery_percent or battery_status.power_plugged
+            battery_status.percent >= min_battery_percent or battery_status.power_plugged
         )
     return {
         "passed": battery_pass,
