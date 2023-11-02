@@ -25,7 +25,7 @@ def check_for_rebase():
         return False, ""
 
     # Branch away from the default tag when one is set
-    branch_file = Path("/etc/ublue-update/branch")
+    branch_file = Path("/var/ublue-update/branch")
     if branch_file.exists():
         with branch_file.open() as f:
             branch = f.readline()
