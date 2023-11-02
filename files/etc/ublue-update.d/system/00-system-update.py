@@ -3,6 +3,8 @@
 from subprocess import run
 from json import loads, load
 from json.decoder import JSONDecodeError
+from pathlib import Path
+
 import os
 
 
@@ -21,6 +23,18 @@ def check_for_rebase():
     except (FileNotFoundError, KeyError):
         print("uBlue image info file does not exist")
         return False, ""
+
+    # Branch away from the default tag when one is set
+    branch_file = Path("/etc/ublue-update/branch")
+    if branch_file.exists():
+        with branch_file.open() as f:
+            branch = f.readline()
+            branch_file.unlink()
+            if branch:
+                return (
+                    True,
+                    f"{default_image_ref[0]}:{default_image_ref[1]}:{default_image_ref[2]}:{branch}",
+                )
 
     status_cmd = [
         "rpm-ostree",
