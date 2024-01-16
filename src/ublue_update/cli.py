@@ -85,6 +85,7 @@ def hardware_inhibitor_checks_failed(
     exception_log = "\n - ".join(failures)
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
+
 def run_update_script(script_path: str):
     executable = os.access(script_path, os.X_OK)
     if executable:
@@ -104,6 +105,7 @@ def run_update_script(script_path: str):
             )
     else:
         log.info(f"could not execute file {script_path}")
+
 
 def run_update_scripts(root_dir: str, override_dir: str):
     # get a list of all the files in the override dir
@@ -214,7 +216,6 @@ log = logging.getLogger(__name__)
 
 
 def main():
-
     # setup argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(

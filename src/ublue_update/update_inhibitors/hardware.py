@@ -29,7 +29,8 @@ def check_battery_status() -> dict:
     battery_pass: bool = True
     if battery_status is not None:
         battery_pass = (
-            battery_status.percent >= min_battery_percent or battery_status.power_plugged
+            battery_status.percent >= min_battery_percent
+            or battery_status.power_plugged
         )
     return {
         "passed": battery_pass,
@@ -56,7 +57,6 @@ def check_mem_percentage() -> dict:
 
 
 def check_hardware_inhibitors() -> bool:
-
     hardware_inhibitors = [
         check_network_status(),
         check_battery_status(),
