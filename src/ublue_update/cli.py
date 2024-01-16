@@ -85,29 +85,45 @@ def hardware_inhibitor_checks_failed(
     exception_log = "\n - ".join(failures)
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
+def run_update_script(script_path: str):
+    executable = os.access(script_path, os.X_OK)
+    if executable:
+        log.info(f"Running update script: {script_path}")
+        out = subprocess.run(
+            [script_path],
+            capture_output=True,
+        )
+        if out.returncode != 0:
+            log.error(
+                f"{full_path} returned error code: {out.returncode}, program output:"  # noqa: E501
+            )
+            log.error(out.stdout.decode("utf-8"))
+            notify(
+                "System Updater",
+                f"Error in update script: {script_path}, check logs for more info",
+            )
+    else:
+        log.info(f"could not execute file {script_path}")
 
-def run_update_scripts(root_dir: str):
+def run_update_scripts(root_dir: str, override_dir: str):
+    # get a list of all the files in the override dir
+    override_files = []
+    for root, dirs, files in os.walk(override_dir):
+        for file in files:
+            override_files.append(file)
+
     for root, dirs, files in os.walk(root_dir):
         for file in files:
-            full_path = root_dir + str(file)
-            executable = os.access(full_path, os.X_OK)
-            if executable:
-                log.info(f"Running update script: {full_path}")
-                out = subprocess.run(
-                    [full_path],
-                    capture_output=True,
-                )
-                if out.returncode != 0:
-                    log.error(
-                        f"{full_path} returned error code: {out.returncode}, program output:"  # noqa: E501
-                    )
-                    log.error(out.stdout.decode("utf-8"))
-                    notify(
-                        "System Updater",
-                        f"Error in update script: {file}, check logs for more info",
-                    )
+            # check if a script overrides the update script in the root dir
+            if file in override_files:
+                run_update_script(override_dir + str(file))
+                # remove from the list to prevent running scripts again
+                override_files.remove(file)
             else:
-                log.info(f"could not execute file {full_path}")
+                run_update_script(root_dir + str(file))
+    # run the remaining scripts in the override dir
+    for file in override_files:
+        run_update_script(override_dir + str(file))
 
 
 def run_updates(system, system_update_available):
@@ -120,7 +136,8 @@ def run_updates(system, system_update_available):
     fd = acquire_lock(filelock_path)
     if fd is None:
         raise Exception("updates are already running for this user")
-    root_dir = "/etc/ublue-update.d"
+    root_dir = "/usr/lib/ublue-update.d"
+    override_dir = "/etc/ublue-update.d"
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
@@ -139,7 +156,7 @@ def run_updates(system, system_update_available):
         if system:
             users = []
 
-        run_update_scripts(f"{root_dir}/system/")
+        run_update_scripts(f"{root_dir}/system/", f"{override_dir}/system/")
         for user in users:
             try:
                 xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
@@ -181,7 +198,7 @@ def run_updates(system, system_update_available):
             raise Exception(
                 "ublue-update needs to be run as root to perform system updates!"
             )
-        run_update_scripts(f"{root_dir}/user/")
+        run_update_scripts(f"{root_dir}/user/", f"{override_dir}/user/")
     release_lock(fd)
     os._exit(0)
 
