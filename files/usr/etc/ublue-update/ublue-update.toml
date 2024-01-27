@@ -4,4 +4,3 @@
     max_mem_percent = 90.0
 [notify]
     dbus_notify = true
-

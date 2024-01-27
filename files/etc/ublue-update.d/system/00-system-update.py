@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 from subprocess import run
 from json import loads, load
@@ -106,11 +106,11 @@ if __name__ == "__main__":
         else:
             print("rebase failed!, command output:")
             print(rebase_out.stdout.decode("utf-8"))
-    update_cmd = ["rpm-ostree", "upgrade"]
+    update_cmd = ["/usr/bin/topgrade", "--config", "/etc/ublue-update/topgrade-system.toml"]
     update_out = run(update_cmd, capture_output=True)
     if update_out.returncode != 0:
         print(
-            f"rpm-ostree upgrade returned code {update_out.returncode}, program output:"
+            f"topgrade returned code {update_out.returncode}, program output:"
         )
         print(update_out.stdout.decode("utf-8"))
         os._exit(update_out.returncode)

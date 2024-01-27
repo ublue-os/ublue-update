@@ -18,7 +18,6 @@ Supplements:   rpm-ostree flatpak
 BuildRequires: make
 BuildRequires: systemd-rpm-macros
 BuildRequires: black
-BuildRequires: ShellCheck
 BuildRequires: python-flake8
 BuildRequires: python-build
 BuildRequires: python-setuptools
@@ -45,8 +44,6 @@ ls
 ls src
 black src
 flake8 src
-shellcheck files/etc/%{NAME}.d/user/*.sh
-shellcheck files/etc/%{NAME}.d/system/*.sh
 black files/etc/%{NAME}.d/system/*.py
 flake8 files/etc/%{NAME}.d/system/*.py
 %pyproject_wheel
@@ -55,6 +52,13 @@ flake8 files/etc/%{NAME}.d/system/*.py
 %pyproject_install
 %pyproject_save_files ublue_update
 cp -rp files/etc files/usr %{buildroot}
+
+%pre
+if [ ! -x /usr/bin/topgrade ]
+then
+    echo "Topgrade not installed. Please install Topgrade (https://github.com/topgrade-rs/topgrade) to use %{NAME}."
+    exit 1
+fi
 
 %post
 %systemd_post %{NAME}.timer
@@ -67,8 +71,7 @@ cp -rp files/etc files/usr %{buildroot}
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.service
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.timer
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system-preset/00-%{NAME}.preset
-%attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/%{NAME}.toml
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/user/*
+%attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/*.toml
 %attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/system/*
 %attr(0644,root,root) %{_exec_prefix}/etc/polkit-1/rules.d/%{NAME}.rules
 

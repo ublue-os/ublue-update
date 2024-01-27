@@ -147,9 +147,7 @@ def run_updates(system, system_update_available):
                 log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
                 break
             log.info(
-                f"""Running update for user: '{user['Name']}',
-                update script directory: '{root_dir}/user'
-                """
+                f"""Running update for user: '{user['Name']}'"""
             )
 
             out = subprocess.run(
@@ -160,8 +158,9 @@ def run_updates(system, system_update_available):
                     "DISPLAY=:0",
                     f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
                     f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
-                    "/usr/bin/ublue-update",
-                    "-f",
+                    "/usr/bin/topgrade",
+                    "--config",
+                    "/etc/ublue-update/topgrade-user.toml",
                 ],
                 capture_output=True,
             )
@@ -181,7 +180,6 @@ def run_updates(system, system_update_available):
             raise Exception(
                 "ublue-update needs to be run as root to perform system updates!"
             )
-        run_update_scripts(f"{root_dir}/user/")
     release_lock(fd)
     os._exit(0)
 
