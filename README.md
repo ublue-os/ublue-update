@@ -1,6 +1,6 @@
 # Universal Blue Update
 
-Small update program written in python intended for use in Universal Blue, bundles [`topgrade`](https://github.com/topgrade-rs/topgrade) configs
+Small update program written in python intended for use in Universal Blue, uses [`topgrade`](https://github.com/topgrade-rs/topgrade) for executing updates
 
 Includes systemd timers and services for auto update
 
