@@ -44,14 +44,12 @@ ls
 ls src
 black src
 flake8 src
-black files/etc/%{NAME}.d/system/*.py
-flake8 files/etc/%{NAME}.d/system/*.py
 %pyproject_wheel
 
 %install
 %pyproject_install
 %pyproject_save_files ublue_update
-cp -rp files/etc files/usr %{buildroot}
+cp -rp files/usr %{buildroot}
 
 %pre
 if [ ! -x /usr/bin/topgrade ]
@@ -72,8 +70,8 @@ fi
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system/%{NAME}.timer
 %attr(0644,root,root) %{_exec_prefix}/lib/systemd/system-preset/00-%{NAME}.preset
 %attr(0644,root,root) %{_exec_prefix}/etc/%{NAME}/*.toml
-%attr(0755,root,root) %{_sysconfdir}/%{NAME}.d/system/*
-%attr(0644,root,root) %{_exec_prefix}/etc/polkit-1/rules.d/%{NAME}.rules
+%attr(0644,root,root) %{_datadir}/%{NAME}/*.toml
+%attr(0644,root,root) %{_datadir}/polkit-1/rules.d/%{NAME}.rules
 
 %changelog
 %autochangelog

@@ -1,6 +1,6 @@
 # Universal Blue Update
 
-Small update program written in python intended for use in Universal Blue, executes update scripts/tasks placed in `/etc/ublue-update.d` (make sure each script has exec perms)
+Small update program written in python intended for use in Universal Blue that uses [`topgrade`](https://github.com/topgrade-rs/topgrade) for executing updates.
 
 Includes systemd timers and services for auto update
 
@@ -75,20 +75,15 @@ $ journalctl -exu 'ublue-update.service'
 # Configuration
 
 ## Update Scripts
-Update scripts are separated into two directories inside of `/etc/ublue-update.d`
+Update scripts are separated into two files inside of `/usr/share/ublue-update`
 
-### `/etc/ublue-update.d/user`
+### `/usr/share/ublue-update/topgrade-system.toml`
+Topgrade config ran as root, handles rpm-ostree and flatpaks.
 
-Update scripts are ran as user. Scripts included:
-  - per-user flatpak update scripts (uninstalling unused deps and repairing flatpak install for maintenence)
-  - distrobox update script
-  - fleek update script
+### `/usr/share/ublue-update/topgrade-user.toml`
+Topgrade config ran as user, handles flatpaks and distrobox containers.
 
-### `/etc/ublue-update.d/system`
-
-Update scripts are ran as root, these updates are meant to be system-wide. Scripts included:
-  - OS update script (depends on [`rpm-ostree`](https://github.com/coreos/rpm-ostree))
-  - system-wide flatpak update scripts (uninstalling unused deps and repairing flatpak install for maintenence)
+See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuring these files.
 
 
 ## Location
