@@ -119,11 +119,18 @@ def run_updates(system, system_update_available):
             [
                 "/usr/bin/topgrade",
                 "--config",
-                "/usr/share/ublue-update/topgrade-system.toml"
+                "/usr/share/ublue-update/topgrade-system.toml",
             ],
             capture_output=True,
         )
         log.debug(out.stdout.decode("utf-8"))
+
+        if out.returncode != 0:
+            print(
+                f"topgrade returned code {out.returncode}, program output:"
+            )
+            print(out.stdout.decode("utf-8"))
+            os._exit(out.returncode)
 
         """Users"""
         for user in users:
