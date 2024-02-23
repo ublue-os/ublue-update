@@ -86,30 +86,6 @@ def hardware_inhibitor_checks_failed(
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
-def run_update_scripts(root_dir: str):
-    for root, dirs, files in os.walk(root_dir):
-        for file in files:
-            full_path = root_dir + str(file)
-            executable = os.access(full_path, os.X_OK)
-            if executable:
-                log.info(f"Running update script: {full_path}")
-                out = subprocess.run(
-                    [full_path],
-                    capture_output=True,
-                )
-                if out.returncode != 0:
-                    log.error(
-                        f"{full_path} returned error code: {out.returncode}, program output:"  # noqa: E501
-                    )
-                    log.error(out.stdout.decode("utf-8"))
-                    notify(
-                        "System Updater",
-                        f"Error in update script: {file}, check logs for more info",
-                    )
-            else:
-                log.info(f"could not execute file {full_path}")
-
-
 def run_updates(system, system_update_available):
     process_uid = os.getuid()
     filelock_path = "/run/ublue-update.lock"
@@ -120,7 +96,6 @@ def run_updates(system, system_update_available):
     fd = acquire_lock(filelock_path)
     if fd is None:
         raise Exception("updates are already running for this user")
-    root_dir = "/etc/ublue-update.d"
 
     """Wait on any existing transactions to complete before updating"""
     transaction_wait()
@@ -139,7 +114,25 @@ def run_updates(system, system_update_available):
         if system:
             users = []
 
-        run_update_scripts(f"{root_dir}/system/")
+        """System"""
+        out = subprocess.run(
+            [
+                "/usr/bin/topgrade",
+                "--config",
+                "/usr/share/ublue-update/topgrade-system.toml",
+            ],
+            capture_output=True,
+        )
+        log.debug(out.stdout.decode("utf-8"))
+
+        if out.returncode != 0:
+            print(
+                f"topgrade returned code {out.returncode}, program output:"
+            )
+            print(out.stdout.decode("utf-8"))
+            os._exit(out.returncode)
+
+        """Users"""
         for user in users:
             try:
                 xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
@@ -160,7 +153,7 @@ def run_updates(system, system_update_available):
                     f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
                     "/usr/bin/topgrade",
                     "--config",
-                    "/etc/ublue-update/topgrade-user.toml",
+                    "/usr/share/ublue-update/topgrade-user.toml",
                 ],
                 capture_output=True,
             )
