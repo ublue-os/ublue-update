@@ -1,6 +1,6 @@
 [misc]
-only = ["system", "flatpak"]
-ignore_failures = ["flatpak"]
+only = ["system", "flatpak", "distrobox"]
+ignore_failures = ["flatpak", "distrobox"]
 skip_notify = true
 assume_yes = true
 no_retry = true
@@ -8,3 +8,6 @@ no_self_update = true
 
 [linux]
 rpm_ostree = true
+
+[distrobox]
+use_root = true
