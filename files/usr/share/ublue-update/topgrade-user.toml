@@ -1,6 +1,6 @@
 [misc]
-only = ["flatpak", "distrobox"]
-ignore_failures = ["flatpak", "distrobox"]
+only = ["flatpak", "distrobox", "brew_formula"]
+ignore_failures = ["flatpak", "distrobox", "brew_formula"]
 skip_notify = true
 assume_yes = true
 no_retry = true
