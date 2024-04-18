@@ -38,6 +38,7 @@ class Config:
     min_battery_percent: Optional[float]
     max_cpu_load_percent: Optional[float]
     max_mem_percent: Optional[float]
+    custom_check_scripts: List[dict]
 
     def load_config(self, path=None):
         config_path = path or find_default_config_file()
@@ -51,6 +52,7 @@ class Config:
         self.min_battery_percent = load_value(config, "checks", "min_battery_percent")
         self.max_cpu_load_percent = load_value(config, "checks", "max_cpu_load_percent")
         self.max_mem_percent = load_value(config, "checks", "max_mem_percent")
+        self.custom_check_scripts = load_value(config, "checks", "scripts") or []
 
 
 cfg = Config()

@@ -107,6 +107,25 @@ See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuri
 
 * `network_not_metered`: if true, checks if the current network connection is not marked as metered
 
+### Section: `checks.scripts`
+
+In addition to the predefined checks above, it is also possible to implement
+custom conditions through user-provided scripts and their exit codes.
+Each entry in the `checks.scripts` array must specify the following settings:
+
+* `shell`: specifies the shell used to execute the custom script (e.g. `bash`)
+
+* `run`: specifies the script text to be run using the specified shell
+
+* `message`: an optional message that is shown when the check fails
+
+* `name`: an optional human-readable name for this check
+
+The custom script should use its exit code to indicate whether the updater should proceed
+(`exit code = 0`) or whether updates should be inhibited right now (any non-0 exit code).
+If `message` is not specified but the script has written text to `stdout`,
+that text will be used as the message.
+
 ### Section: `notify`
 
 * `dbus_notify`: enable graphical notifications via dbus
@@ -119,6 +138,35 @@ See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuri
     max_cpu_load_percent = 50.0 #     CPU Usage <= 50%?
     max_mem_percent = 90.0      #     RAM Usage <= 90%?
     network_not_metered = true  # Abort if network connection is metered
+
+    [[checks.scripts]]
+        name = "Example script that always fails"
+        shell = "bash"
+        run = "exit 1"
+        message = "Failure message - this message will always appear"
+
+    [[checks.scripts]]
+        name = "Example script that always succeeds"
+        shell = "bash"
+        run = "exit 0"
+        message = "Failure message - this message will never appear"
+
+    [[checks.scripts]]
+        name = "Example multiline script with custom message"
+        shell = "bash"
+        run = """
+echo "This is a custom message"
+exit 1
+"""
+
+    [[checks.scripts]]
+        name = "Python script"
+        shell = "python3"
+        run = """
+print("Python also works when installed")
+exit(1)
+"""
+
 [notify]
     dbus_notify = false         # Do not show notifications
 ```

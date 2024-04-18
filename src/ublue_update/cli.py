@@ -9,6 +9,7 @@ from ublue_update.update_checks.system import (
 )
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
+from ublue_update.update_inhibitors.custom import check_custom_inhibitors
 from ublue_update.config import cfg
 from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
 from ublue_update.filelock import acquire_lock, release_lock
@@ -73,12 +74,12 @@ def ask_for_updates(system):
         run_updates(system, True)
 
 
-def hardware_inhibitor_checks_failed(
+def inhibitor_checks_failed(
     failures: list, hardware_check: bool, system_update_available: bool, system: bool
 ):
     # ask if an update can be performed through dbus notifications
     if system_update_available and not hardware_check:
-        log.info("Harware checks failed, but update is available")
+        log.info("Precondition checks failed, but update is available")
         ask_for_updates(system)
     # notify systemd that the checks have failed,
     # systemd will try to rerun the unit
@@ -230,9 +231,14 @@ def main():
 
     system_update_available: bool = system_update_check()
     if not cli_args.force and not cli_args.updatecheck:
-        hardware_checks_failed, failures = check_hardware_inhibitors()
-        if hardware_checks_failed:
-            hardware_inhibitor_checks_failed(
+        hw_checks_failed, hw_failures = check_hardware_inhibitors()
+        cs_checks_failed, cs_failures = check_custom_inhibitors()
+
+        checks_failed = hw_checks_failed or cs_checks_failed
+        failures = hw_failures + cs_failures
+
+        if checks_failed:
+            inhibitor_checks_failed(
                 failures,
                 cli_args.check,
                 system_update_available,
