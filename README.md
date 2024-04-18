@@ -121,6 +121,9 @@ Each entry in the `checks.scripts` array must specify the following settings:
 
 * `name`: an optional human-readable name for this check
 
+The parameters `run` and `file` are mutually exclusive, but at least one must be specified.
+The `shell` parameter is mandatory when using `run`.
+
 The custom script should use its exit code to indicate whether the updater should proceed
 (`exit code = 0`) or whether updates should be inhibited right now (any non-0 exit code).
 If `message` is not specified but the script has written text to `stdout`,
@@ -166,6 +169,11 @@ exit 1
 print("Python also works when installed")
 exit(1)
 """
+
+    [[checks.scripts]]
+        name = "Example external script"
+        # shell = "bash" # specifying a shell is optional for external scripts/programs
+        file = "/bin/true"
 
 [notify]
     dbus_notify = false         # Do not show notifications

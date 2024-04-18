@@ -9,17 +9,22 @@ log = getLogger(__name__)
 
 
 def run_custom_check_script(script) -> dict:
-    if script.get('shell') != 'bash':
-        raise Exception('checks.scripts.*.shell must be set to \'bash\'')
+    if 'run' in script and 'shell' not in script:
+        raise Exception('checks.scripts.*: \'shell\' must be specified when \'run\' is used')
+
+    if 'run' in script and 'file' in script:
+        raise Exception('checks.scripts.*: Only one of \'run\' and \'file\' must be set for a given script')
 
     log.debug(f"Running script {script}")
 
-    # Run the specified custom script via bash
-    script_result = subprocess.run(
-        ['bash', '-c', script['run']],
-        capture_output=True,
-        check=False,
-    )
+    # Run the specified custom script
+    if 'run' in script:
+        run_args = [script['shell'], '-c', script['run']]
+    elif 'shell' in script:
+        run_args = [script['shell'], script['file']]
+    else:
+        run_args = [script['file']]
+    script_result = subprocess.run(run_args, capture_output=True, text=True, check=False)
 
     # An exit code of 0 means "OK", a non-zero exit code
     # means "Do not download or perform updates right now"
