@@ -104,6 +104,8 @@ See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuri
 
 * `max_mem_percent`: checks if memory usage is below specified percent
 
+* `network_not_metered`: if true, checks if the current network connection is not marked as metered
+
 ### Section: `notify`
 
 * `dbus_notify`: enable graphical notifications via dbus
@@ -115,6 +117,7 @@ See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuri
     min_battery_percent = 20.0  # Battery Level >= 20%?
     max_cpu_load_percent = 50.0 #     CPU Usage <= 50%?
     max_mem_percent = 90.0      #     RAM Usage <= 90%?
+    network_not_metered = true  # Abort if network connection is metered
 [notify]
     dbus_notify = false         # Do not show notifications
 ```
