@@ -88,26 +88,36 @@ See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuri
 
 ## Location
 
-### Valid config paths (in order of priority):
+### Valid config paths (in order of priority from highest to lowest):
 
-```/etc/ublue-update/ublue-update.toml```
+1. ```/etc/ublue-update/ublue-update.toml```
 
-```/usr/etc/ublue-update/ublue-update.toml```
+2. ```/usr/etc/ublue-update/ublue-update.toml```
 
 
 ## Config Variables
-Section: `checks`
+### Section: `checks`
 
-`min_battery_percent`: checks if battery is above specified percent
+* `min_battery_percent`: checks if battery is above specified percent
 
-`max_cpu_load_percent`: checks if cpu average load is under specified percent
+* `max_cpu_load_percent`: checks if cpu average load is under specified percent
 
-`max_mem_percent`: checks if memory usage is below specified the percent
+* `max_mem_percent`: checks if memory usage is below specified percent
 
+### Section: `notify`
 
-Section: `notify`
+* `dbus_notify`: enable graphical notifications via dbus
 
-`dbus_notify`: enable graphical notifications via dbus
+### Full Example
+
+```toml
+[checks]
+    min_battery_percent = 20.0  # Battery Level >= 20%?
+    max_cpu_load_percent = 50.0 #     CPU Usage <= 50%?
+    max_mem_percent = 90.0      #     RAM Usage <= 90%?
+[notify]
+    dbus_notify = false         # Do not show notifications
+```
 
 ## How do I build this?
 
