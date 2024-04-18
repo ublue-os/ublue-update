@@ -1,8 +1,13 @@
 import tomllib
 import os
+from typing import List, Optional
+from logging import getLogger
+
+"""Setup logging"""
+log = getLogger(__name__)
 
 
-def load_config():
+def find_default_config_file():
     # load config values
     config_paths = [
         "/etc/ublue-update/ublue-update.toml",
@@ -13,12 +18,12 @@ def load_config():
     # first config file that is found wins
     for path in config_paths:
         if os.path.isfile(path):
-            return tomllib.load(open(path, "rb"))
+            return path
 
-    return config
+    return None
 
 
-def safe_get_nested(dct, *keys):
+def load_value(dct, *keys):
     for key in keys:
         try:
             dct = dct[key]
@@ -27,8 +32,25 @@ def safe_get_nested(dct, *keys):
     return dct
 
 
-def load_value(*keys):
-    return safe_get_nested(config, *keys)
+class Config:
+    dbus_notify: bool
+    network_not_metered: Optional[bool]
+    min_battery_percent: Optional[float]
+    max_cpu_load_percent: Optional[float]
+    max_mem_percent: Optional[float]
+
+    def load_config(self, path=None):
+        config_path = path or find_default_config_file()
+        config = tomllib.load(open(config_path, "rb"))
+        log.debug(f"Configuration loaded from {os.path.abspath(config_path)}")
+        self.load_values(config)
+
+    def load_values(self, config):
+        self.dbus_notify = load_value(config, "notify", "dbus_notify") or False
+        self.network_not_metered = load_value(config, "checks", "network_not_metered")
+        self.min_battery_percent = load_value(config, "checks", "min_battery_percent")
+        self.max_cpu_load_percent = load_value(config, "checks", "max_cpu_load_percent")
+        self.max_mem_percent = load_value(config, "checks", "max_mem_percent")
 
 
-config = load_config()
+cfg = Config()

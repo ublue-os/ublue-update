@@ -62,6 +62,7 @@ options:
   -c, --check        run update checks and exit
   -u, --updatecheck  check for updates and exit
   -w, --wait         wait for transactions to complete and exit
+  --config CONFIG    use the specified config file
   --system           only run system updates (requires root)
 ```
 

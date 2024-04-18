@@ -9,13 +9,13 @@ from ublue_update.update_checks.system import (
 )
 from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
-from ublue_update.config import load_value
+from ublue_update.config import cfg
 from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
 from ublue_update.filelock import acquire_lock, release_lock
 
 
 def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
-    if not dbus_notify:
+    if not cfg.dbus_notify:
         return
     process_uid = os.getuid()
     args = [
@@ -58,7 +58,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
 
 
 def ask_for_updates(system):
-    if not dbus_notify:
+    if not cfg.dbus_notify:
         return
     out = notify(
         "System Updater",
@@ -159,7 +159,7 @@ def run_updates(system, system_update_available):
             )
             log.debug(out.stdout.decode("utf-8"))
         log.info("System update complete")
-        if pending_deployment_check() and system_update_available and dbus_notify:
+        if pending_deployment_check() and system_update_available and cfg.dbus_notify:
             out = notify(
                 "System Updater",
                 "System update complete, pending changes will take effect after reboot. Reboot now?",
@@ -176,8 +176,6 @@ def run_updates(system, system_update_available):
     release_lock(fd)
     os._exit(0)
 
-
-dbus_notify: bool = load_value("notify", "dbus_notify")
 
 # setup logging
 logging.basicConfig(
@@ -213,16 +211,23 @@ def main():
         help="wait for transactions to complete and exit",
     )
     parser.add_argument(
+        "--config",
+        help="use the specified config file"
+    )
+    parser.add_argument(
         "--system",
         action="store_true",
         help="only run system updates (requires root)",
     )
     cli_args = parser.parse_args()
-    hardware_checks_failed = False
+
+    # Load the configuration file
+    cfg.load_config(cli_args.config)
 
     if cli_args.wait:
         transaction_wait()
         os._exit(0)
+
     system_update_available: bool = system_update_check()
     if not cli_args.force and not cli_args.updatecheck:
         hardware_checks_failed, failures = check_hardware_inhibitors()

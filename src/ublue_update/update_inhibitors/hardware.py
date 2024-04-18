@@ -2,15 +2,10 @@ import psutil
 import subprocess
 from typing import Optional
 from logging import getLogger
-from ublue_update.config import load_value
+from ublue_update.config import cfg
 
 """Setup logging"""
 log = getLogger(__name__)
-
-network_not_metered: Optional[bool] = load_value("checks", "network_not_metered")
-min_battery_percent: Optional[float] = load_value("checks", "min_battery_percent")
-max_cpu_load_percent: Optional[float] = load_value("checks", "max_cpu_load_percent")
-max_mem_percent: Optional[float] = load_value("checks", "max_mem_percent")
 
 
 def check_network_status() -> dict:
@@ -26,7 +21,7 @@ def check_network_status() -> dict:
 
 
 def check_network_not_metered() -> dict:
-    if not network_not_metered:
+    if not cfg.network_not_metered:
         return {
             "passed": True,
             "message": "Network metering status is ignored",
@@ -63,18 +58,18 @@ def check_network_not_metered() -> dict:
 
 
 def check_battery_status() -> dict:
-    if min_battery_percent:
+    if cfg.min_battery_percent:
         battery_status = psutil.sensors_battery()
         # null safety on the battery variable, it returns "None"
         # when the system doesn't have a battery
         battery_pass: bool = True
         if battery_status is not None:
             battery_pass = (
-                battery_status.percent >= min_battery_percent or battery_status.power_plugged
+                battery_status.percent >= cfg.min_battery_percent or battery_status.power_plugged
             )
         return {
             "passed": battery_pass,
-            "message": f"Battery less than {min_battery_percent}%",
+            "message": f"Battery less than {cfg.min_battery_percent}%",
         }
     else:
         return {
@@ -84,13 +79,13 @@ def check_battery_status() -> dict:
 
 
 def check_cpu_load() -> dict:
-    if max_cpu_load_percent:
+    if cfg.max_cpu_load_percent:
         # get load average percentage in last 5 minutes:
         # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
         cpu_load_percent = psutil.getloadavg()[1] / psutil.cpu_count() * 100
         return {
-            "passed": cpu_load_percent < max_cpu_load_percent,
-            "message": f"CPU load is above {max_cpu_load_percent}%",
+            "passed": cpu_load_percent < cfg.max_cpu_load_percent,
+            "message": f"CPU load is above {cfg.max_cpu_load_percent}%",
         }
     else:
         return {
@@ -100,11 +95,11 @@ def check_cpu_load() -> dict:
 
 
 def check_mem_percentage() -> dict:
-    if max_mem_percent:
+    if cfg.max_mem_percent:
         mem = psutil.virtual_memory()
         return {
-            "passed": mem.percent < max_mem_percent,
-            "message": f"Memory usage is above {max_mem_percent}%",
+            "passed": mem.percent < cfg.max_mem_percent,
+            "message": f"Memory usage is above {cfg.max_mem_percent}%",
         }
     else:
         return {
