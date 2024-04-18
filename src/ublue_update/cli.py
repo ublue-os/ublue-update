@@ -182,7 +182,7 @@ dbus_notify: bool = load_value("notify", "dbus_notify")
 # setup logging
 logging.basicConfig(
     format="[%(asctime)s] %(name)s:%(levelname)s | %(message)s",
-    level=os.getenv("UBLUE_LOG", default=logging.INFO),
+    level=os.getenv("UBLUE_LOG", default="INFO").upper(),
 )
 log = logging.getLogger(__name__)
 
