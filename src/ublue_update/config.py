@@ -10,6 +10,7 @@ def load_config():
     ]
 
     # search for the right config
+    # BUG: config_path and fallback_config_path always have the same value
     config_path = ""
     fallback_config_path = ""
     for path in config_paths:
@@ -24,11 +25,17 @@ def load_config():
     return config, fallback_config
 
 
-def load_value(key, value):
-    fallback = fallback_config[key][value]
-    if key in config.keys():
-        return config[key].get(value, fallback)
-    return fallback
+def safe_get_nested(dct, *keys):
+    for key in keys:
+        try:
+            dct = dct[key]
+        except KeyError:
+            return None
+    return dct
+
+
+def load_value(*keys):
+    return safe_get_nested(config, *keys) or safe_get_nested(fallback_config, *keys)
 
 
 config, fallback_config = load_config()

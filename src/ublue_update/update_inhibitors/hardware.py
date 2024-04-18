@@ -1,15 +1,16 @@
 import psutil
 import subprocess
+from typing import Optional
 from logging import getLogger
 from ublue_update.config import load_value
 
 """Setup logging"""
 log = getLogger(__name__)
 
-network_not_metered: bool = load_value("checks", "network_not_metered")
-min_battery_percent: float = load_value("checks", "min_battery_percent")
-max_cpu_load_percent: float = load_value("checks", "max_cpu_load_percent")
-max_mem_percent: float = load_value("checks", "max_mem_percent")
+network_not_metered: Optional[bool] = load_value("checks", "network_not_metered")
+min_battery_percent: Optional[float] = load_value("checks", "min_battery_percent")
+max_cpu_load_percent: Optional[float] = load_value("checks", "max_cpu_load_percent")
+max_mem_percent: Optional[float] = load_value("checks", "max_mem_percent")
 
 
 def check_network_status() -> dict:
@@ -26,7 +27,10 @@ def check_network_status() -> dict:
 
 def check_network_not_metered() -> dict:
     if not network_not_metered:
-        return {"passed": True, "message": "Network metering status is ignored"}
+        return {
+            "passed": True,
+            "message": "Network metering status is ignored",
+        }
     # Use busctl CLI to query the NetworkManager via D-Bus for
     # the current metering status of the connection.
     # The output on stdout will be "<datatype> <value>".
@@ -52,40 +56,61 @@ def check_network_not_metered() -> dict:
     #     NM_METERED_GUESS_NO  = 4 # Not metered, the value was guessed
     #
     is_network_metered = metered_status.strip() in ['u 1', 'u 3']
-    return {"passed": not is_network_metered, "message": "Network is metered"}
+    return {
+        "passed": not is_network_metered,
+        "message": "Network is metered",
+    }
 
 
 def check_battery_status() -> dict:
-    battery_status = psutil.sensors_battery()
-    # null safety on the battery variable, it returns "None"
-    # when the system doesn't have a battery
-    battery_pass: bool = True
-    if battery_status is not None:
-        battery_pass = (
-            battery_status.percent >= min_battery_percent or battery_status.power_plugged
-        )
-    return {
-        "passed": battery_pass,
-        "message": f"Battery less than {min_battery_percent}%",
-    }
+    if min_battery_percent:
+        battery_status = psutil.sensors_battery()
+        # null safety on the battery variable, it returns "None"
+        # when the system doesn't have a battery
+        battery_pass: bool = True
+        if battery_status is not None:
+            battery_pass = (
+                battery_status.percent >= min_battery_percent or battery_status.power_plugged
+            )
+        return {
+            "passed": battery_pass,
+            "message": f"Battery less than {min_battery_percent}%",
+        }
+    else:
+        return {
+            "passed": True,
+            "message": "Battery status is ignored",
+        }
 
 
 def check_cpu_load() -> dict:
-    # get load average percentage in last 5 minutes:
-    # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
-    cpu_load_percent = psutil.getloadavg()[1] / psutil.cpu_count() * 100
-    return {
-        "passed": cpu_load_percent < max_cpu_load_percent,
-        "message": f"CPU load is above {max_cpu_load_percent}%",
-    }
+    if max_cpu_load_percent:
+        # get load average percentage in last 5 minutes:
+        # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
+        cpu_load_percent = psutil.getloadavg()[1] / psutil.cpu_count() * 100
+        return {
+            "passed": cpu_load_percent < max_cpu_load_percent,
+            "message": f"CPU load is above {max_cpu_load_percent}%",
+        }
+    else:
+        return {
+            "passed": True,
+            "message": "CPU load is ignored",
+        }
 
 
 def check_mem_percentage() -> dict:
-    mem = psutil.virtual_memory()
-    return {
-        "passed": mem.percent < max_mem_percent,
-        "message": f"Memory usage is above {max_mem_percent}%",
-    }
+    if max_mem_percent:
+        mem = psutil.virtual_memory()
+        return {
+            "passed": mem.percent < max_mem_percent,
+            "message": f"Memory usage is above {max_mem_percent}%",
+        }
+    else:
+        return {
+            "passed": True,
+            "message": "Memory usage is ignored",
+        }
 
 
 def check_hardware_inhibitors() -> bool:
