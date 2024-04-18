@@ -10,19 +10,12 @@ def load_config():
     ]
 
     # search for the right config
-    # BUG: config_path and fallback_config_path always have the same value
-    config_path = ""
-    fallback_config_path = ""
+    # first config file that is found wins
     for path in config_paths:
         if os.path.isfile(path):
-            if config_path == "":
-                config_path = path
-            fallback_config_path = path
-            break
+            return tomllib.load(open(path, "rb"))
 
-    fallback_config = tomllib.load(open(fallback_config_path, "rb"))
-    config = tomllib.load(open(config_path, "rb"))
-    return config, fallback_config
+    return config
 
 
 def safe_get_nested(dct, *keys):
@@ -35,7 +28,7 @@ def safe_get_nested(dct, *keys):
 
 
 def load_value(*keys):
-    return safe_get_nested(config, *keys) or safe_get_nested(fallback_config, *keys)
+    return safe_get_nested(config, *keys)
 
 
-config, fallback_config = load_config()
+config = load_config()
