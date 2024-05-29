@@ -62,6 +62,7 @@ options:
   -c, --check        run update checks and exit
   -u, --updatecheck  check for updates and exit
   -w, --wait         wait for transactions to complete and exit
+  --config CONFIG    use the specified config file
   --system           only run system updates (requires root)
 ```
 
@@ -88,26 +89,95 @@ See [`topgrade`](https://github.com/topgrade-rs/topgrade)'s GitHub for configuri
 
 ## Location
 
-### Valid config paths (in order of priority):
+### Valid config paths (in order of priority from highest to lowest):
 
-```/etc/ublue-update/ublue-update.toml```
+1. ```/etc/ublue-update/ublue-update.toml```
 
-```/usr/etc/ublue-update/ublue-update.toml```
+2. ```/usr/etc/ublue-update/ublue-update.toml```
 
 
 ## Config Variables
-Section: `checks`
+### Section: `checks`
 
-`min_battery_percent`: checks if battery is above specified percent
+* `min_battery_percent`: checks if battery is above specified percent
 
-`max_cpu_load_percent`: checks if cpu average load is under specified percent
+* `max_cpu_load_percent`: checks if cpu average load is under specified percent
 
-`max_mem_percent`: checks if memory usage is below specified the percent
+* `max_mem_percent`: checks if memory usage is below specified percent
 
+* `network_not_metered`: if true, checks if the current network connection is not marked as metered
 
-Section: `notify`
+### Section: `checks.scripts`
 
-`dbus_notify`: enable graphical notifications via dbus
+In addition to the predefined checks above, it is also possible to implement
+custom conditions through user-provided scripts and their exit codes.
+Each entry in the `checks.scripts` array must specify the following settings:
+
+* `shell`: specifies the shell used to execute the custom script (e.g. `bash`)
+
+* `run`: specifies the script text to be run using the specified shell
+
+* `message`: an optional message that is shown when the check fails
+
+* `name`: an optional human-readable name for this check
+
+The parameters `run` and `file` are mutually exclusive, but at least one must be specified.
+The `shell` parameter is mandatory when using `run`.
+
+The custom script should use its exit code to indicate whether the updater should proceed
+(`exit code = 0`) or whether updates should be inhibited right now (any non-0 exit code).
+If `message` is not specified but the script has written text to `stdout`,
+that text will be used as the message.
+
+### Section: `notify`
+
+* `dbus_notify`: enable graphical notifications via dbus
+
+### Full Example
+
+```toml
+[checks]
+    min_battery_percent = 20.0  # Battery Level >= 20%?
+    max_cpu_load_percent = 50.0 #     CPU Usage <= 50%?
+    max_mem_percent = 90.0      #     RAM Usage <= 90%?
+    network_not_metered = true  # Abort if network connection is metered
+
+    [[checks.scripts]]
+        name = "Example script that always fails"
+        shell = "bash"
+        run = "exit 1"
+        message = "Failure message - this message will always appear"
+
+    [[checks.scripts]]
+        name = "Example script that always succeeds"
+        shell = "bash"
+        run = "exit 0"
+        message = "Failure message - this message will never appear"
+
+    [[checks.scripts]]
+        name = "Example multiline script with custom message"
+        shell = "bash"
+        run = """
+echo "This is a custom message"
+exit 1
+"""
+
+    [[checks.scripts]]
+        name = "Python script"
+        shell = "python3"
+        run = """
+print("Python also works when installed")
+exit(1)
+"""
+
+    [[checks.scripts]]
+        name = "Example external script"
+        # shell = "bash" # specifying a shell is optional for external scripts/programs
+        file = "/bin/true"
+
+[notify]
+    dbus_notify = false         # Do not show notifications
+```
 
 ## How do I build this?
 
