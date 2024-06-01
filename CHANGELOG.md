@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.4.0](https://github.com/ublue-os/ublue-update/compare/v1.3.0...v1.4.0) (2024-05-02)
+
+
+### Features
+
+* Add topgrade support ([8a926c5](https://github.com/ublue-os/ublue-update/commit/8a926c5755d10aefc23480bc506b3936c2a7c58a))
+* Add topgrade support ([#102](https://github.com/ublue-os/ublue-update/issues/102)) ([61dd86c](https://github.com/ublue-os/ublue-update/commit/61dd86c698e30c852c2cbd401bf407f9449553d8))
+* Add updater for brew ([#76](https://github.com/ublue-os/ublue-update/issues/76)) ([63d40a1](https://github.com/ublue-os/ublue-update/commit/63d40a1688b52d4dcbcf37797ff14a355025c7fc))
+* auto sign images ([#73](https://github.com/ublue-os/ublue-update/issues/73)) ([6acce45](https://github.com/ublue-os/ublue-update/commit/6acce45767dfd05e82c722c771b65400ce97cc82))
+* move system update script to python ([#81](https://github.com/ublue-os/ublue-update/issues/81)) ([be229d1](https://github.com/ublue-os/ublue-update/commit/be229d1ee60dd7a5f7f5d0f118634bfa31918a88))
+* Remove rebase step now that ISOs are nearly ready ([#105](https://github.com/ublue-os/ublue-update/issues/105)) ([1e670f0](https://github.com/ublue-os/ublue-update/commit/1e670f0044026b434da746bb28fa05a21fade00e))
+* Remove rebase step now that ISOs are nearly ready, move topgrade configs to /usr/share, cleanup. ([8307b17](https://github.com/ublue-os/ublue-update/commit/8307b17a3c280431ffce863b7b98e74d31766cdb))
+* **system-update:** Allow switching between branches via rebase ([e14f166](https://github.com/ublue-os/ublue-update/commit/e14f1665402a4e01a1778833c27568a07d48acfb))
+* **system-update:** Allow switching between branches via rebase ([#91](https://github.com/ublue-os/ublue-update/issues/91)) ([e013061](https://github.com/ublue-os/ublue-update/commit/e013061013c97d5cf49d14237fdfe6b12ace8afe))
+
+
+### Bug Fixes
+
+* account for ostree-unverified-registry shorthand ([8271032](https://github.com/ublue-os/ublue-update/commit/8271032feed7b907d50520dfbc45afbc47d1cd6a))
+* add brew to user and distrobox to system ([2e0e582](https://github.com/ublue-os/ublue-update/commit/2e0e582e125359108a910b5225f4daeb2e64a9bc))
+* add brew to user and distrobox to system ([#107](https://github.com/ublue-os/ublue-update/issues/107)) ([d8fb315](https://github.com/ublue-os/ublue-update/commit/d8fb3157fac1f8c5836beae8ea97097c50403051))
+* be more carefull when to rebase ([2ba442f](https://github.com/ublue-os/ublue-update/commit/2ba442f4be39dccf663dc1ae0c6696d6e738ca78))
+* be more carefull when to rebase ([#88](https://github.com/ublue-os/ublue-update/issues/88)) ([427912c](https://github.com/ublue-os/ublue-update/commit/427912c53db77dab15f6e80c85f5d7a6118925b2))
+* bump version ([32ccf70](https://github.com/ublue-os/ublue-update/commit/32ccf7082ed5228d2f55968eadf2469e4e1ef7f7))
+* bypass distrobox upgrade sudo checks ([#69](https://github.com/ublue-os/ublue-update/issues/69)) ([127ed90](https://github.com/ublue-os/ublue-update/commit/127ed90804f2b56ba0191a7255edc9ff02a0754e))
+* **flake8:** Ignore W503 and W504 ([5111b06](https://github.com/ublue-os/ublue-update/commit/5111b0643b146712117de9cae015f79296ee1646))
+* Improve brew updater to work even if bash_profile change is missing ([#82](https://github.com/ublue-os/ublue-update/issues/82)) ([9993055](https://github.com/ublue-os/ublue-update/commit/99930556ea977fdf8234d84f45e402bdc162bbfa))
+* min_battery_percent = 0 now works to "skip" ([5ad9228](https://github.com/ublue-os/ublue-update/commit/5ad9228568be47cd374e627a84008e609104d31d))
+* min_battery_percent = 0 now works to "skip" battery check ([#89](https://github.com/ublue-os/ublue-update/issues/89)) ([c1f7355](https://github.com/ublue-os/ublue-update/commit/c1f735557c98f3483a96b81693571713a9f77305))
+* offline iso update ([ea267e0](https://github.com/ublue-os/ublue-update/commit/ea267e044b47ee206620e59112bc5b0f2b8b623f))
+* offline iso update ([#87](https://github.com/ublue-os/ublue-update/issues/87)) ([986ed9a](https://github.com/ublue-os/ublue-update/commit/986ed9a89bac290db79c393a2687794dce33827d))
+* only show post update notification when there is a pending deployment ([#83](https://github.com/ublue-os/ublue-update/issues/83)) ([e117cc8](https://github.com/ublue-os/ublue-update/commit/e117cc89fd99b9438576cdd5e560afcef6c028d3))
+* preserve unsigned image tag upon rebase ([0ff9fd5](https://github.com/ublue-os/ublue-update/commit/0ff9fd546607548e4aa15b82ca47bbe8c6ad14d4))
+* preserve unsigned image tag upon rebase ([#75](https://github.com/ublue-os/ublue-update/issues/75)) ([75fd78b](https://github.com/ublue-os/ublue-update/commit/75fd78b0be2379185874074a4c0c5f2501ddd417))
+* try to use staging copr project ([#71](https://github.com/ublue-os/ublue-update/issues/71)) ([2686474](https://github.com/ublue-os/ublue-update/commit/26864748cc9deca97a8387f33b4b8b95989b0a79))
+* update error message logging, log subprocess output ([#77](https://github.com/ublue-os/ublue-update/issues/77)) ([007e1e3](https://github.com/ublue-os/ublue-update/commit/007e1e3b263c542c0510cc8bbb11272127fc3b75))
+
 ## [1.3.0](https://github.com/ublue-os/ublue-update/compare/v1.2.2...v1.3.0) (2023-09-20)
 
 
