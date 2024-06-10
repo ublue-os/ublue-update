@@ -127,9 +127,7 @@ def run_updates(system, system_update_available):
         log.debug(out.stdout.decode("utf-8"))
 
         if out.returncode != 0:
-            print(
-                f"topgrade returned code {out.returncode}, program output:"
-            )
+            print(f"topgrade returned code {out.returncode}, program output:")
             print(out.stdout.decode("utf-8"))
             os._exit(out.returncode)
 
@@ -140,9 +138,7 @@ def run_updates(system, system_update_available):
             except KeyError as e:
                 log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
                 break
-            log.info(
-                f"""Running update for user: '{user['Name']}'"""
-            )
+            log.info(f"""Running update for user: '{user['Name']}'""")
 
             out = subprocess.run(
                 [
@@ -211,10 +207,7 @@ def main():
         action="store_true",
         help="wait for transactions to complete and exit",
     )
-    parser.add_argument(
-        "--config",
-        help="use the specified config file"
-    )
+    parser.add_argument("--config", help="use the specified config file")
     parser.add_argument(
         "--system",
         action="store_true",
