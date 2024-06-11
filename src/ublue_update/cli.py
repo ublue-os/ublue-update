@@ -254,4 +254,7 @@ def main():
 
     # system checks passed
     log.info("System passed all update checks")
-    run_updates(cli_args.system, system_update_available)
+    try:
+        run_updates(cli_args.system, system_update_available)
+    except Exception as e:
+        log.info(f"Failed to update: {e}")
