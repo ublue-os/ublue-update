@@ -258,3 +258,4 @@ def main():
         run_updates(cli_args.system, system_update_available)
     except Exception as e:
         log.info(f"Failed to update: {e}")
+        os._exit(1)
