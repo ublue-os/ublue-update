@@ -6,6 +6,8 @@ WORKDIR /app
 
 ADD . /app
 
+RUN dnf install python3-pip && pip install topgrade
+
 RUN dnf install \
     --disablerepo='*' \
     --enablerepo='fedora,updates' \
@@ -17,7 +19,7 @@ RUN dnf install \
     rpm-build && \
     mkdir -p "$UBLUE_ROOT" && \
     rpkg spec --outdir  "$UBLUE_ROOT" && \
-    dnf builddep -y output/ublue-update.spec
+    dnf builddep -y output/ublue-update.spec \
 
 FROM builder AS rpm
 

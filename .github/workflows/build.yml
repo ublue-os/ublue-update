@@ -13,7 +13,7 @@ env:
 jobs:
   push-ghcr:
     name: Build and push image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -21,12 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        major_version: [38, 39]
+        major_version: [39, 40]
         include:
-          - major_version: 38
+          - major_version: 39
             is_latest_version: true
             is_stable_version: true
-          - major_version: 39
+          - major_version: 40
             is_latest_version: true
             is_stable_version: false
     steps:
@@ -139,21 +139,3 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
-
-  copr-build:
-    permissions:
-      contents: read
-      packages: read
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/akdev1l/copr-build:latest
-    if: github.event_name != 'pull_request'
-    steps:
-      - name: trigger copr build
-        uses: akdev1l/copr-build@main
-        id: copr-build
-        env:
-          COPR_API_TOKEN_CONFIG: ${{ secrets.UBLUE_COPR_API_TOKEN }}
-        with:
-          owner: ublue-os
-          project-name: staging
