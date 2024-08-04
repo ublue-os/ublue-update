@@ -1,4 +1,4 @@
-ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
 FROM registry.fedoraproject.org/fedora:${FEDORA_MAJOR_VERSION} AS builder
 
@@ -21,6 +21,16 @@ RUN dnf install \
     rpkg spec --outdir  "$UBLUE_ROOT" && \
     dnf builddep -y output/ublue-update.spec && \
     make build-rpm
+
+# Dump a file list for each RPM for easier consumption
+RUN \
+    for RPM in ${UBLUE_ROOT}/noarch/*.rpm; do \
+        NAME="$(rpm -q $RPM --queryformat='%{NAME}')"; \
+        mkdir -p "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
+        rpm2cpio "${RPM}" | cpio -idmv --directory "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
+        mkdir -p ${UBLUE_ROOT}/ublue-os/rpms/; \
+        cp "${RPM}" "${UBLUE_ROOT}/ublue-os/rpms/$(rpm -q "${RPM}" --queryformat='%{NAME}.%{ARCH}.rpm')"; \
+    done
 
 FROM scratch
 
