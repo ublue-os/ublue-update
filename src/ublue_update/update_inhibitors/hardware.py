@@ -1,6 +1,5 @@
 import psutil
 import subprocess
-from typing import Optional
 from logging import getLogger
 from ublue_update.config import cfg
 
@@ -29,7 +28,8 @@ def check_network_not_metered() -> dict:
     # Use busctl CLI to query the NetworkManager via D-Bus for
     # the current metering status of the connection.
     # The output on stdout will be "<datatype> <value>".
-    metered_status  = subprocess.run([
+    metered_status = subprocess.run(
+        [
             "busctl",
             "get-property",
             "org.freedesktop.NetworkManager",
@@ -50,7 +50,7 @@ def check_network_not_metered() -> dict:
     #     NM_METERED_GUESS_YES = 3 # Metered, the value was guessed
     #     NM_METERED_GUESS_NO  = 4 # Not metered, the value was guessed
     #
-    is_network_metered = metered_status.strip() in ['u 1', 'u 3']
+    is_network_metered = metered_status.strip() in ["u 1", "u 3"]
     return {
         "passed": not is_network_metered,
         "message": "Network is metered",
@@ -65,7 +65,8 @@ def check_battery_status() -> dict:
         battery_pass: bool = True
         if battery_status is not None:
             battery_pass = (
-                battery_status.percent >= cfg.min_battery_percent or battery_status.power_plugged
+                battery_status.percent >= cfg.min_battery_percent
+                or battery_status.power_plugged
             )
         return {
             "passed": battery_pass,
@@ -109,7 +110,6 @@ def check_mem_percentage() -> dict:
 
 
 def check_hardware_inhibitors() -> bool:
-
     hardware_inhibitors = [
         check_network_status(),
         check_network_not_metered(),

@@ -4,7 +4,7 @@ Small update program written in python intended for use in Universal Blue that u
 
 Includes systemd timers and services for auto update
 
-dependencies (fedora): ```sudo dnf install python3-psutil libnotify```
+dependencies (fedora): ```sudo dnf install python3-psutil libnotify && pip install topgrade```
 
 
 # Usage
@@ -16,14 +16,14 @@ You can add this to your image by simply pulling down and installing the rpm:
 
 ```
 COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
+RUN pip install topgrade && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 ```
 
 If you are on an image derived from uBlue main:
 
 ```
 COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree override remove ublue-os-update-services && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
+RUN pip install topgrade && rpm-ostree override remove ublue-os-update-services && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 ```
 
 > **Note**

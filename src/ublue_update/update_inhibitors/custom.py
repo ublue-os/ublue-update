@@ -1,4 +1,3 @@
-import psutil
 import subprocess
 from typing import List, Optional
 from logging import getLogger
@@ -9,22 +8,28 @@ log = getLogger(__name__)
 
 
 def run_custom_check_script(script) -> dict:
-    if 'run' in script and 'shell' not in script:
-        raise Exception('checks.scripts.*: \'shell\' must be specified when \'run\' is used')
+    if "run" in script and "shell" not in script:
+        raise Exception(
+            "checks.scripts.*: 'shell' must be specified when 'run' is used"
+        )
 
-    if 'run' in script and 'file' in script:
-        raise Exception('checks.scripts.*: Only one of \'run\' and \'file\' must be set for a given script')
+    if "run" in script and "file" in script:
+        raise Exception(
+            "checks.scripts.*: Only one of 'run' and 'file' must be set for a given script"
+        )
 
     log.debug(f"Running script {script}")
 
     # Run the specified custom script
-    if 'run' in script:
-        run_args = [script['shell'], '-c', script['run']]
-    elif 'shell' in script:
-        run_args = [script['shell'], script['file']]
+    if "run" in script:
+        run_args = [script["shell"], "-c", script["run"]]
+    elif "shell" in script:
+        run_args = [script["shell"], script["file"]]
     else:
-        run_args = [script['file']]
-    script_result = subprocess.run(run_args, capture_output=True, text=True, check=False)
+        run_args = [script["file"]]
+    script_result = subprocess.run(
+        run_args, capture_output=True, text=True, check=False
+    )
 
     # An exit code of 0 means "OK", a non-zero exit code
     # means "Do not download or perform updates right now"
@@ -40,10 +45,12 @@ def run_custom_check_script(script) -> dict:
     # to catch any interpreter errors etc.
     script_stderr = script_result.stderr.strip()
     if not script_pass and len(script_stderr) > 0:
-        log.warning(f"A custom check script failed and wrote the following to STDERR:\n====\n{script_stderr}\n====")
+        log.warning(
+            f"A custom check script failed and wrote the following to STDERR:\n====\n{script_stderr}\n===="
+        )
 
     fallback_message = "A custom check script returned a non-0 exit code"
-    script_message = script.get('message') or script_output or fallback_message
+    script_message = script.get("message") or script_output or fallback_message
 
     return {
         "passed": script_pass,
@@ -53,13 +60,12 @@ def run_custom_check_script(script) -> dict:
 
 def run_custom_check_scripts() -> List[dict]:
     results = []
-    for script in (cfg.custom_check_scripts or []):
+    for script in cfg.custom_check_scripts or []:
         results.append(run_custom_check_script(script))
     return results
 
 
 def check_custom_inhibitors() -> bool:
-
     custom_inhibitors = run_custom_check_scripts()
 
     failures = []

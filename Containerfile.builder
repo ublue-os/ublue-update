@@ -6,6 +6,8 @@ WORKDIR /app
 
 ADD . /app
 
+RUN dnf install python3-pip && pip install topgrade
+
 RUN dnf install \
     --disablerepo='*' \
     --enablerepo='fedora,updates' \
