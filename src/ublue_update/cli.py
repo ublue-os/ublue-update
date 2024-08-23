@@ -102,10 +102,13 @@ def run_updates(system, system_update_available):
     transaction_wait()
 
     if process_uid == 0:
-        notify(
-            "System Updater",
-            "System passed checks, updating ...",
-        )
+        if system_update_available:
+            # Notify about a full system update but not about only
+            # distrobox and flatpak updates
+            notify(
+                "System Updater",
+                "System passed checks, updating ...",
+            )
         users = []
         try:
             users = get_active_sessions()

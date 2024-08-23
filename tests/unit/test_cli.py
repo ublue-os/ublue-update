@@ -210,6 +210,48 @@ def test_run_updates_system(
         ["universal-blue-update-reboot=Reboot Now"],
     )
 
+@patch("ublue_update.cli.os")
+@patch("ublue_update.cli.get_active_sessions")
+@patch("ublue_update.cli.acquire_lock")
+@patch("ublue_update.cli.transaction_wait")
+@patch("ublue_update.cli.subprocess.run")
+@patch("ublue_update.cli.log")
+@patch("ublue_update.cli.pending_deployment_check")
+@patch("ublue_update.cli.cfg")
+@patch("ublue_update.cli.release_lock")
+@patch("ublue_update.cli.notify")
+def test_run_updates_without_image_update(
+    mock_notify,
+    mock_release_lock,
+    mock_cfg,
+    mock_pending_deployment_check,
+    mock_log,
+    mock_run,
+    mock_transaction_wait,
+    mock_acquire_lock,
+    mock_get_active_sesions,
+    mock_os,
+):
+    mock_os.getuid.return_value = 0
+    mock_acquire_lock.return_value = 3
+    output = MagicMock(stdout=b"test log")
+    output.returncode = 1
+    mock_run.return_value = output
+    mock_pending_deployment_check.return_value = True
+    mock_cfg.dbus_notify.return_value = True
+    # System Update, but no Image Update Available
+    run_updates(True, False)
+    mock_notify.assert_not_called()
+    mock_run.assert_any_call(
+        [
+            "/usr/bin/topgrade",
+            "--config",
+            "/usr/share/ublue-update/topgrade-system.toml",
+        ],
+        capture_output=True,
+    )
+    mock_notify.assert_not_called()
+
 
 @patch("ublue_update.cli.os")
 @patch("ublue_update.cli.get_active_sessions")
