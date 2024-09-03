@@ -11,7 +11,7 @@ from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.update_inhibitors.custom import check_custom_inhibitors
 from ublue_update.config import cfg
-from ublue_update.session import get_xdg_runtime_dir, get_active_sessions
+from ublue_update.session import get_active_sessions
 from ublue_update.filelock import acquire_lock, release_lock
 
 
@@ -37,17 +37,12 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
         except KeyError as e:
             log.error("failed to get active logind session info", e)
         for user in users:
-            try:
-                xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
-            except KeyError as e:
-                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
-                return
             user_args = [
-                "/usr/bin/sudo",
-                "-u",
-                f"{user['Name']}",
-                "DISPLAY=:0",
-                f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
+                "/usr/bin/systemd-run",
+                "--user",
+                "--machine",
+                f"{user['user']}@",
+                "--wait",
             ]
             user_args += args
             out = subprocess.run(user_args, capture_output=True)
@@ -119,6 +114,8 @@ def run_updates(system, system_update_available):
             users = []
 
         """System"""
+        # remove backwards compat warnings in topgrade (requires user confirmation without this env var)
+        os.environ["TOPGRADE_SKIP_BRKC_NOTIFY"] = "true"
         out = subprocess.run(
             [
                 "/usr/bin/topgrade",
@@ -136,21 +133,15 @@ def run_updates(system, system_update_available):
 
         """Users"""
         for user in users:
-            try:
-                xdg_runtime_dir = get_xdg_runtime_dir(user["User"])
-            except KeyError as e:
-                log.error(f"failed to get xdg_runtime_dir for user: {user['Name']}", e)
-                break
-            log.info(f"""Running update for user: '{user['Name']}'""")
-
+            log.info(f"""Running update for user: '{user['user']}'""")
             out = subprocess.run(
                 [
-                    "/usr/bin/sudo",
-                    "-u",
-                    f"{user['Name']}",
-                    "DISPLAY=:0",
-                    f"XDG_RUNTIME_DIR={xdg_runtime_dir}",
-                    f"DBUS_SESSION_BUS_ADDRESS=unix:path={xdg_runtime_dir}/bus",
+                    "/usr/bin/systemd-run",
+                    "--setenv=TOPGRADE_SKIP_BRKC_NOTIFY=true",
+                    "--user",
+                    "--machine",
+                    f"{user['user']}@",
+                    "--wait",
                     "/usr/bin/topgrade",
                     "--config",
                     "/usr/share/ublue-update/topgrade-user.toml",
@@ -186,7 +177,6 @@ log = logging.getLogger(__name__)
 
 
 def main():
-
     # setup argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(

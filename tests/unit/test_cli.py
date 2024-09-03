@@ -1,7 +1,7 @@
 import pytest
 import sys
 import os
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, MagicMock
 
 # Add the src directory to the sys.path
 sys.path.insert(
@@ -22,7 +22,7 @@ from ublue_update.cli import (
 @patch("ublue_update.cli.subprocess.run")
 def test_notify_no_dbus_notify(mock_run, mock_log, mock_os, mock_cfg):
     mock_cfg.dbus_notify = False
-    assert notify("test_title", "test_body") == None
+    assert notify("test_title", "test_body") is None
 
 
 @patch("ublue_update.cli.cfg")
@@ -42,7 +42,7 @@ def test_notify_uid_user(mock_run, mock_log, mock_os, mock_cfg):
             body,
             "--app-name=Universal Blue Updater",
             "--icon=software-update-available-symbolic",
-            f"--urgency=normal",
+            "--urgency=normal",
         ],
         capture_output=True,
     )
@@ -51,7 +51,7 @@ def test_notify_uid_user(mock_run, mock_log, mock_os, mock_cfg):
 @patch("ublue_update.cli.cfg")
 def test_ask_for_updates_no_dbus_notify(mock_cfg):
     mock_cfg.dbus_notify = False
-    assert ask_for_updates(True) == None
+    assert ask_for_updates(True) is None
 
 
 @patch("ublue_update.cli.cfg")
@@ -59,7 +59,7 @@ def test_ask_for_updates_no_dbus_notify(mock_cfg):
 def test_ask_for_updates_notify_none(mock_notify, mock_cfg):
     mock_cfg.dbus_notify = True
     mock_notify.return_value = None
-    assert ask_for_updates(True) == None
+    assert ask_for_updates(True) is None
     mock_notify.assert_called_once_with(
         "System Updater",
         "Update available, but system checks failed. Update now?",
@@ -209,6 +209,7 @@ def test_run_updates_system(
         "System update complete, pending changes will take effect after reboot. Reboot now?",
         ["universal-blue-update-reboot=Reboot Now"],
     )
+
 
 @patch("ublue_update.cli.os")
 @patch("ublue_update.cli.get_active_sessions")
