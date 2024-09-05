@@ -58,6 +58,6 @@ def system_update_check():
 def pending_deployment_check():
     rpm_ostree_cmd = ["rpm-ostree", "status", "--pending-exit-77"]
     status = run(rpm_ostree_cmd, capture_output=True)
-    if status.returncode == 77:  # no pending deployment
+    if status.returncode == 77:  # pending deployment
         return True
     return False
