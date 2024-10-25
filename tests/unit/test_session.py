@@ -59,5 +59,5 @@ def test_get_active_sessions(mock_run):
         }
     ]
     mock_run.assert_any_call(
-        ["/usr/bin/loginctl", "list-sessions", "--output=json"], capture_output=True
+        ["/usr/bin/loginctl", "list-sessions", "-j"], capture_output=True
     )
