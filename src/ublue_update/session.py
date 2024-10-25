@@ -4,7 +4,7 @@ import json
 
 def get_active_sessions():
     out = subprocess.run(
-        ["/usr/bin/loginctl", "list-sessions", "--output=json"],
+        ["/usr/bin/loginctl", "list-sessions", "-j"],
         capture_output=True,
     )
     sessions = json.loads(out.stdout.decode("utf-8"))
