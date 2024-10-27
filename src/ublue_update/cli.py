@@ -41,7 +41,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
                 "/usr/bin/systemd-run",
                 "--user",
                 "--machine",
-                f"{user[1]}@", # magic number, corresponds to user name in ListUsers (see session.py)
+                f"{user[1]}@",  # magic number, corresponds to user name in ListUsers (see session.py)
                 "--pipe",
                 "--quiet",
             ]
@@ -134,7 +134,9 @@ def run_updates(system, system_update_available):
 
         """Users"""
         for user in users:
-            log.info(f"""Running update for user: '{user[1]}'""") # magic number, corresponds to username (see session.py)
+            log.info(
+                f"""Running update for user: '{user[1]}'"""
+            )  # magic number, corresponds to username (see session.py)
             out = subprocess.run(
                 [
                     "/usr/bin/systemd-run",

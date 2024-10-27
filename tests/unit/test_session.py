@@ -9,23 +9,19 @@ sys.path.insert(
 
 from ublue_update.session import get_active_users
 
-busctl_json_output = b"""
-{'type': 'a(uso)', 'data': [[[1000, 'user', '/org/freedesktop/login1/user/_1000']]]
-"""
+busctl_json_output = b"""{"type":"a(uso)","data":[[[1000,"user","/org/freedesktop/login1/user/_1000"]]]}"""
 
 
 @patch("ublue_update.session.subprocess.run")
-def test_get_active_sessions(mock_run):
+def test_get_active_users(mock_run):
     mock_run.side_effect = [
         MagicMock(stdout=busctl_json_output),
     ]
-    assert get_active_sessions() == [
+    assert get_active_users() == [
         [
-            [
-                "1000",
-                "user",
-                "/org/freedesktop/login1/user/_1000",
-            ]
+            1000,
+            "user",
+            "/org/freedesktop/login1/user/_1000",
         ]
     ]
     mock_run.assert_any_call(
