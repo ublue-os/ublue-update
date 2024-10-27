@@ -7,57 +7,33 @@ sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../src"))
 )
 
-from ublue_update.session import get_active_sessions
+from ublue_update.session import get_active_users
 
-loginctl_json_output = b"""
-[
-        {
-                "session" : "3",
-                "uid" : 1001,
-                "user" : "test",
-                "seat" : null,
-                "leader" : 6205,
-                "class" : "manager",
-                "tty" : null,
-                "state": "active",
-                "idle" : false,
-                "since" : null
-        },
-        {
-                "session" : "c1",
-                "uid" : 1001,
-                "user" : "test",
-                "seat" : null,
-                "leader" : 6230,
-                "class" : "manager",
-                "tty" : null,
-                "state": "inactive",
-                "idle" : false,
-                "since" : null
-        }
-]
-"""
+busctl_json_output = b"""{"type":"a(uso)","data":[[[1000,"user","/org/freedesktop/login1/user/_1000"]]]}"""
 
 
 @patch("ublue_update.session.subprocess.run")
-def test_get_active_sessions(mock_run):
+def test_get_active_users(mock_run):
     mock_run.side_effect = [
-        MagicMock(stdout=loginctl_json_output),
+        MagicMock(stdout=busctl_json_output),
     ]
-    assert get_active_sessions() == [
-        {
-            "session": "3",
-            "uid": 1001,
-            "user": "test",
-            "seat": None,
-            "leader": 6205,
-            "class": "manager",
-            "tty": None,
-            "state": "active",
-            "idle": False,
-            "since": None,
-        }
+    assert get_active_users() == [
+        [
+            1000,
+            "user",
+            "/org/freedesktop/login1/user/_1000",
+        ]
     ]
     mock_run.assert_any_call(
-        ["/usr/bin/loginctl", "list-sessions", "--output=json"], capture_output=True
+        [
+            "/usr/bin/busctl",
+            "--system",
+            "-j",
+            "call",
+            "org.freedesktop.login1",
+            "/org/freedesktop/login1",
+            "org.freedesktop.login1.Manager",
+            "ListUsers",
+        ],
+        capture_output=True,
     )

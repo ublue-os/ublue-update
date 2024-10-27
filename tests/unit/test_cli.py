@@ -47,7 +47,6 @@ def test_notify_uid_user(mock_run, mock_log, mock_os, mock_cfg):
         capture_output=True,
     )
 
-
 @patch("ublue_update.cli.cfg")
 def test_ask_for_updates_no_dbus_notify(mock_cfg):
     mock_cfg.dbus_notify = False
@@ -163,7 +162,7 @@ def test_run_updates_user_no_system(
 
 
 @patch("ublue_update.cli.os")
-@patch("ublue_update.cli.get_active_sessions")
+@patch("ublue_update.cli.get_active_users")
 @patch("ublue_update.cli.acquire_lock")
 @patch("ublue_update.cli.transaction_wait")
 @patch("ublue_update.cli.subprocess.run")
@@ -212,7 +211,7 @@ def test_run_updates_system(
 
 
 @patch("ublue_update.cli.os")
-@patch("ublue_update.cli.get_active_sessions")
+@patch("ublue_update.cli.get_active_users")
 @patch("ublue_update.cli.acquire_lock")
 @patch("ublue_update.cli.transaction_wait")
 @patch("ublue_update.cli.subprocess.run")
@@ -255,7 +254,7 @@ def test_run_updates_without_image_update(
 
 
 @patch("ublue_update.cli.os")
-@patch("ublue_update.cli.get_active_sessions")
+@patch("ublue_update.cli.get_active_users")
 @patch("ublue_update.cli.acquire_lock")
 @patch("ublue_update.cli.transaction_wait")
 @patch("ublue_update.cli.subprocess.run")
