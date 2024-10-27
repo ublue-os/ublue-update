@@ -29,7 +29,7 @@ BuildRequires: python-setuptools_scm
 BuildRequires: python-wheel
 Requires:      skopeo
 Requires:      libnotify
-Requires:      sudo
+Requires:      systemd
 
 %global sub_name %{lua:t=string.gsub(rpm.expand("%{NAME}"), "^ublue%-", ""); print(t)}
 

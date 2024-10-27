@@ -11,7 +11,7 @@ from ublue_update.update_checks.wait import transaction_wait
 from ublue_update.update_inhibitors.hardware import check_hardware_inhibitors
 from ublue_update.update_inhibitors.custom import check_custom_inhibitors
 from ublue_update.config import cfg
-from ublue_update.session import get_active_sessions
+from ublue_update.session import get_active_users
 from ublue_update.filelock import acquire_lock, release_lock
 
 
@@ -33,7 +33,7 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
     if process_uid == 0:
         users = []
         try:
-            users = get_active_sessions()
+            users = get_active_users()
         except KeyError as e:
             log.error("failed to get active logind session info", e)
         for user in users:
@@ -41,8 +41,9 @@ def notify(title: str, body: str, actions: list = [], urgency: str = "normal"):
                 "/usr/bin/systemd-run",
                 "--user",
                 "--machine",
-                f"{user['user']}@",
-                "--wait",
+                f"{user[1]}@", # magic number, corresponds to user name in ListUsers (see session.py)
+                "--pipe",
+                "--quiet",
             ]
             user_args += args
             out = subprocess.run(user_args, capture_output=True)
@@ -106,7 +107,7 @@ def run_updates(system, system_update_available):
             )
         users = []
         try:
-            users = get_active_sessions()
+            users = get_active_users()
         except KeyError as e:
             log.error("failed to get active logind session info", e)
 
@@ -133,15 +134,16 @@ def run_updates(system, system_update_available):
 
         """Users"""
         for user in users:
-            log.info(f"""Running update for user: '{user['user']}'""")
+            log.info(f"""Running update for user: '{user[1]}'""") # magic number, corresponds to username (see session.py)
             out = subprocess.run(
                 [
                     "/usr/bin/systemd-run",
                     "--setenv=TOPGRADE_SKIP_BRKC_NOTIFY=true",
                     "--user",
                     "--machine",
-                    f"{user['user']}@",
-                    "--wait",
+                    f"{user[1]}@",
+                    "--pipe",
+                    "--quiet",
                     "/usr/bin/topgrade",
                     "--config",
                     "/usr/share/ublue-update/topgrade-user.toml",

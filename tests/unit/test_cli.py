@@ -47,7 +47,6 @@ def test_notify_uid_user(mock_run, mock_log, mock_os, mock_cfg):
         capture_output=True,
     )
 
-
 @patch("ublue_update.cli.cfg")
 def test_ask_for_updates_no_dbus_notify(mock_cfg):
     mock_cfg.dbus_notify = False
