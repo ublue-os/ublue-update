@@ -1,3 +1,4 @@
+ARG FEDORA_VERSION="${FEDORA_VERSION:-41}"
 FROM registry.fedoraproject.org/fedora:latest AS builder
 
 ENV UBLUE_ROOT=/app/output

@@ -1,0 +1,47 @@
+ARG TEST_IMAGE="${TEST_IMAGE:-ghcr.io/ublue-os/base-main:40}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
+
+FROM registry.fedoraproject.org/fedora:${FEDORA_MAJOR_VERSION} AS builder
+
+ENV UBLUE_ROOT=/app/output
+
+WORKDIR /app 
+
+ADD . /app
+
+RUN dnf install \
+    --disablerepo='*' \
+    --enablerepo='fedora,updates' \
+    --setopt install_weak_deps=0 \
+    --nodocs \
+    --assumeyes \
+    'dnf-command(builddep)' \
+    rpkg \
+    rpm-build && \
+    mkdir -p "$UBLUE_ROOT" && \
+    rpkg spec --outdir  "$UBLUE_ROOT" && \
+    dnf builddep -y output/ublue-update.spec && \
+    make build-rpm
+
+# Dump a file list for each RPM for easier consumption
+RUN \
+    for RPM in ${UBLUE_ROOT}/noarch/*.rpm; do \
+        NAME="$(rpm -q $RPM --queryformat='%{NAME}')"; \
+        mkdir -p "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
+        rpm2cpio "${RPM}" | cpio -idmv --directory "${UBLUE_ROOT}/ublue-os/files/${NAME}"; \
+        mkdir -p ${UBLUE_ROOT}/ublue-os/rpms/; \
+        cp "${RPM}" "${UBLUE_ROOT}/ublue-os/rpms/$(rpm -q "${RPM}" --queryformat='%{NAME}.%{ARCH}.rpm')"; \
+    done
+
+FROM ${TEST_IMAGE}
+
+ENV UBLUE_ROOT=/app/output
+
+
+COPY --from=builder ${UBLUE_ROOT}/ublue-os/rpms /tmp/rpms
+RUN rpm-ostree install python3-pip
+RUN pip3 install --prefix /usr topgrade && rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
+
+RUN useradd -m -G wheel user && echo "user:" | chpasswd
+
+CMD [ "/sbin/init" ]
