@@ -1,6 +1,6 @@
 function ublue_update_version {
     if [ "$GITHUB_REF_NAME" = "" ]; then
-        echo "1.3.1+$(git rev-parse --short HEAD)"
+        echo "1.3.2+$(git rev-parse --short HEAD)"
     else
         echo "$GITHUB_REF_NAME" 
     fi
