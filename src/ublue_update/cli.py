@@ -103,6 +103,8 @@ def run_updates(system, system_update_available, dry_run):
 
     if dry_run:
         topgrade_args.append("--dry-run")
+        # disable toolbox during dry run because it doesn't want to run in the container: github.com/containers/toolbox/issues/989
+        topgrade_args.extend(["--disable", "toolbx"])
     else:
         transaction_wait()
 
