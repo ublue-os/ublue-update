@@ -21,5 +21,3 @@ def get_active_users():
     users = json.loads(out.stdout.decode("utf-8"))
     # sample output: {'type': 'a(uso)', 'data': [[[1000, 'user', '/org/freedesktop/login1/user/_1000']]]
     return users["data"][0]
-
-print(get_active_users())

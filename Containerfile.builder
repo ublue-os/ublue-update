@@ -24,4 +24,4 @@ RUN dnf install \
 
 FROM builder AS rpm
 
-RUN make build-rpm
+RUN just build-rpm

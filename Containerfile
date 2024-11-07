@@ -1,4 +1,4 @@
-ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
 
 FROM registry.fedoraproject.org/fedora:${FEDORA_MAJOR_VERSION} AS builder
 
@@ -40,3 +40,5 @@ ENV UBLUE_ROOT=/app/output
 COPY --from=builder ${UBLUE_ROOT}/ublue-os/rpms /rpms
 # Copy dumped contents
 COPY --from=builder ${UBLUE_ROOT}/ublue-os/files /files
+
+
