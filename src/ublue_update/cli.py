@@ -67,7 +67,7 @@ def ask_for_updates(system):
         return
     # if the user has confirmed
     if "universal-blue-update-confirm" in out.stdout.decode("utf-8"):
-        run_updates(system, True)
+        run_updates(system, True, False)
 
 
 def inhibitor_checks_failed(
@@ -83,7 +83,7 @@ def inhibitor_checks_failed(
     raise Exception(f"update failed to pass checks: \n - {exception_log}")
 
 
-def run_updates(system, system_update_available):
+def run_updates(system, system_update_available, dry_run):
     process_uid = os.getuid()
     filelock_path = "/run/ublue-update.lock"
     if process_uid != 0:
@@ -95,7 +95,27 @@ def run_updates(system, system_update_available):
         raise Exception("updates are already running for this user")
 
     """Wait on any existing transactions to complete before updating"""
-    transaction_wait()
+    # remove backwards compat warnings in topgrade (requires user confirmation without this env var)
+    os.environ["TOPGRADE_SKIP_BRKC_NOTIFY"] = "true"
+    topgrade_args = [
+        "/usr/bin/topgrade",
+    ]
+
+    if dry_run:
+        topgrade_args.append("--dry-run")
+        # disable toolbox during dry run because it doesn't want to run in the container: github.com/containers/toolbox/issues/989
+        topgrade_args.extend(["--disable", "toolbx"])
+    else:
+        transaction_wait()
+
+    topgrade_system = topgrade_args + [
+        "--config",
+        "/usr/share/ublue-update/topgrade-system.toml",
+    ]
+    topgrade_user = topgrade_args + [
+        "--config",
+        "/usr/share/ublue-update/topgrade-user.toml",
+    ]
 
     if process_uid == 0:
         if system_update_available:
@@ -115,14 +135,8 @@ def run_updates(system, system_update_available):
             users = []
 
         """System"""
-        # remove backwards compat warnings in topgrade (requires user confirmation without this env var)
-        os.environ["TOPGRADE_SKIP_BRKC_NOTIFY"] = "true"
         out = subprocess.run(
-            [
-                "/usr/bin/topgrade",
-                "--config",
-                "/usr/share/ublue-update/topgrade-system.toml",
-            ],
+            topgrade_system,
             capture_output=True,
         )
         log.debug(out.stdout.decode("utf-8"))
@@ -137,19 +151,19 @@ def run_updates(system, system_update_available):
             log.info(
                 f"""Running update for user: '{user[1]}'"""
             )  # magic number, corresponds to username (see session.py)
+
+            args = [
+                "/usr/bin/systemd-run",
+                "--setenv=TOPGRADE_SKIP_BRKC_NOTIFY=true",
+                "--user",
+                "--machine",
+                f"{user[1]}@",
+                "--pipe",
+                "--quiet",
+            ] + topgrade_user
+
             out = subprocess.run(
-                [
-                    "/usr/bin/systemd-run",
-                    "--setenv=TOPGRADE_SKIP_BRKC_NOTIFY=true",
-                    "--user",
-                    "--machine",
-                    f"{user[1]}@",
-                    "--pipe",
-                    "--quiet",
-                    "/usr/bin/topgrade",
-                    "--config",
-                    "/usr/share/ublue-update/topgrade-user.toml",
-                ],
+                args,
                 capture_output=True,
             )
             log.debug(out.stdout.decode("utf-8"))
@@ -189,8 +203,14 @@ def main():
         action="store_true",
         help="force manual update, skipping update checks",
     )
+    parser.add_argument("--config", help="use the specified config file")
     parser.add_argument(
-        "-c", "--check", action="store_true", help="run update checks and exit"
+        "--system",
+        action="store_true",
+        help="only run system updates (requires root)",
+    )
+    parser.add_argument(
+        "--check", action="store_true", help="run update checks and exit"
     )
     parser.add_argument(
         "-u",
@@ -204,16 +224,21 @@ def main():
         action="store_true",
         help="wait for transactions to complete and exit",
     )
-    parser.add_argument("--config", help="use the specified config file")
     parser.add_argument(
-        "--system",
+        "--dry-run",
         action="store_true",
-        help="only run system updates (requires root)",
+        help="dry run ublue-update",
     )
     cli_args = parser.parse_args()
 
     # Load the configuration file
+
     cfg.load_config(cli_args.config)
+
+    if cli_args.dry_run:
+        # run system updates
+        run_updates(False, True, True)
+        os._exit(0)
 
     if cli_args.wait:
         transaction_wait()
@@ -245,7 +270,7 @@ def main():
     # system checks passed
     log.info("System passed all update checks")
     try:
-        run_updates(cli_args.system, system_update_available)
+        run_updates(cli_args.system, system_update_available, False)
     except Exception as e:
         log.info(f"Failed to update: {e}")
         os._exit(1)
