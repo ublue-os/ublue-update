@@ -38,16 +38,17 @@ format:
 dnf-install:
 	dnf install -y "output/noarch/*.rpm"
 
-build-test:
-	#!/usr/bin/env bash
-
+container-build:
 	podman build . -t testing -f Containerfile
-	podman run -d --name ublue_update_test --security-opt label=disable --device /dev/fuse:rw --privileged testing
+
+container-test:
+	#!/usr/bin/env bash
+	podman run -d --replace --name ublue_update_test --security-opt label=disable --device /dev/fuse:rw --privileged testing
 	while [[ "$(podman exec ublue_update_test systemctl is-system-running)" != "running" && "$(podman exec ublue_update_test systemctl is-system-running)" != "degraded" ]]; do
 		echo "Waiting for systemd to finish booting..."
 		sleep 1
 	done
-
 	podman exec -it ublue_update_test systemd-run --user --machine podman@ --pipe --quiet sudo /usr/bin/ublue-update --dry-run
+	podman rm -f ublue_update_test
 clean:
 	rm -rf "$UBLUE_ROOT"
