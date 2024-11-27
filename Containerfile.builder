@@ -1,4 +1,6 @@
-FROM registry.fedoraproject.org/fedora:latest AS builder
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
+
+FROM registry.fedoraproject.org/fedora:${FEDORA_MAJOR_VERSION} AS builder
 
 ENV UBLUE_ROOT=/app/output
 
@@ -6,21 +8,11 @@ WORKDIR /app
 
 ADD . /app
 
-RUN dnf install --assumeyes python3-pip && pip install topgrade
+RUN dnf install -y just git
 
-RUN dnf install \
-    --disablerepo='*' \
-    --enablerepo='fedora,updates' \
-    --setopt install_weak_deps=0 \
-    --nodocs \
-    --assumeyes \
-    'dnf-command(builddep)' \
-    rpkg \
-    rpm-build && \
-    mkdir -p "$UBLUE_ROOT" && \
-    rpkg spec --outdir  "$UBLUE_ROOT" && \
-    dnf builddep -y output/ublue-update.spec
+RUN just container-rpm-build
 
-FROM builder AS rpm
+FROM scratch
 
-RUN make build-rpm
+ENV UBLUE_ROOT=/app/output
+COPY --from=builder ${UBLUE_ROOT}/ublue-os/rpms /tmp/rpms

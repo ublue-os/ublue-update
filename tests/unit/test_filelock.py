@@ -1,7 +1,7 @@
 import sys
 import os
 import fcntl
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # Add the src directory to the sys.path
 sys.path.insert(

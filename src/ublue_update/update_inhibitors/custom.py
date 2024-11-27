@@ -65,7 +65,7 @@ def run_custom_check_scripts() -> List[dict]:
     return results
 
 
-def check_custom_inhibitors() -> bool:
+def check_custom_inhibitors() -> tuple[bool, list]:
     custom_inhibitors = run_custom_check_scripts()
 
     failures = []

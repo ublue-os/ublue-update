@@ -1,7 +1,7 @@
 import pytest
 import sys
 import os
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, MagicMock
 
 # Add the src directory to the sys.path
 sys.path.insert(

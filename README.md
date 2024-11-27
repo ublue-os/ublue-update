@@ -54,16 +54,17 @@ $ pkexec ublue-update --system
 ```
 
 ```
-usage: ublue-update [-h] [-f] [-c] [-u] [-w] [--system]
+usage: ublue-update [-h] [-f] [--config CONFIG] [--system] [--check] [-u] [-w] [--dry-run]
 
 options:
   -h, --help         show this help message and exit
   -f, --force        force manual update, skipping update checks
-  -c, --check        run update checks and exit
-  -u, --updatecheck  check for updates and exit
-  -w, --wait         wait for transactions to complete and exit
   --config CONFIG    use the specified config file
   --system           only run system updates (requires root)
+  --check            run update checks and exit
+  -u, --updatecheck  check for updates and exit
+  -w, --wait         wait for transactions to complete and exit
+  --dry-run          dry run ublue-update
 ```
 
 ## Troubleshooting
@@ -183,10 +184,9 @@ exit(1)
 
 You can build and test this package in a container by using the provided container file.
 
-1. `make builder-image` will create a container image with all dependencies installed
-2. `make builder-exec` will execute a shell inside the builder container to allow you easily build the rpm package with `make build-rpm`
-3. `make` will trigger the build process and generate a `.whl` package that can be installed
-4. `pip install --user -e .` will allow to install an editable version of this package so you quickly edit and test the program
+1. `just venv-create` will create a python venv with `ublue-update` installed (installed with `-e` to make it editable)
+2. `source venv/bin/activate` to activate the venv
+3. `sudo $(which ublue-update)` to run the updater as root (`which ublue-update` makes sure the local `ublue-update` program is run)
 
 # Special Thanks
 
