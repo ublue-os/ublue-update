@@ -47,6 +47,7 @@ def test_notify_uid_user(mock_run, mock_log, mock_os, mock_cfg):
         capture_output=True,
     )
 
+
 @patch("ublue_update.cli.cfg")
 def test_ask_for_updates_no_dbus_notify(mock_cfg):
     mock_cfg.dbus_notify = False
@@ -81,7 +82,7 @@ def test_ask_for_updates_system(mock_run_updates, mock_notify, mock_cfg):
         ["universal-blue-update-confirm=Confirm"],
         "critical",
     )
-    mock_run_updates.assert_called_once_with(system, True)
+    mock_run_updates.assert_called_once_with(system, True, False)
 
 
 @patch("ublue_update.cli.cfg")
@@ -98,7 +99,7 @@ def test_ask_for_updates_user(mock_run_updates, mock_notify, mock_cfg):
         ["universal-blue-update-confirm=Confirm"],
         "critical",
     )
-    mock_run_updates.assert_called_once_with(system, True)
+    mock_run_updates.assert_called_once_with(system, True, False)
 
 
 def test_inhibitor_checks_failed():
@@ -129,7 +130,7 @@ def test_run_updates_user_in_progress(mock_acquire_lock, mock_os):
     mock_os.path.isdir.return_value = True
     mock_acquire_lock.return_value = None
     with pytest.raises(Exception, match="updates are already running for this user"):
-        run_updates(False, True)
+        run_updates(False, True, False)
 
 
 @patch("ublue_update.cli.os")
@@ -143,7 +144,7 @@ def test_run_updates_user_system(mock_transaction_wait, mock_acquire_lock, mock_
         Exception,
         match="ublue-update needs to be run as root to perform system updates!",
     ):
-        run_updates(True, True)
+        run_updates(True, True, False)
 
 
 @patch("ublue_update.cli.os")
@@ -157,7 +158,7 @@ def test_run_updates_user_no_system(
     mock_os.getuid.return_value = 1001
     mock_acquire_lock.return_value = fd
     mock_os.path.isdir.return_value = False
-    run_updates(False, True)
+    run_updates(False, True, False)
     mock_release_lock.assert_called_once_with(fd)
 
 
@@ -190,7 +191,7 @@ def test_run_updates_system(
     mock_run.return_value = output
     mock_pending_deployment_check.return_value = True
     mock_cfg.dbus_notify.return_value = True
-    run_updates(True, True)
+    run_updates(True, True, False)
     mock_notify.assert_any_call(
         "System Updater",
         "System passed checks, updating ...",
@@ -240,7 +241,7 @@ def test_run_updates_without_image_update(
     mock_pending_deployment_check.return_value = True
     mock_cfg.dbus_notify.return_value = True
     # System Update, but no Image Update Available
-    run_updates(True, False)
+    run_updates(True, False, False)
     mock_notify.assert_not_called()
     mock_run.assert_any_call(
         [
@@ -284,7 +285,7 @@ def test_run_updates_system_reboot(
     mock_cfg.dbus_notify.return_value = True
     reboot = MagicMock(stdout=b"universal-blue-update-reboot")
     mock_notify.side_effect = [None, reboot]
-    run_updates(True, True)
+    run_updates(True, True, False)
     mock_notify.assert_any_call(
         "System Updater",
         "System passed checks, updating ...",

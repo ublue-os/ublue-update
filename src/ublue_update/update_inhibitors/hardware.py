@@ -80,10 +80,11 @@ def check_battery_status() -> dict:
 
 
 def check_cpu_load() -> dict:
-    if cfg.max_cpu_load_percent:
+    cores = psutil.cpu_count()
+    if cfg.max_cpu_load_percent and cores is not None:
         # get load average percentage in last 5 minutes:
         # https://psutil.readthedocs.io/en/latest/index.html?highlight=getloadavg
-        cpu_load_percent = psutil.getloadavg()[1] / psutil.cpu_count() * 100
+        cpu_load_percent = psutil.getloadavg()[1] / cores * 100
         return {
             "passed": cpu_load_percent < cfg.max_cpu_load_percent,
             "message": f"CPU load is above {cfg.max_cpu_load_percent}%",
@@ -109,7 +110,7 @@ def check_mem_percentage() -> dict:
         }
 
 
-def check_hardware_inhibitors() -> bool:
+def check_hardware_inhibitors() -> tuple[bool, list]:
     hardware_inhibitors = [
         check_network_status(),
         check_network_not_metered(),
