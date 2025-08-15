@@ -1,3 +1,4 @@
+# THIS PROJECT IS NOW ARCHIVED, REPLACED BY: [uupd](https://github.com/ublue-os/uupd)
 # Universal Blue Update
 
 Small update program written in python intended for use in Universal Blue that uses [`topgrade`](https://github.com/topgrade-rs/topgrade) for executing updates.
