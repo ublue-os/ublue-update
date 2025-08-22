@@ -1,6 +1,6 @@
 import sys
 import os
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, mock_open
 
 # Add the src directory to the sys.path
 sys.path.insert(
@@ -34,7 +34,7 @@ def test_find_default_config_file_success_second(mock_isfile, mock_log):
     mock_isfile.side_effect = [False, True]
 
     assert find_default_config_file() == test_path
-    mock_isfile.call_count == 2
+    assert mock_isfile.call_count == 2
 
 
 def test_load_value_success():
@@ -46,7 +46,7 @@ def test_load_value_success():
 def test_load_value_fail():
     dct = {"key": "val"}
 
-    assert load_value(dct, "key2") == None
+    assert load_value(dct, "key2") is None
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=toml_example)
@@ -118,8 +118,8 @@ def test_load_values(mock_load_value):
     instance = Config()
     instance.load_values(config)
 
-    mock_load_value.call_count == 6
-    assert instance.dbus_notify == False
+    assert mock_load_value.call_count == 6
+    assert not instance.dbus_notify
     assert instance.custom_check_scripts == []
     mock_load_value.assert_any_call(config, "notify", "dbus_notify")
     mock_load_value.assert_any_call(config, "checks", "network_not_metered")

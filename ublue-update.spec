@@ -15,7 +15,7 @@ Source:        {{{ git_dir_pack }}}
 
 BuildArch:     noarch
 Supplements:   rpm-ostree flatpak
-BuildRequires: make
+BuildRequires: just
 BuildRequires: systemd-rpm-macros
 BuildRequires: black
 BuildRequires: python-flake8
