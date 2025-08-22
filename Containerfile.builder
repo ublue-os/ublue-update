@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:latest AS builder
+FROM registry.fedoraproject.org/fedora:latest@sha256:7899eceb9d240c8a6669a0cf961ef963289a354dcd5c27c716526a32bac5e0c7 AS builder
 
 ENV UBLUE_ROOT=/app/output
 
